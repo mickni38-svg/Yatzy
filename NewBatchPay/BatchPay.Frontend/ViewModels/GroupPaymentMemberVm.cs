@@ -1,9 +1,9 @@
 ﻿using BatchPay.Contracts.Dto;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.Maui.Graphics;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
-using System.ComponentModel;
 
 namespace BatchPay.Frontend.ViewModels;
 
@@ -18,12 +18,11 @@ public partial class GroupPaymentMemberVm : ObservableObject
 
     [ObservableProperty] private bool isExpanded;
 
-    // Accordion data
     public ObservableCollection<OrderLineVm> OrderLines { get; } = new();
 
     [ObservableProperty] private string? orderTitle;
 
-    public bool HasOrder { get;  set; }
+    public bool HasOrder { get; set; }
 
     public string OrderTotalText
     {
@@ -36,17 +35,48 @@ public partial class GroupPaymentMemberVm : ObservableObject
 
     public string PaymentStatusText => HasOrder ? "Betalt" : "Afventer";
 
+    // NYT: farver til UI
+    public Color RowBackgroundColor => HasOrder
+        ? Color.FromArgb( "#0B2B30" )
+        : Color.FromArgb( "#071923" );
+
+    public Color RowBorderColor => HasOrder
+        ? Color.FromArgb( "#49DCCB" )
+        : Color.FromArgb( "#173847" );
+
+    public Color StatusBackgroundColor => HasOrder
+        ? Color.FromArgb( "#173D3B" )
+        : Color.FromArgb( "#102636" );
+
+    public Color StatusTextColor => HasOrder
+        ? Color.FromArgb( "#B9FFE2" )
+        : Color.FromArgb( "#D7E5F2" );
+
+    public Color NameTextColor => HasOrder
+        ? Color.FromArgb( "#F2FFFB" )
+        : Colors.White;
+
+    public Color ChevronColor => HasOrder
+        ? Color.FromArgb( "#8EF3D7" )
+        : Color.FromArgb( "#D6E2F2" );
+
+    public Color DetailsBackgroundColor => HasOrder
+        ? Color.FromArgb( "#0C2128" )
+        : Color.FromArgb( "#09131C" );
+
+    public Color DetailsBorderColor => HasOrder
+        ? Color.FromArgb( "#2E8F9E" )
+        : Color.FromArgb( "#2A4357" );
+
     public GroupPaymentMemberVm( DirectoryEntryDto user )
     {
         IsMerchant = user.Type == DirectoryEntryType.Merchant;
         UserId = user.Id;
-         Initials = CreateInitials( user.DisplayName );
+        Initials = CreateInitials( user.DisplayName );
         AvatarColor = CreateAvatarColor( user.Id );
         DisplayName = user.DisplayName;
-               
-        OrderLines.CollectionChanged += OnOrderLinesChanged;
 
-        // ✅ Start empty – bliver fyldt af OverviewViewModel via DB-kald
+        OrderLines.CollectionChanged += OnOrderLinesChanged;
         OrderTitle = null;
     }
 
@@ -55,21 +85,37 @@ public partial class GroupPaymentMemberVm : ObservableObject
         OnPropertyChanged( nameof( HasOrder ) );
         OnPropertyChanged( nameof( OrderTotalText ) );
         OnPropertyChanged( nameof( PaymentStatusText ) );
+        OnPropertyChanged( nameof( RowBackgroundColor ) );
+        OnPropertyChanged( nameof( RowBorderColor ) );
+        OnPropertyChanged( nameof( StatusBackgroundColor ) );
+        OnPropertyChanged( nameof( StatusTextColor ) );
+        OnPropertyChanged( nameof( NameTextColor ) );
+        OnPropertyChanged( nameof( ChevronColor ) );
+        OnPropertyChanged( nameof( DetailsBackgroundColor ) );
+        OnPropertyChanged( nameof( DetailsBorderColor ) );
     }
 
     public void ApplyLatestOrder( OrderDto? order )
     {
         if (order is null)
         {
-            //OrderTitle = order?.MerchantName;
             OrderLines.Clear();
+            HasOrder = false;
+
             OnPropertyChanged( nameof( HasOrder ) );
             OnPropertyChanged( nameof( OrderTotalText ) );
             OnPropertyChanged( nameof( PaymentStatusText ) );
+            OnPropertyChanged( nameof( RowBackgroundColor ) );
+            OnPropertyChanged( nameof( RowBorderColor ) );
+            OnPropertyChanged( nameof( StatusBackgroundColor ) );
+            OnPropertyChanged( nameof( StatusTextColor ) );
+            OnPropertyChanged( nameof( NameTextColor ) );
+            OnPropertyChanged( nameof( ChevronColor ) );
+            OnPropertyChanged( nameof( DetailsBackgroundColor ) );
+            OnPropertyChanged( nameof( DetailsBorderColor ) );
             return;
         }
 
-       // OrderTitle = $"Ordre #{order.Id}";
         OrderLines.Clear();
 
         foreach (var l in order.Lines)
@@ -80,6 +126,14 @@ public partial class GroupPaymentMemberVm : ObservableObject
         OnPropertyChanged( nameof( HasOrder ) );
         OnPropertyChanged( nameof( OrderTotalText ) );
         OnPropertyChanged( nameof( PaymentStatusText ) );
+        OnPropertyChanged( nameof( RowBackgroundColor ) );
+        OnPropertyChanged( nameof( RowBorderColor ) );
+        OnPropertyChanged( nameof( StatusBackgroundColor ) );
+        OnPropertyChanged( nameof( StatusTextColor ) );
+        OnPropertyChanged( nameof( NameTextColor ) );
+        OnPropertyChanged( nameof( ChevronColor ) );
+        OnPropertyChanged( nameof( DetailsBackgroundColor ) );
+        OnPropertyChanged( nameof( DetailsBorderColor ) );
     }
 
     [RelayCommand]

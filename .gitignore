@@ -33,3 +33,6 @@
 /NewBatchPay/BatchPay.Data/bin/Release/net10.0
 /NewBatchPay/BatchPay.Frontend/bin/Release
 /NewBatchPay/BatchPay.Logic/bin/Release/net10.0
+/NewBatchPay/BatchPay.Api/.config
+/NewBatchPay/BatchPay.Api/Properties/PublishProfiles
+/NewBatchPay/BatchPay.Api/BatchPay.Api.csproj.user

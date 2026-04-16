@@ -29,7 +29,10 @@ public partial class HomePage : ContentPage
         => await Shell.Current.GoToAsync( "//find" );
 
     private async void OnBeskederTapped( object sender, EventArgs e )
-        => await Shell.Current.GoToAsync( "//messages" );
+    {
+        _vm.MarkNotificationAsRead();
+        await Shell.Current.GoToAsync( "//messages" );
+    }
 
     private async void OnSignupTapped( object sender, EventArgs e )
         => await DisplayAlert( "Opret dig", "Opret dig som bruger kommer senere 🙂", "OK" );

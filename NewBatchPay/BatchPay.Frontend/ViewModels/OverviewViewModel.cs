@@ -146,8 +146,8 @@ public partial class OverviewViewModel : ObservableObject
 
         foreach (var m in members)
         {
-            //if (m.Type == DirectoryEntryType.Merchant)
-              //  continue;
+            if (m.Type == DirectoryEntryType.Merchant)
+                continue;
 
             // Hvis GroupPaymentMemberVm i dag forventer UserDto,
             // skal den opdateres til at tage DirectoryEntryDto i stedet.

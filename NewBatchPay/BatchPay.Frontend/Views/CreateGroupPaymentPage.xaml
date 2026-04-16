@@ -228,20 +228,20 @@
                               VerticalOptions="Center">
 
                             <Frame
-                                WidthRequest="22"
-                                HeightRequest="22"
-                                CornerRadius="11"
-                                Padding="0"
-                                HasShadow="False"
-                                BorderColor="#2A2F36"
-                                BackgroundColor="Transparent"
-                                HorizontalOptions="Center"
-                                VerticalOptions="Center"
-                                IsVisible="{Binding IsSelected, Converter={StaticResource InverseBoolConverter}}">
+    WidthRequest="22"
+    HeightRequest="22"
+    CornerRadius="11"
+    Padding="0"
+    HasShadow="False"
+    BorderColor="#2A2F36"
+    BackgroundColor="Transparent"
+    HorizontalOptions="Center"
+    VerticalOptions="Center"
+    IsVisible="{Binding IsSelected, Converter={StaticResource InverseBoolConverter}}">
                                 <Frame.GestureRecognizers>
                                     <TapGestureRecognizer
-         Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.ToggleSelectCommand}"
-         CommandParameter="{Binding .}" />
+            Command="{Binding Source={x:Reference RootPage}, Path=BindingContext.ToggleSelectCommand}"
+            CommandParameter="{Binding .}" />
                                 </Frame.GestureRecognizers>
                             </Frame>
 

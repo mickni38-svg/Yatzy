@@ -22,6 +22,7 @@ public class DirectoryService : IDirectoryService
     public async Task<IReadOnlyList<DirectoryEntryDto>> GetDirectoryAsync(CancellationToken ct)
     {
         return await _db.DirectoryEntries
+            .Where(u=>u.IsActive)
             .OrderBy(e => e.DisplayName)
             .Select(e => new DirectoryEntryDto(
                 e is UserEntity ? DirectoryEntryType.User : DirectoryEntryType.Merchant,
