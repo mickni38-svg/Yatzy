@@ -1,0 +1,6 @@
+@Yatzy.Api_HostAddress = http://localhost:5210
+
+GET {{Yatzy.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

@@ -1,0 +1,83 @@
+<div class="score-sheet-wrapper">
+  <table class="score-sheet">
+    <thead>
+      <tr>
+        <th class="cat-col">Category</th>
+        <th *ngIf="canSelect" class="suggest-col">Suggestion</th>
+        <th *ngFor="let player of players" [class.me]="isMe(player)">
+          <span class="player-name">{{ player.displayName }}</span>
+          <span class="you-tag" *ngIf="isMe(player)">you</span>
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+
+      <!-- UPPER SECTION -->
+      <tr class="section-header">
+        <td [attr.colspan]="players.length + (canSelect ? 2 : 1)">Upper Section</td>
+      </tr>
+      <tr *ngFor="let cat of upperCategories"
+          class="score-row"
+          [class.clickable]="canSelect && isMyCategory(myPlayer!, cat)"
+          (click)="onSelect(cat)">
+        <td class="cat-name">{{ labels[cat] }}</td>
+        <td *ngIf="canSelect" class="suggest-cell">
+          <ng-container *ngIf="getSuggestion(cat) as pts; else dash">
+            <span class="suggestion" [class.zero]="pts === 0">{{ pts }}</span>
+          </ng-container>
+          <ng-template #dash><span class="no-suggest">—</span></ng-template>
+        </td>
+        <td *ngFor="let player of players"
+            class="score-cell"
+            [class.me]="isMe(player)"
+            [class.used]="isUsed(player, cat)"
+            [class.available]="isMyCategory(player, cat)">
+          {{ getScore(player, cat) }}
+          <span class="pick-label" *ngIf="isMyCategory(player, cat) && !getScore(player, cat)">tap</span>
+        </td>
+      </tr>
+
+      <!-- UPPER SUBTOTAL -->
+      <tr class="subtotal-row">
+        <td>Subtotal</td>
+        <td *ngIf="canSelect"></td>
+        <td *ngFor="let player of players" [class.me]="isMe(player)">
+          {{ upperTotal(player) }}<span class="bonus-chip" *ngIf="hasBonus(player)">+50</span>
+        </td>
+      </tr>
+
+      <!-- LOWER SECTION -->
+      <tr class="section-header">
+        <td [attr.colspan]="players.length + (canSelect ? 2 : 1)">Lower Section</td>
+      </tr>
+      <tr *ngFor="let cat of lowerCategories"
+          class="score-row"
+          [class.clickable]="canSelect && isMyCategory(myPlayer!, cat)"
+          (click)="onSelect(cat)">
+        <td class="cat-name">{{ labels[cat] }}</td>
+        <td *ngIf="canSelect" class="suggest-cell">
+          <ng-container *ngIf="getSuggestion(cat) !== null">
+            <span class="suggestion" [class.zero]="getSuggestion(cat) === 0">{{ getSuggestion(cat) }}</span>
+          </ng-container>
+          <span class="no-suggest" *ngIf="getSuggestion(cat) === null">—</span>
+        </td>
+        <td *ngFor="let player of players"
+            class="score-cell"
+            [class.me]="isMe(player)"
+            [class.used]="isUsed(player, cat)"
+            [class.available]="isMyCategory(player, cat)">
+          {{ getScore(player, cat) }}
+          <span class="pick-label" *ngIf="isMyCategory(player, cat) && !getScore(player, cat)">tap</span>
+        </td>
+      </tr>
+
+      <!-- TOTAL -->
+      <tr class="total-row">
+        <td>Total</td>
+        <td *ngIf="canSelect"></td>
+        <td *ngFor="let player of players" [class.me]="isMe(player)">{{ player.totalScore }}</td>
+      </tr>
+
+    </tbody>
+  </table>
+</div>

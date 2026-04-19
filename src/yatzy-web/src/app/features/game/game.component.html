@@ -1,0 +1,77 @@
+<div class="game-layout" *ngIf="game; else noGame">
+
+  <!-- LEFT: Players + cameras -->
+  <aside class="col-players">
+    <div class="room-badge">
+      <span class="room-label">Room</span>
+      <span class="room-code">{{ game.roomCode }}</span>
+    </div>
+    <app-player-list
+      [players]="game.players"
+      [currentPlayerId]="game.currentPlayerId"
+      [myPlayerId]="myPlayerId"
+      [streams]="remoteStreams">
+    </app-player-list>
+  </aside>
+
+  <!-- CENTER: Turn info + Dice + Actions -->
+  <main class="col-center">
+    <app-turn-banner
+      [currentPlayerName]="currentPlayerName"
+      [isMyTurn]="isMyTurn"
+      [roundNumber]="game.roundNumber"
+      [rollNumber]="game.rollNumber"
+      [maxRolls]="3">
+    </app-turn-banner>
+
+    <div class="dice-card">
+      <p class="dice-hint" *ngIf="isMyTurn && game.rollNumber > 0 && game.rollNumber < 3">
+        Click a die to hold or release it
+      </p>
+      <p class="dice-hint waiting" *ngIf="!isMyTurn">
+        Waiting for {{ currentPlayerName }}…
+      </p>
+
+      <app-dice-tray
+        [dice]="game.dice"
+        [canInteract]="isMyTurn && game.rollNumber > 0"
+        (toggleHold)="onToggleHold($event)">
+      </app-dice-tray>
+
+      <div class="action-row">
+        <button class="btn-roll"
+                (click)="rollDice()"
+                [class.pulse]="isMyTurn && game.rollNumber === 0"
+                [disabled]="!canRoll || isActing">
+          🎲 {{ game.rollNumber === 0 ? 'Roll Dice' : 'Roll Again' }}
+        </button>
+      </div>
+
+      <div class="must-select-banner" *ngIf="canSelectOnly">
+        ↓ No rolls left — choose a category in the scoreboard ↓
+      </div>
+    </div>
+
+    <p class="error-msg" *ngIf="errorMessage">{{ errorMessage }}</p>
+  </main>
+
+  <!-- RIGHT: Scoreboard -->
+  <aside class="col-score">
+    <h3 class="score-title">Scoreboard</h3>
+    <app-score-sheet
+      [players]="game.players"
+      [myPlayerId]="myPlayerId"
+      [canSelect]="isMyTurn && game.rollNumber > 0"
+      [diceValues]="diceValues"
+      (selectCategory)="onSelectCategory($event)">
+    </app-score-sheet>
+  </aside>
+
+</div>
+
+<ng-template #noGame>
+  <div class="splash-loading">
+    <div class="spinner"></div>
+    <p>Loading game…</p>
+  </div>
+</ng-template>

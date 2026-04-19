@@ -1,0 +1,28 @@
+# Visual Studio
+.vs/
+src/.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Build output
+**/bin/
+**/obj/
+
+# Angular
+src/yatzy-web/node_modules/
+src/yatzy-web/dist/
+src/yatzy-web/.angular/
+
+# Logs
+*.log
+
+# Database files
+*.mdf
+*.ldf
+database/
+
+# OS
+.DS_Store
+Thumbs.db
