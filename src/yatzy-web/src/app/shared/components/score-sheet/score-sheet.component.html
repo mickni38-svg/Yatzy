@@ -18,7 +18,8 @@
       </tr>
       <tr *ngFor="let cat of upperCategories"
           class="score-row"
-          [class.clickable]="canSelect && isMyCategory(myPlayer!, cat)"
+          [class.clickable]="canSelect && isMyCategory(myPlayer!, cat) && isSelectable(cat)"
+          [class.not-selectable]="canSelect && isMyCategory(myPlayer!, cat) && !isSelectable(cat)"
           (click)="onSelect(cat)">
         <td class="cat-name">{{ labels[cat] }}</td>
         <td *ngIf="canSelect" class="suggest-cell">
@@ -33,7 +34,7 @@
             [class.used]="isUsed(player, cat)"
             [class.available]="isMyCategory(player, cat)">
           <ng-container *ngIf="isUsed(player, cat)">{{ getScore(player, cat) }}</ng-container>
-          <span class="pick-btn" *ngIf="isMyCategory(player, cat)">
+          <span class="pick-btn" [class.pick-btn-zero]="!isSelectable(cat)" *ngIf="isMyCategory(player, cat)">
             <span class="pick-pts">{{ getSuggestion(cat) ?? 0 }}</span>
             <span class="pick-label">Vælg</span>
           </span>
@@ -55,7 +56,8 @@
       </tr>
       <tr *ngFor="let cat of lowerCategories"
           class="score-row"
-          [class.clickable]="canSelect && isMyCategory(myPlayer!, cat)"
+          [class.clickable]="canSelect && isMyCategory(myPlayer!, cat) && isSelectable(cat)"
+          [class.not-selectable]="canSelect && isMyCategory(myPlayer!, cat) && !isSelectable(cat)"
           (click)="onSelect(cat)">
         <td class="cat-name">{{ labels[cat] }}</td>
         <td *ngIf="canSelect" class="suggest-cell">
@@ -68,9 +70,10 @@
             class="score-cell"
             [class.me]="isMe(player)"
             [class.used]="isUsed(player, cat)"
-            [class.available]="isMyCategory(player, cat)">
+            [class.available]="isMyCategory(player, cat) && isSelectable(cat)"
+            [class.available-zero]="isMyCategory(player, cat) && !isSelectable(cat)">
           <ng-container *ngIf="isUsed(player, cat)">{{ getScore(player, cat) }}</ng-container>
-          <span class="pick-btn" *ngIf="isMyCategory(player, cat)">
+          <span class="pick-btn" [class.pick-btn-zero]="!isSelectable(cat)" *ngIf="isMyCategory(player, cat)">
             <span class="pick-pts">{{ getSuggestion(cat) ?? 0 }}</span>
             <span class="pick-label">Vælg</span>
           </span>

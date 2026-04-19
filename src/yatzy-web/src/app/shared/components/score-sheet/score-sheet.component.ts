@@ -42,6 +42,24 @@ export class ScoreSheetComponent {
     return player.playerId === this.myPlayerId && this.canSelect && !this.isUsed(player, category);
   }
 
+  /** Kategori må klikkes hvis score > 0, ELLER hvis alle tilgængelige kategorier giver 0 */
+  isSelectable(category: ScoreCategory): boolean {
+    const pts = this.getSuggestion(category);
+    if (pts === null) return false;
+    if (pts > 0) return true;
+    // Ingen positive valg tilbage → tillad nul-valg
+    return !this.hasAnyPositiveOption();
+  }
+
+  hasAnyPositiveOption(): boolean {
+    return this.allCategories.some(cat => {
+      const me = this.myPlayer;
+      if (!me || this.isUsed(me, cat)) return false;
+      const pts = this.getSuggestion(cat);
+      return pts !== null && pts > 0;
+    });
+  }
+
   getSuggestion(category: ScoreCategory): number | null {
     if (!this.canSelect || this.diceValues.length !== 5) return null;
     return this.calcScore(category, this.diceValues);
@@ -57,7 +75,7 @@ export class ScoreSheetComponent {
 
   onSelect(category: ScoreCategory): void {
     const me = this.players.find(p => p.playerId === this.myPlayerId);
-    if (this.canSelect && me && !this.isUsed(me, category)) {
+    if (this.canSelect && me && !this.isUsed(me, category) && this.isSelectable(category)) {
       this.selectCategory.emit(category);
     }
   }
