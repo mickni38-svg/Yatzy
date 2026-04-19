@@ -81,7 +81,20 @@
         <div *ngFor="let player of game.players"
              class="camera-slot"
              [class.active]="player.playerId === myPlayerId">
-          <div class="camera-slot-empty">👤</div>
+          <!-- Eget kamera (local stream) -->
+          <ng-container *ngIf="player.playerId === myPlayerId">
+            <video *ngIf="webrtc.localStream"
+                   [srcObject]="webrtc.localStream"
+                   autoplay muted playsinline></video>
+            <div class="camera-slot-empty" *ngIf="!webrtc.localStream">👤</div>
+          </ng-container>
+          <!-- Andres kamera (remote stream) -->
+          <ng-container *ngIf="player.playerId !== myPlayerId">
+            <video *ngIf="getStream(player.playerId)"
+                   [srcObject]="getStream(player.playerId)"
+                   autoplay playsinline></video>
+            <div class="camera-slot-empty" *ngIf="!getStream(player.playerId)">👤</div>
+          </ng-container>
           <div class="camera-slot-name">
             {{ player.displayName }}
             <span class="mic-icon">🎤</span>

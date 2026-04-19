@@ -6,14 +6,16 @@ import { Subscription } from 'rxjs';
 import { GameApiService } from '../../core/services/game-api.service';
 import { GameRealtimeService } from '../../core/services/game-realtime.service';
 import { PlayerSessionService } from '../../core/services/player-session.service';
+import { WebRtcService } from '../../core/services/webrtc.service';
 import { GameStateDto } from '../../core/models/game-state.dto';
 import { GameStatus } from '../../shared/enums/game-status.enum';
 import { ScoreSheetComponent } from '../../shared/components/score-sheet/score-sheet.component';
+import { SrcObjectDirective } from '../../shared/directives/src-object.directive';
 
 @Component({
   selector: 'app-lobby',
   standalone: true,
-  imports: [CommonModule, FormsModule, ScoreSheetComponent],
+  imports: [CommonModule, FormsModule, ScoreSheetComponent, SrcObjectDirective],
   templateUrl: './lobby.component.html',
   styleUrl: './lobby.component.scss'
 })
@@ -26,6 +28,7 @@ export class LobbyComponent implements OnInit, OnDestroy {
   isLoading = false;
 
   game: GameStateDto | null = null;
+  remoteStreams = new Map<string, MediaStream>();
 
   private sub = new Subscription();
 
@@ -33,10 +36,15 @@ export class LobbyComponent implements OnInit, OnDestroy {
     private api: GameApiService,
     private realtime: GameRealtimeService,
     public session: PlayerSessionService,
+    public webrtc: WebRtcService,
     private router: Router
   ) {}
 
   ngOnInit(): void {
+    this.sub.add(
+      this.webrtc.remoteStreams$.subscribe(m => this.remoteStreams = new Map(m))
+    );
+
     this.sub.add(
       this.realtime.gameState$.subscribe(state => {
         if (!state) return;
@@ -66,6 +74,8 @@ export class LobbyComponent implements OnInit, OnDestroy {
       await this.realtime.joinRoom(state.roomCode, host.playerId);
       this.game = state;
       this.mode = 'waiting';
+      // Start kamera allerede i lobby
+      this.webrtc.start(state.roomCode, host.playerId);
     } catch {
       this.errorMessage = 'Could not create game.';
     } finally {
@@ -91,6 +101,8 @@ export class LobbyComponent implements OnInit, OnDestroy {
       await this.realtime.joinRoom(state.roomCode, me.playerId);
       this.game = state;
       this.mode = 'waiting';
+      // Start kamera allerede i lobby
+      this.webrtc.start(state.roomCode, me.playerId);
     } catch {
       this.errorMessage = 'Could not join game. Check the room code.';
     } finally {
@@ -126,7 +138,12 @@ export class LobbyComponent implements OnInit, OnDestroy {
     return this.session.playerId;
   }
 
+  getStream(playerId: string): MediaStream | null {
+    return this.remoteStreams.get(playerId) ?? null;
+  }
+
   ngOnDestroy(): void {
     this.sub.unsubscribe();
+    // WebRTC stopper IKKE her – game-komponenten overtager den samme session
   }
 }

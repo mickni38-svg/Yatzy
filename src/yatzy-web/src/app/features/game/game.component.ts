@@ -73,7 +73,8 @@ export class GameComponent implements OnInit, OnDestroy {
 
     const playerId = this.session.playerId;
     const roomCode = this.session.roomCode;
-    if (playerId && roomCode) {
+    // Start kun WebRTC hvis det ikke allerede kører fra lobby
+    if (playerId && roomCode && !this.webrtc.localStream) {
       this.webrtc.start(roomCode, playerId);
     }
   }
