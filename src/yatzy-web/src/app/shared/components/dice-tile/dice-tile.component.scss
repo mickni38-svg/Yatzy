@@ -1,9 +1,9 @@
 .dice-tile {
   width: 80px;
   height: 80px;
-  border-radius: var(--radius-md);
-  border: 2.5px solid rgba(255,255,255,.2);
-  background: #f8fdf8;
+  border-radius: 12px;
+  border: 2.5px solid #d0d0d0;
+  background: #fff;
   padding: 0;
   display: flex;
   align-items: center;
@@ -11,50 +11,38 @@
   position: relative;
   transition: transform .15s ease, box-shadow .15s ease, background .15s ease, border-color .15s ease;
   flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(0,0,0,.10);
+  cursor: pointer;
 
   &:hover:not(.disabled) {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 24px rgba(0,0,0,.35);
-    border-color: var(--green-400);
+    transform: translateY(-3px);
+    box-shadow: 0 6px 18px rgba(0,0,0,.15);
+    border-color: #2e7d32;
   }
 
-  &:active:not(.disabled) { transform: translateY(-2px); }
+  &:active:not(.disabled) { transform: translateY(-1px); }
 
   &.held {
-    background: var(--green-800);
-    border-color: #69f0ae;
-    box-shadow: 0 0 0 2px rgba(105,240,174,.35), 0 4px 16px rgba(27,94,32,.5);
+    background: #fff;
+    border-color: #2e7d32;
+    border-width: 3px;
+    box-shadow: 0 0 0 2px rgba(46,125,50,.25), 0 4px 12px rgba(46,125,50,.2);
 
-    .pip-grid circle { fill: #fff; }
-    .hold-badge { display: flex; }
+    .pip-grid circle { fill: #1b5e20; }
   }
 
   &.disabled {
-    opacity: .38;
+    opacity: .45;
     cursor: not-allowed;
-    &:hover { transform: none; box-shadow: none; }
+    &:hover { transform: none; box-shadow: 0 2px 8px rgba(0,0,0,.10); border-color: #d0d0d0; }
   }
 
   .pip-grid {
     width: 54px;
     height: 54px;
 
-    circle { fill: var(--green-900); }
+    circle { fill: #1a1a1a; }
   }
 
-  .hold-badge {
-    display: none;
-    position: absolute;
-    bottom: -11px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: #69f0ae;
-    color: var(--green-950);
-    font-size: .58rem;
-    font-weight: 800;
-    letter-spacing: .06em;
-    padding: 2px 7px;
-    border-radius: 20px;
-    white-space: nowrap;
-  }
+  .hold-badge { display: none; }
 }

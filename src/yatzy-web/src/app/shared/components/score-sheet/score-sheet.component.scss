@@ -1,26 +1,29 @@
 .score-sheet-wrapper {
   overflow-x: auto;
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow-md);
+  overflow-y: auto;
+  flex: 1;
+  border-radius: 0;
+  box-shadow: none;
 }
 
 .score-sheet {
   width: 100%;
   border-collapse: collapse;
-  font-size: .88rem;
+  font-size: .82rem;
 
   thead th {
-    background: var(--green-800);
+    background: #2e7d32;
     color: #fff;
-    padding: 11px 14px;
+    padding: 8px 10px;
     text-align: center;
     position: sticky;
     top: 0;
     z-index: 2;
+    font-size: .8rem;
 
-    &.me      { background: var(--green-900); }
-    &.cat-col { text-align: left; min-width: 130px; }
-    &.suggest-col { min-width: 90px; color: #a5d6a7; font-size: .78rem; }
+    &.me      { background: #1b5e20; }
+    &.cat-col { text-align: left; min-width: 110px; }
+    &.suggest-col { min-width: 70px; color: #a5d6a7; font-size: .78rem; }
 
     .player-name { display: block; }
     .you-tag {
@@ -134,10 +137,10 @@
   }
 
   .total-row td {
-    background: var(--green-800);
+    background: #2e7d32;
     color: #fff;
-    font-size: .95rem;
-    &.me { background: var(--green-900); }
+    font-size: .88rem;
+    &.me { background: #1b5e20; }
   }
 
   .bonus-chip {

@@ -8,11 +8,12 @@ import { GameRealtimeService } from '../../core/services/game-realtime.service';
 import { PlayerSessionService } from '../../core/services/player-session.service';
 import { GameStateDto } from '../../core/models/game-state.dto';
 import { GameStatus } from '../../shared/enums/game-status.enum';
+import { ScoreSheetComponent } from '../../shared/components/score-sheet/score-sheet.component';
 
 @Component({
   selector: 'app-lobby',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, ScoreSheetComponent],
   templateUrl: './lobby.component.html',
   styleUrl: './lobby.component.scss'
 })

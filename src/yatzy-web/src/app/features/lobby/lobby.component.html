@@ -1,17 +1,16 @@
-<div class="lobby-container">
+<!-- HOME / CREATE / JOIN modes -->
+<div class="lobby-container" *ngIf="mode === 'home' || mode === 'create' || mode === 'join'">
   <div class="logo">
     <span class="logo-icon">🎲</span>
     <span class="logo-text">Yatzy</span>
   </div>
 
-  <!-- Forside -->
   <div *ngIf="mode === 'home'" class="card home-card">
     <p class="home-desc">Kast terninger, udfyld scorekortet, slå dine venner.</p>
     <button class="btn btn-primary" (click)="mode = 'create'">Opret spil</button>
     <button class="btn btn-secondary" (click)="mode = 'join'">Deltag i spil</button>
   </div>
 
-  <!-- Opret -->
   <div *ngIf="mode === 'create'" class="card">
     <h2>Opret spil</h2>
     <label>Dit navn
@@ -26,7 +25,6 @@
     </div>
   </div>
 
-  <!-- Deltag -->
   <div *ngIf="mode === 'join'" class="card">
     <h2>Deltag i spil</h2>
     <label>Dit navn
@@ -43,33 +41,73 @@
       </button>
     </div>
   </div>
+</div>
 
-  <!-- Venteværelse -->
-  <div *ngIf="mode === 'waiting' && game" class="card waiting-card">
-    <h2>Lobby</h2>
-    <div class="room-code">
-      <div>
-        <span class="label">Rumkode</span>
-        <span class="code">{{ game.roomCode }}</span>
-      </div>
-      <span class="player-count">{{ game.players.length }} spiller{{ game.players.length !== 1 ? 'e' : '' }}</span>
+<!-- WAITING mode – mockup layout med topbar + kamera-grid + scorekort -->
+<div class="lobby-shell" *ngIf="mode === 'waiting' && game">
+
+  <header class="lobby-topbar">
+    <div class="lobby-topbar-logo">
+      YATZY med <span style="margin: 0 4px">⚄</span> terninger
     </div>
-    <p class="hint">Del koden — venner bruger den til at deltage.</p>
-    <div class="waiting-players">
-      <div *ngFor="let player of game.players" class="waiting-player">
-        <div class="avatar-sm">{{ player.displayName.charAt(0).toUpperCase() }}</div>
-        <span class="wp-name">{{ player.displayName }}</span>
-        <span class="host-badge" *ngIf="player.isHost">Vært</span>
-      </div>
-    </div>
-    <p class="error" *ngIf="errorMessage">{{ errorMessage }}</p>
-    <div class="actions">
-      <button class="btn btn-primary"
+    <div class="lobby-topbar-actions">
+      <button class="btn-topbar-outline" (click)="mode = 'home'">Forlad spil</button>
+      <button class="btn-topbar-primary"
               (click)="startGame()"
               [disabled]="!canStart || isLoading">
-        {{ isLoading ? 'Starter...' : canStart ? '🎲 Start spil' : 'Venter på spillere...' }}
+        {{ isLoading ? 'Starter...' : 'Start spil' }}
       </button>
     </div>
-    <p *ngIf="!isHost" class="hint">Venter på at værten starter spillet.</p>
+  </header>
+
+  <div class="lobby-body">
+
+    <!-- Venstre: kamera-grid + kontroller -->
+    <div class="lobby-left">
+      <div>
+        <p class="lobby-players-label">
+          Spillere ({{ game.players.length }}/{{ game.players.length }})
+        </p>
+        <p class="lobby-players-sub">Vent på at alle er klar…</p>
+      </div>
+
+      <div class="camera-grid">
+        <div *ngFor="let player of game.players"
+             class="camera-slot"
+             [class.active]="player.playerId === myPlayerId">
+          <div class="camera-slot-empty">👤</div>
+          <div class="camera-slot-name">
+            {{ player.displayName }}
+            <span class="mic-icon">🎤</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="lobby-controls">
+        <button class="control-btn"><span>🎤</span><span>Slå lyd fra</span></button>
+        <button class="control-btn"><span>📹</span><span>Slå video fra</span></button>
+        <button class="control-btn"><span>💬</span><span>Chat</span></button>
+      </div>
+
+      <p class="error" *ngIf="errorMessage" style="margin:0; padding:8px 12px; background:#ffebee; border:1px solid #ef9a9a; border-radius:8px; color:#c62828; font-size:.82rem;">{{ errorMessage }}</p>
+    </div>
+
+    <!-- Højre: tom scorekort -->
+    <div class="lobby-score-panel">
+      <div class="score-panel-title">
+        YATZY med <span style="margin: 0 2px">⚄</span> terninger
+      </div>
+      <app-score-sheet
+        [players]="game.players"
+        [myPlayerId]="myPlayerId"
+        [canSelect]="false"
+        [diceValues]="[]"
+        (selectCategory)="null">
+      </app-score-sheet>
+      <div class="score-note">
+        Spillet starter, når alle trykker <strong>Start spil</strong>
+      </div>
+    </div>
+
   </div>
 </div>
