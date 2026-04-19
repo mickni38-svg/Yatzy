@@ -1,0 +1,26 @@
+<div class="turn-banner" [class.my-turn]="isMyTurn">
+  <div class="left">
+    <div class="round-label">Round {{ roundNumber }}</div>
+    <div class="player-name">
+      <span class="dot"></span>
+      {{ isMyTurn ? 'Your turn!' : currentPlayerName + "'s turn" }}
+    </div>
+  </div>
+
+  <div class="rolls">
+    <div class="roll-pips">
+      <span *ngFor="let i of [0,1,2]"
+            class="pip"
+            [class.used]="i < rollNumber"
+            [class.available]="i >= rollNumber">
+      </span>
+    </div>
+    <div class="roll-text">
+      <ng-container *ngIf="rollNumber === 0">First roll</ng-container>
+      <ng-container *ngIf="rollNumber > 0 && rollNumber < maxRolls">
+        {{ maxRolls - rollNumber }} roll{{ maxRolls - rollNumber !== 1 ? 's' : '' }} left
+      </ng-container>
+      <ng-container *ngIf="rollNumber >= maxRolls">Select a category</ng-container>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,116 @@
+/* ═══════════════════════════════════════════════════
+   Yatzy – Global Design Tokens & Reset
+   ═══════════════════════════════════════════════════ */
+:root {
+  /* Green palette */
+  --green-950: #0d3b14;
+  --green-900: #1b5e20;
+  --green-800: #2e7d32;
+  --green-700: #388e3c;
+  --green-600: #43a047;
+  --green-400: #66bb6a;
+  --green-200: #a5d6a7;
+  --green-100: #e8f5e9;
+  --green-50:  #f1f8e9;
+
+  /* Semantic */
+  --held-bg:      #2e7d32;
+  --held-border:  #81c784;
+  --active-bg:    #fff9c4;
+  --active-border:#f9a825;
+  --error:        #c62828;
+  --warn:         #f57c00;
+
+  /* Neutrals */
+  --text-main:  #1a1a1a;
+  --text-muted: #666;
+  --text-light: #999;
+  --bg-page:    #1a2e1a;
+  --bg-surface: #ffffff;
+  --bg-panel:   #f5f5f5;
+  --border:     #e0e0e0;
+
+  /* Radius */
+  --radius-sm:  6px;
+  --radius-md:  12px;
+  --radius-lg:  16px;
+  --radius-xl:  24px;
+
+  /* Shadows */
+  --shadow-sm:  0 1px 4px rgba(0,0,0,.10);
+  --shadow-md:  0 4px 16px rgba(0,0,0,.14);
+  --shadow-lg:  0 8px 32px rgba(0,0,0,.20);
+  --shadow-green: 0 4px 20px rgba(27,94,32,.40);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  height: 100%;
+  overflow: hidden;
+}
+
+body {
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  font-size: 14px;
+  color: var(--text-main);
+  background: var(--bg-page);
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4 { margin: 0; font-weight: 700; }
+button { font-family: inherit; cursor: pointer; border: none; }
+ul { list-style: none; }
+
+/* ── Shared buttons ─────────────────────────────── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 11px 28px;
+  border-radius: var(--radius-md);
+  font-size: .95rem;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: background .15s, transform .12s, box-shadow .15s;
+
+  &:disabled { opacity: .45; cursor: not-allowed; transform: none !important; }
+
+  &.btn-primary {
+    background: var(--green-800);
+    color: #fff;
+    &:hover:not(:disabled) {
+      background: var(--green-900);
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-green);
+    }
+  }
+
+  &.btn-secondary {
+    background: transparent;
+    color: var(--green-800);
+    border: 2px solid var(--green-700);
+    &:hover:not(:disabled) {
+      background: var(--green-100);
+    }
+  }
+
+  &.btn-danger {
+    background: var(--error);
+    color: #fff;
+    &:hover:not(:disabled) { filter: brightness(1.1); }
+  }
+}
+
+/* ── Card surface ───────────────────────────────── */
+.card {
+  background: var(--bg-surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  padding: 24px;
+}
+
+/* ── Error text ─────────────────────────────────── */
+.error { color: var(--error); font-size: .85rem; margin: 4px 0; }

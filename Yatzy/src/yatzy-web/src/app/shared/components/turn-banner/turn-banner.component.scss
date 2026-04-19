@@ -1,0 +1,79 @@
+.turn-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px;
+  border-radius: var(--radius-md);
+  background: rgba(255,255,255,.06);
+  border: 1px solid rgba(255,255,255,.1);
+  border-left: 4px solid var(--green-600);
+  transition: background .2s, border-color .2s;
+
+  &.my-turn {
+    background: rgba(56,142,60,.2);
+    border-color: var(--green-400);
+    border-left-color: #69f0ae;
+
+    .round-label   { color: var(--green-400); }
+    .player-name   { color: #fff; }
+    .dot           { background: #69f0ae; box-shadow: 0 0 8px #69f0ae; }
+    .roll-text     { color: #a5d6a7; }
+    .pip.available { background: rgba(255,255,255,.25); }
+    .pip.used      { background: #fff; }
+  }
+
+  .left { display: flex; flex-direction: column; gap: 4px; }
+
+  .round-label {
+    font-size: .72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    color: rgba(255,255,255,.45);
+  }
+
+  .player-name {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: rgba(255,255,255,.8);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: var(--green-600);
+    flex-shrink: 0;
+  }
+
+  .rolls {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 6px;
+  }
+
+  .roll-pips {
+    display: flex;
+    gap: 6px;
+  }
+
+  .pip {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    transition: background .2s;
+
+    &.available { background: #c8e6c9; }
+    &.used      { background: var(--green-700); }
+  }
+
+  .roll-text {
+    font-size: .78rem;
+    font-weight: 600;
+    color: var(--text-muted);
+  }
+}

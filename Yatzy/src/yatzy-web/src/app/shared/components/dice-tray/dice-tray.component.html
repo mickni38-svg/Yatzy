@@ -1,0 +1,9 @@
+<div class="dice-tray">
+  <app-dice-tile
+    *ngFor="let die of dice"
+    [value]="die.value"
+    [isHeld]="die.isHeld"
+    [disabled]="!canInteract"
+    (toggle)="toggleHold.emit(die.position)">
+  </app-dice-tile>
+</div>

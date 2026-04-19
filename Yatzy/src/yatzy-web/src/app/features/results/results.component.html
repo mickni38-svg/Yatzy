@@ -1,0 +1,28 @@
+<div class="results-container">
+  <div class="trophy-wrap">
+    <span class="trophy" *ngIf="isWinner">🏆</span>
+    <span class="trophy" *ngIf="!isWinner">🎲</span>
+  </div>
+
+  <h1 class="headline" [class.is-winner]="isWinner">
+    {{ isWinner ? 'You won!' : 'Game over!' }}
+  </h1>
+  <p class="winner-name" *ngIf="!isWinner && winner">
+    {{ winner.displayName }} wins with {{ winner.totalScore }} pts
+  </p>
+
+  <div class="standings">
+    <div *ngFor="let player of standings; let i = index"
+         class="standing-row"
+         [class.rank-1]="i === 0"
+         [class.rank-2]="i === 1"
+         [class.rank-3]="i === 2"
+         [class.me]="player.playerId === myPlayerId">
+      <span class="medal">{{ i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : (i + 1) }}</span>
+      <span class="name">{{ player.displayName }}<span class="you-tag" *ngIf="player.playerId === myPlayerId"> you</span></span>
+      <span class="score">{{ player.totalScore }} pts</span>
+    </div>
+  </div>
+
+  <button class="btn-play-again" (click)="playAgain()">Play Again</button>
+</div>

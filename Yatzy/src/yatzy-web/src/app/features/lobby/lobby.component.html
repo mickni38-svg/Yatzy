@@ -1,0 +1,73 @@
+<div class="lobby-container">
+  <div class="logo">
+    <span class="logo-icon">🎲</span>
+    <span class="logo-text">Yatzy</span>
+  </div>
+
+  <!-- Home -->
+  <div *ngIf="mode === 'home'" class="card home-card">
+    <p class="home-desc">Roll dice, fill the scoresheet, beat your friends.</p>
+    <button class="btn btn-primary" (click)="mode = 'create'">Create Game</button>
+    <button class="btn btn-secondary" (click)="mode = 'join'">Join Game</button>
+  </div>
+
+  <!-- Create -->
+  <div *ngIf="mode === 'create'" class="card">
+    <h2>Create Game</h2>
+    <label>Your name
+      <input [(ngModel)]="hostName" placeholder="Enter your name" maxlength="30" (keyup.enter)="createGame()" />
+    </label>
+    <p class="error" *ngIf="errorMessage">{{ errorMessage }}</p>
+    <div class="actions">
+      <button class="btn btn-secondary" (click)="mode = 'home'">Back</button>
+      <button class="btn btn-primary" (click)="createGame()" [disabled]="isLoading">
+        {{ isLoading ? 'Creating...' : 'Create' }}
+      </button>
+    </div>
+  </div>
+
+  <!-- Join -->
+  <div *ngIf="mode === 'join'" class="card">
+    <h2>Join Game</h2>
+    <label>Your name
+      <input [(ngModel)]="playerName" placeholder="Enter your name" maxlength="30" />
+    </label>
+    <label>Room code
+      <input [(ngModel)]="roomCodeInput" placeholder="e.g. ABC123" maxlength="6" (keyup.enter)="joinGame()" />
+    </label>
+    <p class="error" *ngIf="errorMessage">{{ errorMessage }}</p>
+    <div class="actions">
+      <button class="btn btn-secondary" (click)="mode = 'home'">Back</button>
+      <button class="btn btn-primary" (click)="joinGame()" [disabled]="isLoading">
+        {{ isLoading ? 'Joining...' : 'Join' }}
+      </button>
+    </div>
+  </div>
+
+  <!-- Waiting room -->
+  <div *ngIf="mode === 'waiting' && game" class="card waiting-card">
+    <h2>Lobby</h2>
+    <div class="room-code">
+      <div>
+        <span class="label">Room code</span>
+        <span class="code">{{ game.roomCode }}</span>
+      </div>
+      <span class="player-count">{{ game.players.length }} player{{ game.players.length !== 1 ? 's' : '' }}</span>
+    </div>
+    <p class="hint">Share the code — friends join with it.</p>
+    <app-player-list
+      [players]="game.players"
+      [currentPlayerId]="null"
+      [myPlayerId]="myPlayerId">
+    </app-player-list>
+    <p class="error" *ngIf="errorMessage">{{ errorMessage }}</p>
+    <div class="actions">
+      <button class="btn btn-primary"
+              (click)="startGame()"
+              [disabled]="!canStart || isLoading">
+        {{ isLoading ? 'Starting...' : canStart ? 'Start Game' : 'Waiting for players...' }}
+      </button>
+    </div>
+    <p *ngIf="!isHost" class="hint">Waiting for the host to start the game.</p>
+  </div>
+</div>

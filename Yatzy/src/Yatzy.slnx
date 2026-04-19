@@ -1,0 +1,29 @@
+<Solution>
+  <Project Path="Yatzy.Domain\Yatzy.Domain.csproj" />
+  <Project Path="Yatzy.Domain.Tests\Yatzy.Domain.Tests.csproj" />
+  <Project Path="Yatzy.Application\Yatzy.Application.csproj" />
+  <Project Path="Yatzy.Infrastructure\Yatzy.Infrastructure.csproj" />
+  <Project Path="Yatzy.Persistence\Yatzy.Persistence.csproj" />
+  <Folder Name="/Solution Items/">
+    <File Path="../docs/00-step-by-step-guide.md" />
+    <File Path="../docs/01-solution-architecture.md" />
+    <File Path="../docs/02-create-visual-studio-solution.md" />
+    <File Path="../docs/03-domain-and-logic-layer.md" />
+    <File Path="../docs/04-database-and-entity-framework.md" />
+    <File Path="../docs/05-api-layer.md" />
+    <File Path="../docs/06-realtime-signalr.md" />
+    <File Path="../docs/07-angular-frontend.md" />
+    <File Path="../docs/08-ui-ux-from-mockup.md" />
+    <File Path="../docs/09-testing-strategy.md" />
+    <File Path="../docs/10-copilot-master-prompt.md" />
+    <File Path="../docs/11-copilot-prompt-phase-1.md" />
+    <File Path="../docs/12-copilot-prompt-phase-2.md" />
+    <File Path="../docs/13-copilot-prompt-phase-3.md" />
+    <File Path="../docs/14-copilot-prompt-phase-4.md" />
+    <File Path="../docs/README-browser-yatzy.md" />
+    <File Path="../docs/yatzy_maui_android_guide.md" />
+    <File Path="../docs/yatzy_mockup.png" />
+  </Folder>
+  <Project Path="Yatzy.Api.Tests/Yatzy.Api.Tests.csproj" />
+  <Project Path="Yatzy.Api\Yatzy.Api.csproj" />
+</Solution>

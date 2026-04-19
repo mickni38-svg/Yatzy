@@ -1,0 +1,131 @@
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
+import { Subscription } from 'rxjs';
+import { GameRealtimeService } from '../../core/services/game-realtime.service';
+import { PlayerSessionService } from '../../core/services/player-session.service';
+import { WebRtcService } from '../../core/services/webrtc.service';
+import { GameStateDto } from '../../core/models/game-state.dto';
+import { GameStatus } from '../../shared/enums/game-status.enum';
+import { ScoreCategory } from '../../shared/enums/score-category.enum';
+import { DiceTrayComponent } from '../../shared/components/dice-tray/dice-tray.component';
+import { ScoreSheetComponent } from '../../shared/components/score-sheet/score-sheet.component';
+import { PlayerListComponent } from '../../shared/components/player-list/player-list.component';
+import { TurnBannerComponent } from '../../shared/components/turn-banner/turn-banner.component';
+
+@Component({
+  selector: 'app-game',
+  standalone: true,
+  imports: [CommonModule, DiceTrayComponent, ScoreSheetComponent, PlayerListComponent, TurnBannerComponent],
+  templateUrl: './game.component.html',
+  styleUrl: './game.component.scss'
+})
+export class GameComponent implements OnInit, OnDestroy {
+  game: GameStateDto | null = null;
+  errorMessage = '';
+  isActing = false;
+  remoteStreams = new Map<string, MediaStream>();
+
+  private sub = new Subscription();
+
+  constructor(
+    private realtime: GameRealtimeService,
+    private session: PlayerSessionService,
+    private router: Router,
+    public webrtc: WebRtcService
+  ) {}
+
+  ngOnInit(): void {
+    this.game = this.realtime.currentState;
+
+    if (!this.session.hasSession()) {
+      this.router.navigate(['/']);
+      return;
+    }
+
+    // Subscribe to remote streams regardless of game load timing
+    this.sub.add(
+      this.webrtc.remoteStreams$.subscribe(m => this.remoteStreams = new Map(m))
+    );
+
+    this.sub.add(
+      this.realtime.gameState$.subscribe(state => {
+        if (!state) return;
+        this.game = state;
+        if (state.status === GameStatus.Completed) {
+          this.router.navigate(['/results']);
+        }
+      })
+    );
+
+    this.sub.add(
+      this.realtime.error$.subscribe(msg => {
+        this.errorMessage = msg;
+        this.isActing = false;
+      })
+    );
+
+    // Start WebRTC – works whether game was already in currentState or arrives via subscription
+    const playerId = this.session.playerId;
+    const roomCode = this.session.roomCode;
+    if (playerId && roomCode) {
+      this.webrtc.start(roomCode, playerId);
+    }
+  }
+
+  async rollDice(): Promise<void> {
+    if (!this.game || !this.isMyTurn || this.canSelectOnly) return;
+    this.isActing = true;
+    this.errorMessage = '';
+    try {
+      await this.realtime.rollDice(this.game.gameId, this.myPlayerId!);
+    } finally {
+      this.isActing = false;
+    }
+  }
+
+  async onToggleHold(position: number): Promise<void> {
+    if (!this.game || !this.isMyTurn || this.game.rollNumber === 0) return;
+    await this.realtime.toggleHold(this.game.gameId, this.myPlayerId!, position);
+  }
+
+  async onSelectCategory(category: ScoreCategory): Promise<void> {
+    if (!this.game || !this.isMyTurn || this.game.rollNumber === 0) return;
+    this.isActing = true;
+    this.errorMessage = '';
+    try {
+      await this.realtime.selectScore(this.game.gameId, this.myPlayerId!, category);
+    } finally {
+      this.isActing = false;
+    }
+  }
+
+  get myPlayerId(): string | null { return this.session.playerId; }
+
+  get isMyTurn(): boolean {
+    return this.game?.currentPlayerId === this.myPlayerId;
+  }
+
+  get canRoll(): boolean {
+    return this.isMyTurn && (this.game?.rollNumber ?? 0) < 3;
+  }
+
+  get canSelectOnly(): boolean {
+    return this.isMyTurn && (this.game?.rollNumber ?? 0) >= 3;
+  }
+
+  get currentPlayerName(): string {
+    const cp = this.game?.players.find(p => p.playerId === this.game?.currentPlayerId);
+    return cp?.displayName ?? '';
+  }
+
+  get diceValues(): number[] {
+    return this.game?.dice.map(d => d.value) ?? [];
+  }
+
+  ngOnDestroy(): void {
+    this.sub.unsubscribe();
+    this.webrtc.stop();
+  }
+}
+
