@@ -64,6 +64,12 @@
 
     <!-- Venstre: kamera-grid + kontroller -->
     <div class="lobby-left">
+      <div class="room-code-box">
+        <span class="room-code-label">Rumkode</span>
+        <span class="room-code-value">{{ game.roomCode }}</span>
+        <span class="room-code-hint">Del denne kode med dem der skal deltage</span>
+      </div>
+
       <div>
         <p class="lobby-players-label">
           Spillere ({{ game.players.length }}/{{ game.players.length }})
