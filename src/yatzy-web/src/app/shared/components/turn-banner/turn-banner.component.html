@@ -1,9 +1,9 @@
 <div class="turn-banner" [class.my-turn]="isMyTurn">
   <div class="left">
-    <div class="round-label">Round {{ roundNumber }}</div>
+    <div class="round-label">Runde {{ roundNumber }}</div>
     <div class="player-name">
       <span class="dot"></span>
-      {{ isMyTurn ? 'Your turn!' : currentPlayerName + "'s turn" }}
+      {{ isMyTurn ? 'Din tur!' : currentPlayerName + ' har tur' }}
     </div>
   </div>
 
@@ -16,11 +16,11 @@
       </span>
     </div>
     <div class="roll-text">
-      <ng-container *ngIf="rollNumber === 0">First roll</ng-container>
+      <ng-container *ngIf="rollNumber === 0">Første kast</ng-container>
       <ng-container *ngIf="rollNumber > 0 && rollNumber < maxRolls">
-        {{ maxRolls - rollNumber }} roll{{ maxRolls - rollNumber !== 1 ? 's' : '' }} left
+        {{ maxRolls - rollNumber }} kast tilbage
       </ng-container>
-      <ng-container *ngIf="rollNumber >= maxRolls">Select a category</ng-container>
+      <ng-container *ngIf="rollNumber >= maxRolls">Vælg en kategori</ng-container>
     </div>
   </div>
 </div>

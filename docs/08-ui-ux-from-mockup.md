@@ -3,10 +3,12 @@
 ## Formål
 Denne fil omsætter mockup-retningen til Angular browser-UI.
 
-Mockup’en viser tre vigtige skærmtilstande:
-1. lobby – klar til start
-2. aktiv tur – første kast
-3. vælg kategori og se stillingen opdatere
+
+
+Vi har tre mockups der  viser tre vigtige skærmtilstande:
+1. lobby – klar til start : C:\Users\Michael\Documents\MINEPROJEKTER\Yatzy\docs\lobby.png
+2. aktiv tur – første kast : C:\Users\Michael\Documents\MINEPROJEKTER\Yatzy\docs\KastTerninger.png
+3. vælg kategori og se stillingen opdatere : C:\Users\Michael\Documents\MINEPROJEKTER\Yatzy\docs\Vælgresultat.png
 
 Det samme flow skal bruges i browserløsningen.
 
@@ -18,9 +20,9 @@ Det samme flow skal bruges i browserløsningen.
 - tydelig aktiv spiller
 - tydelig turstatus
 - holdte terninger skal være visuelt markeret
-- scorevalg skal være hurtigt og forståeligt
+- scorevalg skal være hurtigt og forståeligt, marker de kategorier hvor det er muligt at vælge sin score.
 
-Den tidligere MAUI-guide understregede også, at scorekortet skal være centrum og at det skal være klart hvem der har tur, hvor mange kast der er tilbage, og hvilke kategorier der stadig er ledige fileciteturn0file1L25-L37
+Scorekortet skal være centrum og at det skal være klart hvem der har tur, hvor mange kast der er tilbage, og hvilke kategorier der stadig er ledige.
 
 ---
 
@@ -32,7 +34,7 @@ Brug 3 kolonner:
 - center: terninger og handlinger
 - højre: scorekort
 
-### Smalere bredde
+### Smallere bredde
 Brug 1 kolonne:
 - top: banner
 - midt: spillerliste
@@ -41,7 +43,7 @@ Brug 1 kolonne:
 
 ---
 
-## Lobby-skærm
+## Lobby-skærm : C:\Users\Michael\Documents\MINEPROJEKTER\Yatzy\docs\lobby.png
 Vis:
 - room code
 - spillere
@@ -51,7 +53,7 @@ Vis:
 
 ---
 
-## Aktiv tur
+## Aktiv tur : C:\Users\Michael\Documents\MINEPROJEKTER\Yatzy\docs\KastTerninger.png
 Vis:
 - rundeinfo
 - hvem der har tur
@@ -62,7 +64,7 @@ Vis:
 
 ---
 
-## Kategorivalg
+## Kategorivalg : C:\Users\Michael\Documents\MINEPROJEKTER\Yatzy\docs\Vælgresultat.png
 Vis:
 - anbefalede point for ledige kategorier
 - tydelige knapper
@@ -80,8 +82,7 @@ Vis:
 ---
 
 ## Copilot-prompt
-> Build the browser UI for the Yatzy game based on the uploaded mockup: lobby, active turn, and score selection. Use a clean Angular component structure, a classic green Yatzy look, a central scoreboard, clear turn information, and strong visual indicators for held dice and active player.
-
+> Build the browser UI for the Yatzy game based on the uploaded mockup: C:\Users\Michael\Documents\MINEPROJEKTER\Yatzy\docs\lobby.png, C:\Users\Michael\Documents\MINEPROJEKTER\Yatzy\docs\KastTerninger.png, and C:\Users\Michael\Documents\MINEPROJEKTER\Yatzy\docs\Vælgresultat.png. Use a clean Angular component structure, a classic green Yatzy look, a central scoreboard, clear turn information, and strong visual indicators for held dice and active player.
 ---
 
 ## Done-kriterier

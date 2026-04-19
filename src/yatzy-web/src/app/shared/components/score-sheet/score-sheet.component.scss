@@ -82,22 +82,40 @@
     color: #555;
     position: relative;
 
-    &.me       { background: #fafff8; }
-    &.used     { color: var(--green-800); }
+    &.me    { background: #fafff8; }
+    &.used  { color: var(--green-800); font-weight: 700; }
+
     &.available {
       cursor: pointer;
       background: #e8f5e9;
-      color: var(--green-700);
+      padding: 4px 6px;
 
       &:hover { background: #c8e6c9; }
 
+      .pick-btn {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1px;
+      }
+
+      .pick-pts {
+        font-size: .95rem;
+        font-weight: 800;
+        color: var(--green-800);
+        line-height: 1;
+      }
+
       .pick-label {
-        display: block;
-        font-size: .6rem;
-        color: var(--green-600);
+        display: inline-block;
+        font-size: .58rem;
         font-weight: 700;
         text-transform: uppercase;
         letter-spacing: .05em;
+        background: var(--green-700);
+        color: #fff;
+        padding: 1px 5px;
+        border-radius: 4px;
       }
     }
   }

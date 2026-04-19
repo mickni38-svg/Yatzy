@@ -2,19 +2,19 @@
   <table class="score-sheet">
     <thead>
       <tr>
-        <th class="cat-col">Category</th>
-        <th *ngIf="canSelect" class="suggest-col">Suggestion</th>
+        <th class="cat-col">Kategori</th>
+        <th *ngIf="canSelect" class="suggest-col">Point</th>
         <th *ngFor="let player of players" [class.me]="isMe(player)">
           <span class="player-name">{{ player.displayName }}</span>
-          <span class="you-tag" *ngIf="isMe(player)">you</span>
+          <span class="you-tag" *ngIf="isMe(player)">dig</span>
         </th>
       </tr>
     </thead>
     <tbody>
 
-      <!-- UPPER SECTION -->
+      <!-- ØVERSTE SEKTION -->
       <tr class="section-header">
-        <td [attr.colspan]="players.length + (canSelect ? 2 : 1)">Upper Section</td>
+        <td [attr.colspan]="players.length + (canSelect ? 2 : 1)">Øverste sektion</td>
       </tr>
       <tr *ngFor="let cat of upperCategories"
           class="score-row"
@@ -32,12 +32,15 @@
             [class.me]="isMe(player)"
             [class.used]="isUsed(player, cat)"
             [class.available]="isMyCategory(player, cat)">
-          {{ getScore(player, cat) }}
-          <span class="pick-label" *ngIf="isMyCategory(player, cat) && !getScore(player, cat)">tap</span>
+          <ng-container *ngIf="isUsed(player, cat)">{{ getScore(player, cat) }}</ng-container>
+          <span class="pick-btn" *ngIf="isMyCategory(player, cat)">
+            <span class="pick-pts">{{ getSuggestion(cat) ?? 0 }}</span>
+            <span class="pick-label">Vælg</span>
+          </span>
         </td>
       </tr>
 
-      <!-- UPPER SUBTOTAL -->
+      <!-- SUBTOTAL -->
       <tr class="subtotal-row">
         <td>Subtotal</td>
         <td *ngIf="canSelect"></td>
@@ -46,9 +49,9 @@
         </td>
       </tr>
 
-      <!-- LOWER SECTION -->
+      <!-- NEDERSTE SEKTION -->
       <tr class="section-header">
-        <td [attr.colspan]="players.length + (canSelect ? 2 : 1)">Lower Section</td>
+        <td [attr.colspan]="players.length + (canSelect ? 2 : 1)">Nederste sektion</td>
       </tr>
       <tr *ngFor="let cat of lowerCategories"
           class="score-row"
@@ -66,8 +69,11 @@
             [class.me]="isMe(player)"
             [class.used]="isUsed(player, cat)"
             [class.available]="isMyCategory(player, cat)">
-          {{ getScore(player, cat) }}
-          <span class="pick-label" *ngIf="isMyCategory(player, cat) && !getScore(player, cat)">tap</span>
+          <ng-container *ngIf="isUsed(player, cat)">{{ getScore(player, cat) }}</ng-container>
+          <span class="pick-btn" *ngIf="isMyCategory(player, cat)">
+            <span class="pick-pts">{{ getSuggestion(cat) ?? 0 }}</span>
+            <span class="pick-label">Vælg</span>
+          </span>
         </td>
       </tr>
 

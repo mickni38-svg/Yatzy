@@ -6,14 +6,13 @@ import { Subscription } from 'rxjs';
 import { GameApiService } from '../../core/services/game-api.service';
 import { GameRealtimeService } from '../../core/services/game-realtime.service';
 import { PlayerSessionService } from '../../core/services/player-session.service';
-import { PlayerListComponent } from '../../shared/components/player-list/player-list.component';
 import { GameStateDto } from '../../core/models/game-state.dto';
 import { GameStatus } from '../../shared/enums/game-status.enum';
 
 @Component({
   selector: 'app-lobby',
   standalone: true,
-  imports: [CommonModule, FormsModule, PlayerListComponent],
+  imports: [CommonModule, FormsModule],
   templateUrl: './lobby.component.html',
   styleUrl: './lobby.component.scss'
 })

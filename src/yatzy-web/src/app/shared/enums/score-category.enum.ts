@@ -17,19 +17,19 @@ export enum ScoreCategory {
 }
 
 export const ScoreCategoryLabel: Record<ScoreCategory, string> = {
-  [ScoreCategory.Ones]: 'Ones',
-  [ScoreCategory.Twos]: 'Twos',
-  [ScoreCategory.Threes]: 'Threes',
-  [ScoreCategory.Fours]: 'Fours',
-  [ScoreCategory.Fives]: 'Fives',
-  [ScoreCategory.Sixes]: 'Sixes',
-  [ScoreCategory.OnePair]: 'One Pair',
-  [ScoreCategory.TwoPairs]: 'Two Pairs',
-  [ScoreCategory.ThreeOfAKind]: 'Three of a Kind',
-  [ScoreCategory.FourOfAKind]: 'Four of a Kind',
-  [ScoreCategory.SmallStraight]: 'Small Straight',
-  [ScoreCategory.LargeStraight]: 'Large Straight',
-  [ScoreCategory.FullHouse]: 'Full House',
+  [ScoreCategory.Ones]: 'Ettere',
+  [ScoreCategory.Twos]: 'Toere',
+  [ScoreCategory.Threes]: 'Treere',
+  [ScoreCategory.Fours]: 'Firere',
+  [ScoreCategory.Fives]: 'Femmere',
+  [ScoreCategory.Sixes]: 'Seksere',
+  [ScoreCategory.OnePair]: 'Et par',
+  [ScoreCategory.TwoPairs]: 'To par',
+  [ScoreCategory.ThreeOfAKind]: 'Tre ens',
+  [ScoreCategory.FourOfAKind]: 'Fire ens',
+  [ScoreCategory.SmallStraight]: 'Lille straight',
+  [ScoreCategory.LargeStraight]: 'Stor straight',
+  [ScoreCategory.FullHouse]: 'Full house',
   [ScoreCategory.Chance]: 'Chance',
   [ScoreCategory.Yatzy]: 'Yatzy'
 };
