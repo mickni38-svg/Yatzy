@@ -54,7 +54,7 @@
           <app-dice-tile
             [value]="die.value"
             [isHeld]="die.isHeld"
-            [disabled]="!isMyTurn || game.rollNumber === 0 || canSelectOnly"
+            [disabled]="!isMyTurn || game.rollNumber === 0"
             (toggle)="onToggleHold(die.position)">
           </app-dice-tile>
           <button class="btn-hold"
