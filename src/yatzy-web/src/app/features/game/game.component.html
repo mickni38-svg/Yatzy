@@ -29,77 +29,52 @@
       </app-player-list>
     </aside>
 
-    <!-- CENTER: Terninger + kategorivalg -->
+    <!-- CENTER: Terninger -->
     <main class="col-center">
 
-      <!-- Kast-tilstand -->
-      <ng-container *ngIf="!canSelectOnly">
-        <div class="cast-header">
-          <p class="cast-title">Kast {{ game.rollNumber + (game.rollNumber === 0 ? 1 : 0) }} af 3</p>
-          <p class="cast-sub" *ngIf="isMyTurn && game.rollNumber > 0">Vælg hvilke terninger du vil holde</p>
-          <p class="cast-sub waiting" *ngIf="!isMyTurn">Venter på {{ currentPlayerName }}…</p>
-        </div>
+      <!-- Status header -->
+      <div class="cast-header">
+        <p class="cast-title" *ngIf="!canSelectOnly">
+          Kast {{ game.rollNumber === 0 ? 1 : game.rollNumber }} af 3
+        </p>
+        <p class="cast-title" *ngIf="canSelectOnly && isMyTurn">
+          Vælg en kategori til {{ diceTotal }} point
+        </p>
+        <p class="cast-title" *ngIf="canSelectOnly && !isMyTurn">
+          Runde {{ game.roundNumber }}/13
+        </p>
+        <p class="cast-sub" *ngIf="isMyTurn && !canSelectOnly && game.rollNumber > 0">Vælg hvilke terninger du vil holde</p>
+        <p class="cast-sub" *ngIf="isMyTurn && canSelectOnly">Klik på scorekortet for at registrere din score</p>
+        <p class="cast-sub waiting" *ngIf="!isMyTurn">Venter på {{ currentPlayerName }}…</p>
+      </div>
 
-        <!-- Terninger med Hold-knap -->
-        <div class="dice-row">
-          <div class="die-wrapper" *ngFor="let die of game.dice">
-            <app-dice-tile
-              [value]="die.value"
-              [isHeld]="die.isHeld"
-              [disabled]="!isMyTurn || game.rollNumber === 0"
-              (toggle)="onToggleHold(die.position)">
-            </app-dice-tile>
-            <button class="btn-hold"
-                    [class.held]="die.isHeld"
-                    [disabled]="!isMyTurn || game.rollNumber === 0"
-                    (click)="onToggleHold(die.position)">
-              Hold
-            </button>
-          </div>
-        </div>
-
-        <div class="center-actions">
-          <button class="btn-roll-big"
-                  (click)="rollDice()"
-                  [class.pulse]="isMyTurn && game.rollNumber === 0"
-                  [disabled]="!canRoll || isActing">
-            {{ game.rollNumber === 0 ? 'Kast terninger' : 'Kast igen (' + (3 - game.rollNumber) + ' tilbage)' }}
+      <!-- Terninger – altid synlige -->
+      <div class="dice-row">
+        <div class="die-wrapper" *ngFor="let die of game.dice">
+          <app-dice-tile
+            [value]="die.value"
+            [isHeld]="die.isHeld"
+            [disabled]="!isMyTurn || game.rollNumber === 0 || canSelectOnly"
+            (toggle)="onToggleHold(die.position)">
+          </app-dice-tile>
+          <button class="btn-hold"
+                  [class.held]="die.isHeld"
+                  [disabled]="!isMyTurn || game.rollNumber === 0 || canSelectOnly"
+                  (click)="onToggleHold(die.position)">
+            Hold
           </button>
         </div>
-      </ng-container>
+      </div>
 
-      <!-- Kategorivalg-tilstand -->
-      <ng-container *ngIf="canSelectOnly && isMyTurn">
-        <div class="select-header">
-          <div class="select-result-box">
-            <span class="result-icon">🔧</span>
-            <div>
-              <p class="result-title">Vælg en kategori til {{ bestSuggestionPoints() }} point</p>
-              <p class="result-sub">Klik på en kategori herunder for at registrere din score.</p>
-            </div>
-          </div>
-        </div>
-
-        <div class="category-grid">
-          <button *ngFor="let cat of allCategories"
-                  class="cat-btn"
-                  [class.available]="isCategoryAvailable(cat)"
-                  [class.selected]="selectedCategory === cat"
-                  [class.used]="isCategoryUsed(cat)"
-                  [disabled]="isCategoryUsed(cat)"
-                  (click)="selectCategoryPending(cat)">
-            {{ categoryLabel(cat) }} ({{ getCategorySuggestion(cat) }})
-          </button>
-        </div>
-
-        <div class="center-actions">
-          <button class="btn-confirm"
-                  [disabled]="!selectedCategory || isActing"
-                  (click)="confirmCategory()">
-            Bekræft valg
-          </button>
-        </div>
-      </ng-container>
+      <!-- Kast-knap (kun når der stadig kan kastes) -->
+      <div class="center-actions" *ngIf="!canSelectOnly">
+        <button class="btn-roll-big"
+                (click)="rollDice()"
+                [class.pulse]="isMyTurn && game.rollNumber === 0"
+                [disabled]="!canRoll || isActing">
+          {{ game.rollNumber === 0 ? 'Kast terninger' : 'Kast igen (' + (3 - game.rollNumber) + ' tilbage)' }}
+        </button>
+      </div>
 
       <p class="error-msg" *ngIf="errorMessage">⚠️ {{ errorMessage }}</p>
     </main>
@@ -112,7 +87,7 @@
       <app-score-sheet
         [players]="game.players"
         [myPlayerId]="myPlayerId"
-        [canSelect]="false"
+        [canSelect]="canSelectOnly && isMyTurn"
         [diceValues]="diceValues"
         (selectCategory)="onSelectCategory($event)">
       </app-score-sheet>
