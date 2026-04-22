@@ -18,6 +18,7 @@ public sealed class PlayerDto
     public string DisplayName { get; init; } = string.Empty;
     public bool IsHost { get; init; }
     public bool IsConnected { get; init; }
+    public bool HasLeft { get; init; }
     public int TotalScore { get; init; }
     public IReadOnlyList<ScoreEntryDto> ScoreEntries { get; init; } = [];
 }

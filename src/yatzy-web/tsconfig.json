@@ -3,7 +3,7 @@
 {
   "compileOnSave": false,
   "compilerOptions": {
-    "outDir": "./dist/out-tsc",
+    /* Fjernet: "outDir" hører ikke til i rod-tsconfig – den er sat i tsconfig.app.json og tsconfig.spec.json */
     "strict": true,
     "noImplicitOverride": true,
     "noPropertyAccessFromIndexSignature": true,

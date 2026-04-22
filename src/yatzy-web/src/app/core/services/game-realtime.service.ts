@@ -75,6 +75,10 @@ export class GameRealtimeService implements OnDestroy {
     await this.connection.invoke('SelectScore', { gameId, playerId, category });
   }
 
+  async leaveGame(gameId: string, playerId: string): Promise<void> {
+    await this.connection.invoke('LeaveGame', { gameId, playerId });
+  }
+
   get currentState(): GameStateDto | null {
     return this._gameState$.value;
   }

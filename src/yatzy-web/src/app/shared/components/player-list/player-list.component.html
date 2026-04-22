@@ -4,28 +4,13 @@
       [class.active]="player.playerId === currentPlayerId"
       [class.disconnected]="!player.isConnected">
 
-    <!-- Camera thumbnail -->
     <div class="camera-box">
-      <video *ngIf="getStream(player.playerId) as stream"
-             [srcObject]="stream"
-             autoplay muted playsinline></video>
-      <div *ngIf="!getStream(player.playerId)" class="camera-off">📷</div>
+      <video #videoEl [attr.data-player-id]="player.playerId" [muted]="player.playerId === myPlayerId" autoplay playsinline></video>
     </div>
 
-    <!-- Info row -->
     <div class="player-row">
-      <div class="avatar" [class.active]="player.playerId === currentPlayerId">
-        {{ player.displayName.charAt(0).toUpperCase() }}
-      </div>
-
-      <div class="info">
-        <span class="name">
-          {{ player.displayName }}
-          <span class="you-tag" *ngIf="player.playerId === myPlayerId">you</span>
-        </span>
-        <span class="score">{{ player.totalScore }} pts</span>
-      </div>
-
+      <div class="avatar" [class.active]="player.playerId === currentPlayerId">{{ player.displayName.charAt(0).toUpperCase() }}</div>
+      <div class="info"><span class="name">{{ player.displayName }}<span class="you-tag" *ngIf="player.playerId === myPlayerId">you</span></span><span class="score">{{ player.totalScore }} pts</span></div>
       <div class="status-dot" [class.connected]="player.isConnected"></div>
     </div>
 

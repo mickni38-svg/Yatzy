@@ -23,6 +23,7 @@ export class DiceTileComponent {
   @Input() value = 1;
   @Input() isHeld = false;
   @Input() disabled = false;
+  @Input() isRolling = false;
   @Output() toggle = new EventEmitter<void>();
 
   showPip(key: PipKey): boolean {

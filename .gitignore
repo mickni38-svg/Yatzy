@@ -26,3 +26,20 @@ database/
 # OS
 .DS_Store
 Thumbs.db
+/docs/dump1.png
+/docs/laptop.png
+/docs/mobilview.png
+/docs/mobilviewperfekt.png
+/docs/nydesign.png
+/docs/thegame.png
+/docs/thegame2.png
+/docs/yatzyEr der.png
+/docs/yatzyMangler.png
+
+# Publish & deploy artifacts
+*.publishsettings
+*.zip
+**/publish_output/
+**/publish-output/
+**/PublishProfiles/
+**/wwwroot/

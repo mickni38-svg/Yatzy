@@ -1,10 +1,23 @@
-/* Lobby - lyst mockup-tema */
+/* ── Lobby – mørkt tema (matches game-komponenten) ── */
+$bg:      #1a1f2e;
+$bg2:     #222838;
+$bg3:     #2a3040;
+$border:  #333b50;
+$text:    #e8eaf0;
+$muted:   #8892a4;
+$green:   #2e7d32;
+$green2:  #1b5e20;
+$greenhl: #66bb6a;
+$orange:  #f57c00;
+$orange2: #ff9800;
 
 .lobby-shell {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background: #f0f0f0;
+  background: $bg;
+  color: $text;
+  font-family: system-ui, sans-serif;
 }
 
 /* Top bar */
@@ -14,8 +27,9 @@
   justify-content: space-between;
   height: 52px;
   min-height: 52px;
-  background: #2e7d32;
-  color: #fff;
+  background: $bg2;
+  border-bottom: 1px solid $border;
+  color: $text;
   padding: 0 20px;
 }
 
@@ -25,6 +39,8 @@
   display: flex;
   align-items: center;
   gap: 6px;
+  color: $orange2;
+  letter-spacing: .06em;
 }
 
 .lobby-topbar-actions {
@@ -34,30 +50,31 @@
 
 .btn-topbar-outline {
   padding: 6px 16px;
-  border: 2px solid rgba(255,255,255,.7);
+  border: 1.5px solid $border;
   background: transparent;
-  color: #fff;
+  color: $muted;
   border-radius: 8px;
   font-size: .85rem;
   font-weight: 600;
   cursor: pointer;
-  transition: background .15s;
+  transition: background .15s, color .15s;
 }
-.btn-topbar-outline:hover { background: rgba(255,255,255,.15); }
+.btn-topbar-outline:hover { background: $bg3; color: $text; }
 
 .btn-topbar-primary {
   padding: 6px 18px;
   border: none;
-  background: #fff;
-  color: #2e7d32;
+  background: $orange;
+  color: #fff;
   border-radius: 8px;
   font-size: .85rem;
   font-weight: 800;
   cursor: pointer;
   transition: background .15s;
+  box-shadow: 0 3px 10px rgba($orange,.3);
 }
-.btn-topbar-primary:hover { background: #e8f5e9; }
-.btn-topbar-primary:disabled { opacity: .45; cursor: not-allowed; }
+.btn-topbar-primary:hover    { background: $orange2; }
+.btn-topbar-primary:disabled { opacity: .4; cursor: not-allowed; }
 
 /* Lobby body */
 .lobby-body {
@@ -95,43 +112,44 @@
   gap: 12px;
 }
 
-.camera-slot {
-  position: relative;
-  background: #333;
+.camera-tile {
+  display: flex;
+  flex-direction: column;
+  background: $bg3;
   border-radius: 10px;
   overflow: hidden;
-  aspect-ratio: 4/3;
-  border: 2px solid transparent;
-  transition: border-color .2s;
-}
-.camera-slot.active { border-color: #2e7d32; }
-
-.camera-slot video {
-  width: 100%; height: 100%; object-fit: cover; display: block;
+  border: 1px solid $border;
 }
 
-.camera-slot-empty {
-  position: absolute;
-  inset: 0;
+.camera-label {
+  font-size: .82rem;
+  font-weight: 700;
+  color: #fff;
+  text-align: center;
+  padding: 4px 8px;
+  background: rgba(0,0,0,.4);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  order: -1; /* navn OVER video */
+}
+
+.camera-tile video {
+  width: 100%;
+  aspect-ratio: 16/9;
+  object-fit: cover;
+  display: block;
+}
+
+.camera-no-stream {
+  width: 100%;
+  aspect-ratio: 16/9;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #444;
-  color: rgba(255,255,255,.3);
   font-size: 2rem;
-}
-
-.camera-slot-name {
-  position: absolute;
-  bottom: 8px;
-  left: 10px;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: .85rem;
-  font-weight: 700;
-  color: #fff;
-  text-shadow: 0 1px 4px rgba(0,0,0,.6);
+  background: $bg2;
+  color: rgba(255,255,255,.15);
 }
 
 .mic-icon {
@@ -150,8 +168,8 @@
   flex-direction: column;
   align-items: center;
   gap: 4px;
-  background: #f9fbe7;
-  border: 2px solid #a5d6a7;
+  background: $bg3;
+  border: 2px solid $border;
   border-radius: 10px;
   padding: 14px 20px;
   text-align: center;
@@ -162,20 +180,20 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: .1em;
-  color: #2e7d32;
+  color: $greenhl;
 }
 
 .room-code-value {
   font-size: 2.2rem;
   font-weight: 900;
-  color: #1b5e20;
+  color: $text;
   letter-spacing: .22em;
   line-height: 1.1;
 }
 
 .room-code-hint {
   font-size: .75rem;
-  color: #777;
+  color: $muted;
 }
 
 /* Media controls */
@@ -194,18 +212,18 @@
   border: none;
   cursor: pointer;
   font-size: .78rem;
-  color: #333;
+  color: $muted;
   font-weight: 600;
 }
 .control-btn span:first-child { font-size: 1.4rem; }
-.control-btn:hover { color: #2e7d32; }
+.control-btn:hover { color: $greenhl; }
 
 /* Right panel: scorekort */
 .lobby-score-panel {
   width: 340px;
   min-width: 280px;
-  background: #fff;
-  border: 1px solid #d0d0d0;
+  background: $bg2;
+  border: 1px solid $border;
   border-radius: 10px;
   display: flex;
   flex-direction: column;
@@ -216,24 +234,25 @@
   padding: 12px 14px 10px;
   font-size: .88rem;
   font-weight: 800;
-  color: #1b5e20;
-  border-bottom: 1px solid #e0e0e0;
+  color: $text;
+  border-bottom: 1px solid $border;
   display: flex;
   align-items: center;
   gap: 6px;
-  background: #f9fbe7;
+  background: $bg3;
   white-space: nowrap;
+  letter-spacing: .06em;
 }
 
 .score-note {
   font-size: .77rem;
-  color: #2e7d32;
+  color: $muted;
   font-weight: 600;
   padding: 8px 12px;
-  border-top: 1px solid #e0e0e0;
+  border-top: 1px solid $border;
   text-align: center;
 }
-.score-note a { color: #2e7d32; font-weight: 700; text-decoration: none; }
+.score-note a { color: $greenhl; font-weight: 700; text-decoration: none; }
 
 /* ─── Centeret login-flow (home / create / join) ─── */
 .lobby-container {
@@ -243,7 +262,7 @@
   align-items: center;
   justify-content: center;
   padding: 24px;
-  background: #f0f0f0;
+  background: $bg;
 }
 
 .logo {
@@ -253,21 +272,21 @@
   margin-bottom: 36px;
 }
 .logo-icon { font-size: 2.8rem; }
-.logo-text { font-size: 2.4rem; font-weight: 900; color: #2e7d32; letter-spacing: .08em; }
+.logo-text { font-size: 2.4rem; font-weight: 900; color: $orange2; letter-spacing: .08em; }
 
 .card {
-  background: #fff;
-  border: 1px solid #d0d0d0;
+  background: $bg2;
+  border: 1px solid $border;
   border-radius: 12px;
   padding: 32px;
   width: 100%;
   max-width: 420px;
-  box-shadow: 0 4px 20px rgba(0,0,0,.08);
+  box-shadow: 0 8px 32px rgba(0,0,0,.4);
   display: flex;
   flex-direction: column;
   gap: 16px;
 }
-.card h2 { margin: 0; color: #1a1a1a; font-size: 1.3rem; font-weight: 700; }
+.card h2 { margin: 0; color: $text; font-size: 1.3rem; font-weight: 700; }
 
 .card label {
   display: flex;
@@ -275,37 +294,38 @@
   gap: 6px;
   font-size: .82rem;
   font-weight: 600;
-  color: #444;
+  color: $muted;
   letter-spacing: .04em;
   text-transform: uppercase;
 }
 .card label input {
   padding: 11px 14px;
-  border: 1.5px solid #d0d0d0;
+  border: 1.5px solid $border;
   border-radius: 8px;
   font-size: 1rem;
-  background: #fafafa;
-  color: #1a1a1a;
+  background: $bg3;
+  color: $text;
   outline: none;
   transition: border-color .15s;
 }
-.card label input:focus { border-color: #2e7d32; box-shadow: 0 0 0 3px rgba(46,125,50,.15); }
+.card label input::placeholder { color: $muted; }
+.card label input:focus { border-color: $green; box-shadow: 0 0 0 3px rgba(46,125,50,.2); }
 
 .home-card { text-align: center; gap: 18px; padding: 36px 32px; }
-.home-desc { margin: 0 0 8px; font-size: .95rem; color: #666; line-height: 1.6; }
+.home-desc { margin: 0 0 8px; font-size: .95rem; color: $muted; line-height: 1.6; }
 
 .room-code {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: #f9fbe7;
-  border: 2px solid #c8e6c9;
+  background: $bg3;
+  border: 2px solid $border;
   border-radius: 10px;
   padding: 14px 18px;
 }
-.room-code .label { font-size: .65rem; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; color: #2e7d32; display: block; margin-bottom: 2px; }
-.room-code .code { font-size: 2rem; font-weight: 900; color: #1b5e20; letter-spacing: .18em; }
-.room-code .player-count { font-size: .8rem; font-weight: 700; background: #2e7d32; color: #fff; padding: 5px 12px; border-radius: 20px; }
+.room-code .label { font-size: .65rem; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; color: $greenhl; display: block; margin-bottom: 2px; }
+.room-code .code { font-size: 2rem; font-weight: 900; color: $text; letter-spacing: .18em; }
+.room-code .player-count { font-size: .8rem; font-weight: 700; background: $green; color: #fff; padding: 5px 12px; border-radius: 20px; }
 
 .waiting-players { display: flex; flex-direction: column; gap: 8px; margin-top: 4px; }
 .waiting-player {
@@ -313,9 +333,9 @@
   align-items: center;
   gap: 10px;
   padding: 9px 13px;
-  background: #f5f5f5;
+  background: $bg3;
   border-radius: 8px;
-  border: 1px solid #e0e0e0;
+  border: 1px solid $border;
 }
 .avatar-sm {
   width: 32px; height: 32px; border-radius: 50%;
@@ -323,21 +343,21 @@
   display: flex; align-items: center; justify-content: center;
   font-weight: 700; font-size: .9rem; flex-shrink: 0;
 }
-.wp-name { flex: 1; font-size: .88rem; font-weight: 600; color: #1a1a1a; }
-.host-badge { font-size: .68rem; font-weight: 700; background: #e8f5e9; color: #2e7d32; border: 1px solid #a5d6a7; border-radius: 8px; padding: 2px 8px; }
+.wp-name { flex: 1; font-size: .88rem; font-weight: 600; color: $text; }
+.host-badge { font-size: .68rem; font-weight: 700; background: rgba(46,125,50,.2); color: $greenhl; border: 1px solid rgba(46,125,50,.4); border-radius: 8px; padding: 2px 8px; }
 
-.hint { font-size: .82rem; color: #777; margin: 0; text-align: center; }
+.hint { font-size: .82rem; color: $muted; margin: 0; text-align: center; }
 
 .actions { display: flex; gap: 10px; justify-content: flex-end; }
 
 .btn { padding: 11px 22px; border-radius: 8px; font-size: .9rem; font-weight: 700; cursor: pointer; transition: background .15s, transform .1s; border: none; }
 .btn:disabled { opacity: .4; cursor: not-allowed; }
-.btn-primary { background: #2e7d32; color: #fff; }
-.btn-primary:hover:not(:disabled) { background: #1b5e20; transform: translateY(-1px); }
-.btn-secondary { background: #f0f0f0; color: #333; border: 1px solid #d0d0d0; }
-.btn-secondary:hover:not(:disabled) { background: #e0e0e0; }
+.btn-primary { background: $orange; color: #fff; box-shadow: 0 4px 14px rgba($orange,.35); }
+.btn-primary:hover:not(:disabled) { background: $orange2; transform: translateY(-1px); }
+.btn-secondary { background: $bg3; color: $text; border: 1px solid $border; }
+.btn-secondary:hover:not(:disabled) { background: lighten($bg3, 4%); }
 
-.error { color: #c62828; font-size: .82rem; background: #ffebee; border: 1px solid #ef9a9a; border-radius: 6px; padding: 7px 12px; margin: 0; }
+.error { color: #ef5350; font-size: .82rem; background: rgba(239,83,80,.12); border: 1px solid rgba(239,83,80,.35); border-radius: 6px; padding: 7px 12px; margin: 0; }
 
 @media (max-width: 800px) {
   .lobby-body { flex-direction: column; }

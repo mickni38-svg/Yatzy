@@ -1,197 +1,139 @@
+/* ── Dark theme variabler ── */
+$bg2:     #222838;
+$bg3:     #2a3040;
+$bg4:     #1e2435;
+$border:  #333b50;
+$text:    #e8eaf0;
+$muted:   #8892a4;
+$green:   #2e7d32;
+$green2:  #1b5e20;
+$greenhl: #66bb6a;
+
+:host { display:flex; flex-direction:column; flex:1; min-height:0; overflow:hidden; }
+
 .score-sheet-wrapper {
+  flex: 1;
+  min-height: 0;
   overflow-x: auto;
   overflow-y: auto;
-  flex: 1;
-  border-radius: 0;
-  box-shadow: none;
+  background: $bg4;
+  display: flex;
+  flex-direction: column;
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
 }
 
 .score-sheet {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: .82rem;
+  width:100%;
+  height:100%;
+  border-collapse:collapse;
+  font-size:.82rem;
+  table-layout:fixed;
+}
 
-  thead th {
-    background: #2e7d32;
-    color: #fff;
-    padding: 8px 10px;
-    text-align: center;
-    position: sticky;
-    top: 0;
-    z-index: 2;
-    font-size: .8rem;
+/* Header */
+.score-sheet thead th {
+  background:$green;
+  color:#fff;
+  padding:7px 10px;
+  text-align:center;
+  position:sticky;
+  top:0;
+  z-index:2;
+  font-size:.80rem;
+  white-space:nowrap;
+  border-right:1px solid rgba(255,255,255,.15);
+}
+.score-sheet thead th:last-child { border-right:none; }
+.score-sheet thead th.me   { background:$green2; }
+.score-sheet thead th.cat-col { text-align:left; width:auto; }
+.score-sheet thead .player-name { display:block; }
+.score-sheet thead .you-tag { display:inline-block; font-size:.6rem; background:rgba(255,255,255,.2); border-radius:8px; padding:1px 5px; margin-top:1px; }
 
-    &.me      { background: #1b5e20; }
-    &.cat-col { text-align: left; min-width: 110px; }
-    &.suggest-col { min-width: 70px; color: #a5d6a7; font-size: .78rem; }
+/* Alle score-kolonner lige brede */
+.score-sheet thead th:not(.cat-col) { width:72px; min-width:56px; }
 
-    .player-name { display: block; }
-    .you-tag {
-      display: inline-block;
-      font-size: .62rem;
-      background: rgba(255,255,255,.2);
-      border-radius: 8px;
-      padding: 1px 6px;
-      margin-top: 2px;
-    }
-  }
+/* Kategori-rækker */
+.score-sheet .score-row td { padding:4px 10px; border-bottom:1px solid $border; vertical-align:middle; }
+.score-sheet .score-row.not-selectable { cursor:not-allowed; }
 
-  .section-header td {
-    background: var(--green-100);
-    color: var(--green-800);
-    font-weight: 700;
-    font-size: .72rem;
-    text-transform: uppercase;
-    letter-spacing: .08em;
-    padding: 5px 14px;
-  }
+/* Hele rækken highlightes ved hover */
+.score-sheet .score-row:hover td,
+.score-sheet .score-row:hover .cat-name {
+  background: rgba(255,255,255,.06);
+}
 
-  .score-row {
-    transition: background .1s;
+/* Valgbar kategori: hele rækken får grøn highlight */
+.score-sheet .score-row.clickable { cursor:pointer; }
+.score-sheet .score-row.clickable td,
+.score-sheet .score-row.clickable .cat-name {
+  background: rgba(46,125,50,.14);
+}
+.score-sheet .score-row.clickable:hover td,
+.score-sheet .score-row.clickable:hover .cat-name {
+  background: rgba(46,125,50,.28);
+}
 
-    td { padding: 8px 12px; border-bottom: 1px solid #e8f0e8; }
+/* Kategori-celle: navn til venstre, max-points til højre */
+.score-sheet .cat-name {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:6px;
+  white-space:nowrap;
+  padding:4px 10px;
+  border-bottom:1px solid $border;
+  box-sizing:border-box;
+}
+.score-sheet .cat-label { color:$text; font-size:.82rem; }
+.score-sheet .max-pts   { font-size:.76rem; font-weight:700; color:$muted; min-width:22px; text-align:right; flex-shrink:0; }
+.score-sheet .bonus-max { color:$greenhl; }
 
-    &.clickable { cursor: pointer;
-      &:hover { background: #f0faf0; }
-    }
-  }
+/* Score-celler */
+.score-sheet .score-cell {
+  text-align:center;
+  font-weight:600;
+  color:$muted;
+  border-bottom:1px solid $border;
+  border-right:1px solid $border;
+  padding:4px 6px;
+  vertical-align:middle;
+}
+.score-sheet .score-cell:last-child { border-right:none; }
+.score-sheet .score-cell.me   { background:rgba(46,125,50,.06); }
+.score-sheet .score-cell.used { color:#ffffff; font-weight:700; }
 
-  .cat-name {
-    font-size: .87rem;
-    color: #333;
-    white-space: nowrap;
-  }
+/* Kan vælge og giver point */
+.score-sheet .score-cell.available {
+  cursor:pointer;
+}
+.score-sheet .score-cell.available .pick-pts { font-size:.88rem; font-weight:800; color:$greenhl; }
 
-  .suggest-cell {
-    text-align: center;
-    .suggestion {
-      display: inline-block;
-      background: #e8f5e9;
-      color: var(--green-800);
-      font-weight: 700;
-      border-radius: 6px;
-      padding: 2px 8px;
-      min-width: 28px;
+/* Kan vælge men giver 0 – meget svag så man ikke forveksler med allerede valgt */
+.score-sheet .score-cell.available-zero {
+  cursor:pointer;
+}
+.score-sheet .score-cell.available-zero .pick-pts { font-size:.88rem; font-weight:600; color:rgba(136,146,164,.45); }
 
-      &.zero { background: #fce4ec; color: #b71c1c; }
-    }
-    .no-suggest { color: #ccc; }
-  }
+/* Subtotal-række (Sum øvre) */
+.score-sheet .subtotal-row td { padding:5px 10px; font-weight:700; color:$text; background:$bg3; border-bottom:2px solid $border; border-right:1px solid $border; vertical-align:middle; }
+.score-sheet .subtotal-row td.me { background:rgba(46,125,50,.12); }
+.score-sheet .subtotal-row td:not(.cat-name) { text-align:center; }
 
-  .score-cell {
-    text-align: center;
-    min-width: 56px;
-    font-weight: 600;
-    color: #555;
-    position: relative;
+/* Bonus-række */
+.score-sheet .bonus-row td { padding:4px 10px; background:$bg3; border-bottom:1px solid $border; border-right:1px solid $border; vertical-align:middle; }
+.score-sheet .bonus-row td.me { background:rgba(46,125,50,.1); }
+.score-sheet .bonus-row td:not(.cat-name) { text-align:center; font-weight:700; color:$greenhl; }
 
-    &.me    { background: #fafff8; }
-    &.used  { color: var(--green-800); font-weight: 700; }
+/* Total-række (Sum nederst) */
+.score-sheet .total-row td { padding:6px 10px; font-weight:700; background:$green; color:#fff; font-size:.88rem; border-top:2px solid $green2; border-right:1px solid rgba(255,255,255,.15); }
+.score-sheet .total-row td.me { background:$green2; }
+.score-sheet .total-row td:not(.cat-name) { text-align:center; }
 
-    &.available {
-      cursor: pointer;
-      background: #e8f5e9;
-      padding: 4px 6px;
-
-      &:hover { background: #c8e6c9; }
-
-      .pick-btn {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 1px;
-      }
-
-      .pick-pts {
-        font-size: .95rem;
-        font-weight: 800;
-        color: var(--green-800);
-        line-height: 1;
-      }
-
-      .pick-label {
-        display: inline-block;
-        font-size: .58rem;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: .05em;
-        background: var(--green-700);
-        color: #fff;
-        padding: 1px 5px;
-        border-radius: 4px;
-      }
-    }
-
-    /* Kategori der ikke kan vælges (0 point og der er positive alternativer) */
-    &.available-zero {
-      background: #fafafa;
-      cursor: not-allowed;
-      padding: 4px 6px;
-
-      .pick-btn-zero {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 1px;
-        opacity: .4;
-      }
-
-      .pick-pts {
-        font-size: .95rem;
-        font-weight: 800;
-        color: #999;
-        line-height: 1;
-      }
-
-      .pick-label {
-        display: inline-block;
-        font-size: .58rem;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: .05em;
-        background: #ccc;
-        color: #fff;
-        padding: 1px 5px;
-        border-radius: 4px;
-      }
-    }
-  }
-
-  /* Rækker der ikke kan vælges */
-  .not-selectable {
-    cursor: not-allowed !important;
-    &:hover { background: inherit !important; }
-  }
-
-  .subtotal-row td, .total-row td {
-    padding: 9px 12px;
-    font-weight: 700;
-    text-align: center;
-    &:first-child { text-align: left; }
-  }
-
-  .subtotal-row td {
-    background: #f1f8e9;
-    font-size: .85rem;
-    &.me { background: #e8f5e9; }
-  }
-
-  .total-row td {
-    background: #2e7d32;
-    color: #fff;
-    font-size: .88rem;
-    &.me { background: #1b5e20; }
-  }
-
-  .bonus-chip {
-    display: inline-block;
-    margin-left: 4px;
-    background: #fdd835;
-    color: #333;
-    font-size: .62rem;
-    font-weight: 700;
-    border-radius: 6px;
-    padding: 1px 5px;
-    vertical-align: middle;
-  }
+/* Sentinel-række: sort kant som løfter indhold fri af browser-navigation */
+.score-sheet .sentinel-row td {
+  height: 112px;
+  background: #000;
+  border: none;
+  padding: 0;
 }

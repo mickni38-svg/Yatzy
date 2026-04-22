@@ -145,6 +145,30 @@ public sealed class GameHub : Hub
         }
     }
 
+    public async Task LeaveGame(LeaveGameRequest request)
+    {
+        try
+        {
+            var entry = _connectionService.Get(Context.ConnectionId);
+            var state = await _gameplayAppService.LeaveGameAsync(request);
+
+            if (entry is not null)
+            {
+                _connectionService.Unregister(Context.ConnectionId);
+                await Groups.RemoveFromGroupAsync(Context.ConnectionId, state.RoomCode);
+            }
+
+            if (state.Status == nameof(GameStatus.Completed))
+                await _hubService.BroadcastGameEndedAsync(state.RoomCode, state);
+            else
+                await _hubService.BroadcastPlayerLeftAsync(state.RoomCode, state);
+        }
+        catch (Exception ex)
+        {
+            await SendErrorAsync(ex);
+        }
+    }
+
     // -------------------------------------------------------------------------
     // Disconnect
     // -------------------------------------------------------------------------

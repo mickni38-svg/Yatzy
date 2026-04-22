@@ -77,6 +77,17 @@ public sealed class Game
         player.SetConnected(connected);
     }
 
+    public void LeaveGame(Guid playerId)
+    {
+        RequireInProgress();
+        var player = RequirePlayer(playerId);
+        player.Leave();
+
+        // If it was this player's turn, advance immediately
+        if (CurrentPlayer?.Id == playerId)
+            AdvanceTurn();
+    }
+
     // -------------------------------------------------------------------------
     // Game flow
     // -------------------------------------------------------------------------
@@ -166,13 +177,14 @@ public sealed class Game
     {
         ResetDice();
 
-        if (_players.All(p => p.ScoreSheet.IsComplete))
+        // If all active (non-left) players have completed their scoresheet → game over
+        if (_players.All(p => p.HasLeft || p.ScoreSheet.IsComplete))
         {
             Status = GameStatus.Completed;
             return;
         }
 
-        // Advance to next player who still has categories left
+        // Advance to next player who hasn't left and still has categories left
         int startIndex = CurrentPlayerIndex;
         do
         {
@@ -180,7 +192,7 @@ public sealed class Game
             if (CurrentPlayerIndex == 0)
                 RoundNumber++;
         }
-        while (_players[CurrentPlayerIndex].ScoreSheet.IsComplete &&
+        while ((_players[CurrentPlayerIndex].HasLeft || _players[CurrentPlayerIndex].ScoreSheet.IsComplete) &&
                CurrentPlayerIndex != startIndex);
 
         RollNumber = 0;

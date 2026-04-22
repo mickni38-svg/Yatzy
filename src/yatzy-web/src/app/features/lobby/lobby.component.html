@@ -62,7 +62,7 @@
 
   <div class="lobby-body">
 
-    <!-- Venstre: kamera-grid + kontroller -->
+    <!-- Kamera-grid + kontroller (fylder hele bredden uden scorekort) -->
     <div class="lobby-left">
       <div class="room-code-box">
         <span class="room-code-label">Rumkode</span>
@@ -78,54 +78,20 @@
       </div>
 
       <div class="camera-grid">
-        <div *ngFor="let player of game.players"
-             class="camera-slot"
-             [class.active]="player.playerId === myPlayerId">
-          <!-- Eget kamera (local stream) -->
-          <ng-container *ngIf="player.playerId === myPlayerId">
-            <video *ngIf="webrtc.localStream"
-                   [srcObject]="webrtc.localStream"
-                   autoplay muted playsinline></video>
-            <div class="camera-slot-empty" *ngIf="!webrtc.localStream">👤</div>
-          </ng-container>
-          <!-- Andres kamera (remote stream) -->
-          <ng-container *ngIf="player.playerId !== myPlayerId">
-            <video *ngIf="getStream(player.playerId)"
-                   [srcObject]="getStream(player.playerId)"
-                   autoplay playsinline></video>
-            <div class="camera-slot-empty" *ngIf="!getStream(player.playerId)">👤</div>
-          </ng-container>
-          <div class="camera-slot-name">
-            {{ player.displayName }}
-            <span class="mic-icon">🎤</span>
+        <div class="camera-tile" *ngFor="let p of game.players">
+          <video *ngIf="p.playerId === myPlayerId && webrtc.localStream"
+                 [srcObject]="webrtc.localStream" autoplay muted playsinline></video>
+          <video *ngIf="p.playerId !== myPlayerId && getStream(p.playerId)"
+                 [srcObject]="getStream(p.playerId)" autoplay playsinline></video>
+          <div class="camera-no-stream"
+               *ngIf="(p.playerId === myPlayerId && !webrtc.localStream) || (p.playerId !== myPlayerId && !getStream(p.playerId))">
+            🎲
           </div>
+          <span class="camera-label">{{ p.displayName }}{{ p.playerId === myPlayerId ? ' (dig)' : '' }}</span>
         </div>
       </div>
 
-      <div class="lobby-controls">
-        <button class="control-btn"><span>🎤</span><span>Slå lyd fra</span></button>
-        <button class="control-btn"><span>📹</span><span>Slå video fra</span></button>
-        <button class="control-btn"><span>💬</span><span>Chat</span></button>
-      </div>
-
       <p class="error" *ngIf="errorMessage" style="margin:0; padding:8px 12px; background:#ffebee; border:1px solid #ef9a9a; border-radius:8px; color:#c62828; font-size:.82rem;">{{ errorMessage }}</p>
-    </div>
-
-    <!-- Højre: tom scorekort -->
-    <div class="lobby-score-panel">
-      <div class="score-panel-title">
-        YATZY med <span style="margin: 0 2px">⚄</span> terninger
-      </div>
-      <app-score-sheet
-        [players]="game.players"
-        [myPlayerId]="myPlayerId"
-        [canSelect]="false"
-        [diceValues]="[]"
-        (selectCategory)="null">
-      </app-score-sheet>
-      <div class="score-note">
-        Spillet starter, når alle trykker <strong>Start spil</strong>
-      </div>
     </div>
 
   </div>

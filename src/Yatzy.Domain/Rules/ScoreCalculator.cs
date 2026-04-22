@@ -112,7 +112,7 @@ public sealed class ScoreCalculator : IScoreCalculator
     }
 
     private static int Yatzy(IReadOnlyList<int> dice) =>
-        dice.Distinct().Count() == 1 ? 50 : 0;
+        dice.Distinct().Count() == 1 ? 50 + dice.Sum() : 0;
 
     // -------------------------------------------------------------------------
     // Helpers

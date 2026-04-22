@@ -14,6 +14,7 @@ export interface PlayerDto {
   displayName: string;
   isHost: boolean;
   isConnected: boolean;
+  hasLeft: boolean;
   totalScore: number;
   scoreEntries: ScoreEntryDto[];
 }

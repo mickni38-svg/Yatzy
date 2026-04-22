@@ -1,107 +1,147 @@
 <div class="game-shell" *ngIf="game; else noGame">
 
-  <!-- TOP BAR -->
-  <header class="topbar">
-    <div class="topbar-left">
-      <span class="topbar-logo">YATZY med <span class="dice-icon">⚄</span> terninger</span>
+  <!-- VENSTRE SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <span class="logo-icon">🎲</span>
+      <span class="logo-text">YATZY</span>
     </div>
-    <div class="topbar-center">
-      <span class="round-info">Runde {{ game.roundNumber }}/13</span>
-      <span class="turn-info" [class.my-turn]="isMyTurn">
-        {{ isMyTurn ? 'Din tur' : 'Det er ' + currentPlayerName + 's tur' }}
-      </span>
-    </div>
-    <div class="topbar-right">
-      <button class="btn-outline">Forlad spil</button>
-    </div>
-  </header>
 
-  <!-- MAIN AREA -->
+    <div class="sidebar-info">
+      <div class="sidebar-label">RUNDE</div>
+      <div class="sidebar-round">{{ game.roundNumber }} / 13</div>
+      <div class="sidebar-turn" [class.my-turn]="isMyTurn">
+        {{ isMyTurn ? '● DIN TUR' : '● ' + currentPlayerName }}
+      </div>
+    </div>
+
+    <div class="sidebar-divider"></div>
+
+    <nav class="sidebar-nav">
+      <button class="nav-item active">
+        <span class="nav-icon">🎲</span>
+        <span>KAST</span>
+      </button>
+      <button class="nav-item">
+        <span class="nav-icon">📋</span>
+        <span>POINTTAVLE</span>
+      </button>
+    </nav>
+
+    <div class="sidebar-spacer"></div>
+
+    <button class="btn-leave" (click)="leaveGame()">
+      🚪 FORLAD SPIL
+    </button>
+  </aside>
+
+  <!-- RESTEN: topbar + indhold -->
   <div class="game-body">
 
-    <!-- LEFT: Kameraer -->
-    <aside class="col-cameras">
-      <app-player-list
-        [players]="game.players"
-        [currentPlayerId]="game.currentPlayerId"
-        [myPlayerId]="myPlayerId"
-        [streams]="remoteStreams">
-      </app-player-list>
-    </aside>
-
-    <!-- CENTER: Terninger -->
-    <main class="col-center">
-
-      <!-- Status header -->
-      <div class="cast-header">
-        <p class="cast-title" *ngIf="!canSelectOnly">
-          Kast {{ game.rollNumber === 0 ? 1 : game.rollNumber }} af 3
-        </p>
-        <p class="cast-title" *ngIf="canSelectOnly && isMyTurn">
-          Vælg en kategori til {{ diceTotal }} point
-        </p>
-        <p class="cast-title" *ngIf="canSelectOnly && !isMyTurn">
-          Runde {{ game.roundNumber }}/13
-        </p>
-        <p class="cast-sub" *ngIf="isMyTurn && !canSelectOnly && game.rollNumber > 0">Vælg hvilke terninger du vil holde</p>
-        <p class="cast-sub" *ngIf="isMyTurn && canSelectOnly">Klik på scorekortet for at registrere din score</p>
-        <p class="cast-sub waiting" *ngIf="!isMyTurn">Venter på {{ currentPlayerName }}…</p>
+    <header class="topbar">
+      <div class="topbar-center">
+        <span class="round-info">Runde {{ game.roundNumber }} af 13</span>
+        <span class="turn-dot" [class.my-turn]="isMyTurn">●</span>
+        <span class="turn-info" [class.my-turn]="isMyTurn">
+          {{ isMyTurn ? 'Din tur' : 'Det er ' + currentPlayerName + 's tur' }}
+        </span>
       </div>
-
-      <!-- Terninger – altid synlige -->
-      <div class="dice-row">
-        <div class="die-wrapper" *ngFor="let die of game.dice">
-          <app-dice-tile
-            [value]="die.value"
-            [isHeld]="die.isHeld"
-            [disabled]="!isMyTurn || game.rollNumber === 0"
-            (toggle)="onToggleHold(die.position)">
-          </app-dice-tile>
-          <button class="btn-hold"
-                  [class.held]="die.isHeld"
-                  [disabled]="!isMyTurn || game.rollNumber === 0 || canSelectOnly"
-                  (click)="onToggleHold(die.position)">
-            Hold
-          </button>
-        </div>
-      </div>
-
-      <!-- Kast-knap (kun når der stadig kan kastes) -->
-      <div class="center-actions" *ngIf="!canSelectOnly">
-        <button class="btn-roll-big"
-                (click)="rollDice()"
-                [class.pulse]="isMyTurn && game.rollNumber === 0"
-                [disabled]="!canRoll || isActing">
-          {{ game.rollNumber === 0 ? 'Kast terninger' : 'Kast igen (' + (3 - game.rollNumber) + ' tilbage)' }}
+      <div class="topbar-right">
+        <button class="btn-camera-toggle" (click)="toggleCamera()" [class.active]="cameraEnabled">
+          {{ cameraEnabled ? '📷 Kamera til' : '📷 Kamera fra' }}
         </button>
+        <button class="btn-outline" (click)="leaveGame()">Forlad spil</button>
       </div>
+    </header>
 
-      <p class="error-msg" *ngIf="errorMessage">⚠️ {{ errorMessage }}</p>
-    </main>
+    <!-- Horisontal row: spil + pointtavle -->
+    <div class="content-row">
 
-    <!-- RIGHT: Scorekort -->
-    <aside class="col-score">
-      <div class="score-panel-title">
-        YATZY med <span class="dice-icon-sm">⚄</span> terninger
-      </div>
-      <app-score-sheet
-        [players]="game.players"
-        [myPlayerId]="myPlayerId"
-        [canSelect]="canSelectOnly && isMyTurn"
-        [diceValues]="diceValues"
-        (selectCategory)="onSelectCategory($event)">
-      </app-score-sheet>
-    </aside>
+      <!-- Midterste: terninger over, video under -->
+      <main class="play-col">
 
+        <div class="play-area">
+          <div class="cast-header">
+            <p class="cast-title" *ngIf="!canSelectOnly">
+              Kast {{ game.rollNumber === 0 ? 1 : game.rollNumber }} af 3
+            </p>
+            <p class="cast-title" *ngIf="canSelectOnly && isMyTurn">Vælg en kategori</p>
+            <p class="cast-title" *ngIf="canSelectOnly && !isMyTurn">Runde {{ game.roundNumber }}/13</p>
+            <p class="cast-sub" *ngIf="isMyTurn && !canSelectOnly && game.rollNumber > 0">Vælg hvilke terninger du vil holde</p>
+            <p class="cast-sub" *ngIf="isMyTurn && canSelectOnly">Klik på pointtavlen for at registrere din score</p>
+            <p class="cast-sub waiting" *ngIf="!isMyTurn">Venter på {{ currentPlayerName }}…</p>
+          </div>
+
+          <div class="dice-row">
+            <div class="die-wrapper" *ngFor="let die of game.dice; let i = index">
+              <app-dice-tile
+                [value]="rollingDice[i] ? animatedValues[i] : die.value"
+                [isHeld]="die.isHeld"
+                [isRolling]="rollingDice[i]"
+                [disabled]="!isMyTurn || game.rollNumber === 0 || rollingDice[i]"
+                (toggle)="onToggleHold(die.position)">
+              </app-dice-tile>
+              <button class="btn-hold"
+                      *ngIf="isMyTurn"
+                      [class.held]="die.isHeld"
+                      [disabled]="game.rollNumber === 0 || hasSelectedCategory"
+                      (click)="onToggleHold(die.position)">
+                HOLD
+              </button>
+            </div>
+          </div>
+
+          <div class="center-actions" *ngIf="!canSelectOnly">
+            <button class="btn-roll-big"
+                    (click)="rollDice()"
+                    [class.pulse]="isMyTurn && game.rollNumber === 0"
+                    [disabled]="!canRoll || isActing">
+              {{ game.rollNumber === 0 ? 'KAST TERNINGER' : 'KAST IGEN' }}
+            </button>
+            <span class="roll-count" *ngIf="game.rollNumber > 0">
+              {{ 3 - game.rollNumber }} kast tilbage
+            </span>
+          </div>
+
+          <p class="error-msg" *ngIf="errorMessage">⚠️ {{ errorMessage }}</p>
+        </div>
+
+        <!-- Video grid – dynamisk kolonner/rækker efter antal spillere -->
+        <div class="camera-grid"
+             *ngIf="cameraEnabled"
+             [style.grid-template-columns]="cameraGridCols"
+             [style.grid-template-rows]="cameraGridRows">
+          <div class="camera-tile" *ngFor="let p of game.players">
+            <div class="camera-label">
+              <span class="online-dot">●</span>
+              {{ p.displayName }}<span *ngIf="isHost(p.playerId)"> 👑</span><span *ngIf="p.playerId === myPlayerId" class="mic-icon"> 🎤</span>
+            </div>
+            <video *ngIf="p.playerId === myPlayerId && webrtc.localStream"
+                   [srcObject]="webrtc.localStream" autoplay muted playsinline></video>
+            <video *ngIf="p.playerId !== myPlayerId && allStreams.get(p.playerId)"
+                   [srcObject]="allStreams.get(p.playerId)" autoplay playsinline></video>
+            <div class="camera-no-stream"
+                 *ngIf="(p.playerId === myPlayerId && !webrtc.localStream) || (p.playerId !== myPlayerId && !allStreams.get(p.playerId))">
+            </div>
+          </div>
+        </div>
+
+      </main>
+
+      <!-- Pointtavle -->
+      <aside class="col-score">
+        <div class="score-panel-title">POINTTAVLE</div>
+        <app-score-sheet
+          [players]="game.players"
+          [myPlayerId]="myPlayerId"
+          [canSelect]="canSelectOnly && isMyTurn"
+          [diceValues]="diceValues"
+          (selectCategory)="onSelectCategory($event)">
+        </app-score-sheet>
+      </aside>
+
+    </div>
   </div>
-
-  <!-- BOTTOM BAR: Stilling -->
-  <footer class="scorebar">
-    <span class="scorebar-label">Stillingen lige nu:</span>
-    <span class="score-chip" *ngFor="let p of game.players" [class.active]="p.playerId === game.currentPlayerId">
-      {{ p.displayName }} {{ p.totalScore }}
-    </span>
-  </footer>
 
 </div>
 

@@ -16,6 +16,8 @@ public sealed class VideoHub : Hub
 
     public async Task JoinVideoRoom(string roomCode, string playerId)
     {
+        List<(string ConnId, string PlayerId)> existingPeers;
+
         lock (_lock)
         {
             _connections[Context.ConnectionId] = (roomCode, playerId);
@@ -24,22 +26,41 @@ public sealed class VideoHub : Hub
                 set = [];
                 _rooms[roomCode] = set;
             }
+
+            // Collect existing peers BEFORE adding ourselves
+            existingPeers = set
+                .Where(connId => _connections.ContainsKey(connId))
+                .Select(connId => (connId, _connections[connId].PlayerId))
+                .ToList();
+
             set.Add(Context.ConnectionId);
         }
 
         await Groups.AddToGroupAsync(Context.ConnectionId, roomCode);
 
-        // Tell other peers in the room that a new participant arrived so they
-        // can initiate an offer towards us.
-        await Clients.OthersInGroup(roomCode)
-            .SendAsync("PeerJoined", playerId, Context.ConnectionId);
+        // Tell each existing peer about the new joiner.
+        // Each existing peer will send an offer to the joiner.
+        // The joiner simply waits, receives the offers and sends answers back.
+        foreach (var (connId, _) in existingPeers)
+        {
+            await Clients.Client(connId)
+                .SendAsync("PeerJoined", playerId, Context.ConnectionId);
+        }
     }
 
     /// <summary>Forward an SDP offer to a specific peer.</summary>
     public async Task SendOffer(string targetConnectionId, string sdp, string playerId)
     {
+        // Always use the sender's own playerId so the receiver maps the stream correctly
+        string senderPlayerId;
+        lock (_lock)
+        {
+            senderPlayerId = _connections.TryGetValue(Context.ConnectionId, out var entry)
+                ? entry.PlayerId
+                : playerId;
+        }
         await Clients.Client(targetConnectionId)
-            .SendAsync("ReceiveOffer", sdp, playerId, Context.ConnectionId);
+            .SendAsync("ReceiveOffer", sdp, senderPlayerId, Context.ConnectionId);
     }
 
     /// <summary>Forward an SDP answer back to the caller.</summary>

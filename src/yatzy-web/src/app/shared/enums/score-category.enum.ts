@@ -17,19 +17,37 @@ export enum ScoreCategory {
 }
 
 export const ScoreCategoryLabel: Record<ScoreCategory, string> = {
-  [ScoreCategory.Ones]: 'Ettere',
-  [ScoreCategory.Twos]: 'Toere',
-  [ScoreCategory.Threes]: 'Treere',
-  [ScoreCategory.Fours]: 'Firere',
-  [ScoreCategory.Fives]: 'Femmere',
-  [ScoreCategory.Sixes]: 'Seksere',
-  [ScoreCategory.OnePair]: 'Et par',
-  [ScoreCategory.TwoPairs]: 'To par',
-  [ScoreCategory.ThreeOfAKind]: 'Tre ens',
-  [ScoreCategory.FourOfAKind]: 'Fire ens',
+  [ScoreCategory.Ones]: "1' ere",
+  [ScoreCategory.Twos]: "2' ere",
+  [ScoreCategory.Threes]: "3' ere",
+  [ScoreCategory.Fours]: "4' ere",
+  [ScoreCategory.Fives]: "5' ere",
+  [ScoreCategory.Sixes]: "6' ere",
+  [ScoreCategory.OnePair]: '1 par',
+  [ScoreCategory.TwoPairs]: '2 par',
+  [ScoreCategory.ThreeOfAKind]: '3 ens',
+  [ScoreCategory.FourOfAKind]: '4 ens',
   [ScoreCategory.SmallStraight]: 'Lille straight',
   [ScoreCategory.LargeStraight]: 'Stor straight',
-  [ScoreCategory.FullHouse]: 'Full house',
+  [ScoreCategory.FullHouse]: 'Hus',
   [ScoreCategory.Chance]: 'Chance',
-  [ScoreCategory.Yatzy]: 'Yatzy'
+  [ScoreCategory.Yatzy]: 'YATZY'
+};
+
+export const ScoreCategoryMax: Record<ScoreCategory, number> = {
+  [ScoreCategory.Ones]: 5,
+  [ScoreCategory.Twos]: 10,
+  [ScoreCategory.Threes]: 15,
+  [ScoreCategory.Fours]: 20,
+  [ScoreCategory.Fives]: 25,
+  [ScoreCategory.Sixes]: 30,
+  [ScoreCategory.OnePair]: 12,
+  [ScoreCategory.TwoPairs]: 22,
+  [ScoreCategory.ThreeOfAKind]: 18,
+  [ScoreCategory.FourOfAKind]: 24,
+  [ScoreCategory.SmallStraight]: 15,
+  [ScoreCategory.LargeStraight]: 20,
+  [ScoreCategory.FullHouse]: 28,
+  [ScoreCategory.Chance]: 30,
+  [ScoreCategory.Yatzy]: 50
 };

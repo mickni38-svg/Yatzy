@@ -2,6 +2,7 @@
   class="dice-tile"
   [class.held]="isHeld"
   [class.disabled]="disabled"
+  [class.rolling]="isRolling"
   (click)="onToggle()"
   [disabled]="disabled"
   [attr.aria-label]="'Dice ' + value + (isHeld ? ' – held' : '')">

@@ -9,4 +9,5 @@ public interface IGameplayAppService
     Task<GameStateResponse> SelectScoreAsync(SelectScoreRequest request, CancellationToken cancellationToken = default);
     Task<GameStateResponse> PlayerDisconnectedAsync(Guid gameId, Guid playerId, CancellationToken cancellationToken = default);
     Task<GameStateResponse?> PlayerReconnectedAsync(Guid gameId, Guid playerId, CancellationToken cancellationToken = default);
+    Task<GameStateResponse> LeaveGameAsync(LeaveGameRequest request, CancellationToken cancellationToken = default);
 }

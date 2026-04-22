@@ -123,6 +123,7 @@ public sealed class GameAppService : IGameAppService
                 DisplayName = p.DisplayName,
                 IsHost = i == 0,
                 IsConnected = p.IsConnected,
+                HasLeft = p.HasLeft,
                 TotalScore = p.ScoreSheet.Total,
                 ScoreEntries = p.ScoreSheet.Entries
                     .Select(kvp => new ScoreEntryDto

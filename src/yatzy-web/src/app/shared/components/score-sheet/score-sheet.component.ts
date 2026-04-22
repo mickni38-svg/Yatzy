@@ -1,7 +1,7 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { PlayerDto } from '../../../core/models/game-state.dto';
-import { ScoreCategory, ScoreCategoryLabel } from '../../enums/score-category.enum';
+import { ScoreCategory, ScoreCategoryLabel, ScoreCategoryMax } from '../../enums/score-category.enum';
 
 @Component({
   selector: 'app-score-sheet',
@@ -28,6 +28,7 @@ export class ScoreSheetComponent {
   ];
   readonly allCategories = [...this.upperCategories, ...this.lowerCategories];
   readonly labels = ScoreCategoryLabel;
+  readonly maxPts = ScoreCategoryMax;
 
   getScore(player: PlayerDto, category: ScoreCategory): string {
     const entry = player.scoreEntries.find(e => e.category === category);
@@ -42,13 +43,10 @@ export class ScoreSheetComponent {
     return player.playerId === this.myPlayerId && this.canSelect && !this.isUsed(player, category);
   }
 
-  /** Kategori må klikkes hvis score > 0, ELLER hvis alle tilgængelige kategorier giver 0 */
+  /** Kategori er altid valgbar (inkl. 0 point) når det er min tur */
   isSelectable(category: ScoreCategory): boolean {
     const pts = this.getSuggestion(category);
-    if (pts === null) return false;
-    if (pts > 0) return true;
-    // Ingen positive valg tilbage → tillad nul-valg
-    return !this.hasAnyPositiveOption();
+    return pts !== null; // altid valgbar hvis det er min tur og kategorien ikke er brugt
   }
 
   hasAnyPositiveOption(): boolean {

@@ -1,48 +1,64 @@
 .dice-tile {
-  width: 80px;
-  height: 80px;
+  width: clamp(46px, 6vw, 72px);
+  height: clamp(46px, 6vw, 72px);
   border-radius: 12px;
-  border: 2.5px solid #d0d0d0;
-  background: #fff;
+  border: 2px solid #555;
+  background: #ffffff;
   padding: 0;
   display: flex;
   align-items: center;
   justify-content: center;
   position: relative;
-  transition: transform .15s ease, box-shadow .15s ease, background .15s ease, border-color .15s ease;
+  transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease;
   flex-shrink: 0;
-  box-shadow: 0 2px 8px rgba(0,0,0,.10);
+  box-shadow: 0 3px 14px rgba(0,0,0,.55), 0 1px 3px rgba(0,0,0,.4);
   cursor: pointer;
 
   &:hover:not(.disabled) {
     transform: translateY(-3px);
-    box-shadow: 0 6px 18px rgba(0,0,0,.15);
+    box-shadow: 0 8px 22px rgba(0,0,0,.6);
     border-color: #2e7d32;
   }
 
   &:active:not(.disabled) { transform: translateY(-1px); }
 
   &.held {
-    background: #fff;
+    background: #ffffff;
     border-color: #2e7d32;
     border-width: 3px;
-    box-shadow: 0 0 0 2px rgba(46,125,50,.25), 0 4px 12px rgba(46,125,50,.2);
+    box-shadow: 0 0 0 2px rgba(46,125,50,.5), 0 4px 14px rgba(46,125,50,.35);
 
     .pip-grid circle { fill: #1b5e20; }
   }
 
   &.disabled {
-    opacity: .45;
+    opacity: .5;
     cursor: not-allowed;
-    &:hover { transform: none; box-shadow: 0 2px 8px rgba(0,0,0,.10); border-color: #d0d0d0; }
+    &:hover { transform: none; box-shadow: 0 3px 14px rgba(0,0,0,.55); border-color: #555; }
   }
 
   .pip-grid {
-    width: 54px;
-    height: 54px;
+    width: 68%;
+    height: 68%;
 
-    circle { fill: #1a1a1a; }
+    circle { fill: #000000; }
   }
 
   .hold-badge { display: none; }
+
+  &.rolling {
+    animation: dice-spin 0.5s infinite linear;
+    pointer-events: none;
+    border-color: #f9a825;
+    box-shadow: 0 0 14px rgba(249,168,37,.7), 0 3px 14px rgba(0,0,0,.5);
+    cursor: not-allowed;
+  }
+}
+
+@keyframes dice-spin {
+  0%   { transform: rotate(-18deg) scale(1.08); }
+  25%  { transform: rotate(12deg)  scale(0.93); }
+  50%  { transform: rotate(-8deg)  scale(1.06); }
+  75%  { transform: rotate(16deg)  scale(0.95); }
+  100% { transform: rotate(-18deg) scale(1.08); }
 }

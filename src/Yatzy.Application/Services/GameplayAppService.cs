@@ -73,6 +73,18 @@ public sealed class GameplayAppService : IGameplayAppService
         return MapToResponse(game);
     }
 
+    public async Task<GameStateResponse> LeaveGameAsync(LeaveGameRequest request, CancellationToken cancellationToken = default)
+    {
+        var game = await RequireGameAsync(request.GameId, cancellationToken);
+
+        game.LeaveGame(request.PlayerId);
+
+        _gameRepository.Update(game);
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        return MapToResponse(game);
+    }
+
     public async Task<GameStateResponse?> PlayerReconnectedAsync(Guid gameId, Guid playerId, CancellationToken cancellationToken = default)
     {
         var game = await _gameRepository.GetByIdAsync(gameId, cancellationToken);
@@ -118,6 +130,7 @@ public sealed class GameplayAppService : IGameplayAppService
                 DisplayName = p.DisplayName,
                 IsHost = i == 0,
                 IsConnected = p.IsConnected,
+                HasLeft = p.HasLeft,
                 TotalScore = p.ScoreSheet.Total,
                 ScoreEntries = p.ScoreSheet.Entries
                     .Select(kvp => new ScoreEntryDto

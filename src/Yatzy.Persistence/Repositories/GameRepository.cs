@@ -115,6 +115,7 @@ public sealed class GameRepository : IGameRepository
                     id: p.Id,
                     displayName: p.DisplayName,
                     isConnected: p.IsConnected,
+                    hasLeft: p.HasLeft,
                     scoreEntries: p.ScoreEntries.ToDictionary(
                         s => s.Category,
                         s => s.Points)))
@@ -150,6 +151,7 @@ public sealed class GameRepository : IGameRepository
                     GameId = game.Id,
                     DisplayName = p.DisplayName,
                     IsConnected = p.IsConnected,
+                    HasLeft = p.HasLeft,
                     JoinOrder = i,
                     ScoreEntries = p.ScoreSheet.Entries
                         .Where(kvp => kvp.Value.IsUsed)
