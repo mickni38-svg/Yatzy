@@ -6,7 +6,7 @@ Beskrivelse af SignalR-hubs, alle events og WebRTC-videoflow.
 
 ## GameHub
 
-`Yatzy.Api/Hubs/GameHub.cs` — monteret på `/hubs/game`
+[`Yatzy.Api/Hubs/GameHub.cs`](https://github.com/mickni38-svg/Yatzy/blob/main/src/Yatzy.Api/Hubs/GameHub.cs) — monteret på `/hubs/game`
 
 Alle gameplay-handlinger går igennem denne hub. Klienten kalder server-metoder, og serveren broadcaster til hele gruppen (rum-koden bruges som SignalR-gruppe).
 
@@ -20,11 +20,15 @@ JoinRoom(roomCode: string, playerId: Guid)
 ```
 Tilmelder klientens connection til SignalR-gruppen for rummet og registrerer forbindelsen i `ConnectionService`. Hvis spilleren genforbinder, sendes fuldt spilstate.
 
+> [Se implementering → L39](https://github.com/mickni38-svg/Yatzy/blob/main/src/Yatzy.Api/Hubs/GameHub.cs#L39)
+
 #### `StartGame`
 ```
 StartGame({ GameId: Guid })
 ```
 Kun host (første spiller). Starter spillet og broadcaster `GameStarted` til alle.
+
+> [Se implementering → L72](https://github.com/mickni38-svg/Yatzy/blob/main/src/Yatzy.Api/Hubs/GameHub.cs#L72)
 
 #### `RollDice`
 ```
@@ -32,11 +36,15 @@ RollDice({ GameId: Guid, PlayerId: Guid })
 ```
 Ruller ikke-holdte terninger. Broadcaster `DiceRolled` til alle.
 
+> [Se implementering → L109](https://github.com/mickni38-svg/Yatzy/blob/main/src/Yatzy.Api/Hubs/GameHub.cs#L109)
+
 #### `ToggleHold`
 ```
 ToggleHold({ GameId: Guid, PlayerId: Guid, Position: number })
 ```
 Holder eller frigiver én terning. Broadcaster `HoldChanged` til alle.
+
+> [Se implementering → L120](https://github.com/mickni38-svg/Yatzy/blob/main/src/Yatzy.Api/Hubs/GameHub.cs#L120)
 
 #### `SelectScore`
 ```
@@ -44,11 +52,15 @@ SelectScore({ GameId: Guid, PlayerId: Guid, Category: string })
 ```
 Registrerer valgt kategori. Broadcaster `ScoreSelected` (eller `GameEnded` hvis spillet er slut) til alle.
 
+> [Se implementering → L131](https://github.com/mickni38-svg/Yatzy/blob/main/src/Yatzy.Api/Hubs/GameHub.cs#L131)
+
 #### `TriggerYatzy`
 ```
 TriggerYatzy(targetPlayerId: Guid, gifName: string)
 ```
 Kun host. Broadcaster `TriggerYatzy`-eventet med GIF-navn til alle spillere i rummet.
+
+> [Se implementering → L148](https://github.com/mickni38-svg/Yatzy/blob/main/src/Yatzy.Api/Hubs/GameHub.cs#L148)
 
 #### `LeaveGame`
 ```
@@ -56,11 +68,13 @@ LeaveGame({ GameId: Guid, PlayerId: Guid })
 ```
 Markerer spilleren som forladt. Broadcaster `PlayerLeft` (eller `GameEnded` hvis host forlader) til alle.
 
+> [Se implementering → L172](https://github.com/mickni38-svg/Yatzy/blob/main/src/Yatzy.Api/Hubs/GameHub.cs#L172)
+
 ---
 
 ### Server → Klient events
 
-Defineret i `Yatzy.Api/Hubs/HubEvents.cs`:
+Defineret i [`Yatzy.Api/Hubs/HubEvents.cs`](https://github.com/mickni38-svg/Yatzy/blob/main/src/Yatzy.Api/Hubs/HubEvents.cs):
 
 | Event navn | Payload | Hvornår |
 |---|---|---|

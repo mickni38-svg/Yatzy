@@ -23,6 +23,7 @@ Den centrale entitet der ejer spillets tilstand.
 | `MaxRollsPerTurn` | 3 | Maks slag per runde |
 
 **Vigtige metoder:**
+
 ```csharp
 // Fabriksmetode — opretter nyt spil med 5 terninger
 Game.Create(string roomCode)
@@ -34,20 +35,32 @@ Player AddPlayer(Guid playerId, string displayName)
 void StartGame()
 
 // Ruller ikke-holdte terninger (kræver IRandomProvider)
-void Roll(IRandomProvider random)
+void RollDice(Guid playerId, IRandomProvider random)
 
 // Holder/frigiver terning
-void ToggleDie(int position)
+void ToggleHold(Guid playerId, int diceIndex)
 
 // Registrerer kategori-score for aktiv spiller, avancerer tur
-void SelectScore(ScoreCategory category, IScoreCalculator calculator)
+void SelectScore(Guid playerId, ScoreCategory category, IScoreCalculator calculator)
 
 // Markerer spiller som forladt
 void LeaveGame(Guid playerId)
 
-// True når alle spillere har udfyldt alle kategorier
-bool IsGameOver { get; }
+// Spil slutter når alle aktive spillere har udfyldt alle kategorier (se AdvanceTurn)
+GameStatus.Completed
 ```
+
+> Klik for at se implementeringen direkte på GitHub:
+> | Metode | Linje |
+> |---|---|
+> | [`Game.Create`](https://github.com/mickni38-svg/Yatzy/blob/main/src/Yatzy.Domain/Entities/Game.cs#L33) | L33 |
+> | [`AddPlayer`](https://github.com/mickni38-svg/Yatzy/blob/main/src/Yatzy.Domain/Entities/Game.cs#L54) | L54 |
+> | [`StartGame`](https://github.com/mickni38-svg/Yatzy/blob/main/src/Yatzy.Domain/Entities/Game.cs#L95) | L95 |
+> | [`RollDice`](https://github.com/mickni38-svg/Yatzy/blob/main/src/Yatzy.Domain/Entities/Game.cs#L108) | L108 |
+> | [`ToggleHold`](https://github.com/mickni38-svg/Yatzy/blob/main/src/Yatzy.Domain/Entities/Game.cs#L122) | L122 |
+> | [`SelectScore`](https://github.com/mickni38-svg/Yatzy/blob/main/src/Yatzy.Domain/Entities/Game.cs#L136) | L136 |
+> | [`LeaveGame`](https://github.com/mickni38-svg/Yatzy/blob/main/src/Yatzy.Domain/Entities/Game.cs#L80) | L80 |
+> | [`AdvanceTurn` (spil slut-logik)](https://github.com/mickni38-svg/Yatzy/blob/main/src/Yatzy.Domain/Entities/Game.cs#L176) | L176 |
 
 ---
 
@@ -101,6 +114,13 @@ var points = calculator.Calculate(ScoreCategory.Yatzy, new[] { 4, 4, 4, 4, 4 });
 // → 50
 ```
 
+> Klik for at se implementeringen direkte på GitHub:
+> | Metode | Linje |
+> |---|---|
+> | [`Calculate` (switch over alle kategorier)](https://github.com/mickni38-svg/Yatzy/blob/main/src/Yatzy.Domain/Rules/ScoreCalculator.cs#L8) | L8 |
+> | [`SumOfFace` (øvre sektion)](https://github.com/mickni38-svg/Yatzy/blob/main/src/Yatzy.Domain/Rules/ScoreCalculator.cs#L41) | L41 |
+> | [`BestPair`](https://github.com/mickni38-svg/Yatzy/blob/main/src/Yatzy.Domain/Rules/ScoreCalculator.cs#L48) | L48 |
+
 ---
 
 ### Enums
@@ -139,12 +159,18 @@ Use case-lag — orkestrerer domain og infrastruktur.
 Håndterer spilopsætning og lobby.
 
 ```csharp
-Task<GameStateResponse> CreateAsync(string roomCode, Guid playerId, string displayName)
-Task<GameStateResponse> JoinAsync(string roomCode, Guid playerId, string displayName)
+Task<GameStateResponse> CreateGameAsync(CreateGameRequest request)
+Task<GameStateResponse> JoinGameAsync(string roomCode, JoinGameRequest request)
 Task<GameStateResponse> StartGameAsync(Guid gameId)
 Task<GameStateResponse> GetByIdAsync(Guid gameId)
 Task<GameStateResponse> GetByRoomCodeAsync(string roomCode)
 ```
+
+> | Metode | Linje |
+> |---|---|
+> | [`CreateGameAsync`](https://github.com/mickni38-svg/Yatzy/blob/main/src/Yatzy.Application/Services/GameAppService.cs#L25) | L25 |
+> | [`JoinGameAsync`](https://github.com/mickni38-svg/Yatzy/blob/main/src/Yatzy.Application/Services/GameAppService.cs#L40) | L40 |
+> | [`StartGameAsync`](https://github.com/mickni38-svg/Yatzy/blob/main/src/Yatzy.Application/Services/GameAppService.cs#L55) | L55 |
 
 ---
 
@@ -162,13 +188,20 @@ Task<GameStateResponse> LeaveGameAsync(LeaveGameRequest request)
 Task<GameStateResponse?> PlayerReconnectedAsync(Guid gameId, Guid playerId)
 ```
 
+> | Metode | Linje |
+> |---|---|
+> | [`RollDiceAsync`](https://github.com/mickni38-svg/Yatzy/blob/main/src/Yatzy.Application/Services/GameplayAppService.cs#L28) | L28 |
+> | [`ToggleHoldAsync`](https://github.com/mickni38-svg/Yatzy/blob/main/src/Yatzy.Application/Services/GameplayAppService.cs#L40) | L40 |
+> | [`SelectScoreAsync`](https://github.com/mickni38-svg/Yatzy/blob/main/src/Yatzy.Application/Services/GameplayAppService.cs#L52) | L52 |
+> | [`LeaveGameAsync`](https://github.com/mickni38-svg/Yatzy/blob/main/src/Yatzy.Application/Services/GameplayAppService.cs#L76) | L76 |
+
 ---
 
 ### `ConnectionService`
 
 `Yatzy.Application/Services/ConnectionService.cs`
 
-In-memory dictionary der mapper `ConnectionId → (GameId, PlayerId, RoomCode)`.
+In-memory `ConcurrentDictionary` der mapper `ConnectionId → (GameId, PlayerId, RoomCode)`.
 Bruges af `GameHub` til at identificere hvilken spiller der sender en besked.
 
 ```csharp
@@ -176,6 +209,12 @@ void Register(string connectionId, Guid gameId, Guid playerId, string roomCode)
 void Unregister(string connectionId)
 (Guid GameId, Guid PlayerId, string RoomCode)? Get(string connectionId)
 ```
+
+> | Metode | Linje |
+> |---|---|
+> | [`Register`](https://github.com/mickni38-svg/Yatzy/blob/main/src/Yatzy.Application/Services/ConnectionService.cs#L10) | L10 |
+> | [`Unregister`](https://github.com/mickni38-svg/Yatzy/blob/main/src/Yatzy.Application/Services/ConnectionService.cs#L13) | L13 |
+> | [`Get`](https://github.com/mickni38-svg/Yatzy/blob/main/src/Yatzy.Application/Services/ConnectionService.cs#L16) | L16 |
 
 ---
 
