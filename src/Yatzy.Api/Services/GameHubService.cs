@@ -37,4 +37,7 @@ public sealed class GameHubService : IGameHubService
 
     public Task BroadcastGameEndedAsync(string roomCode, GameStateResponse state) =>
         _hubContext.Clients.Group(roomCode).SendAsync(HubEvents.GameEnded, state);
+
+    public Task BroadcastYatzyTriggerAsync(string roomCode, Guid targetPlayerId, string gifName) =>
+        _hubContext.Clients.Group(roomCode).SendAsync(HubEvents.TriggerYatzy, targetPlayerId, gifName);
 }

@@ -47,7 +47,7 @@
           <span class="max-pts bonus-max">50</span>
         </td>
         <td *ngFor="let player of players" [class.me]="isMe(player)">
-          <strong *ngIf="hasBonus(player)">50</strong>
+          <span class="bonus-badge" *ngIf="hasBonus(player)">50</span>
         </td>
       </tr>
 

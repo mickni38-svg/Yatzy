@@ -145,6 +145,31 @@ public sealed class GameHub : Hub
         }
     }
 
+    public async Task TriggerYatzy(Guid targetPlayerId, string gifName)
+    {
+        try
+        {
+            var entry = _connectionService.Get(Context.ConnectionId);
+            if (entry is null) return;
+
+            var (gameId, _, roomCode) = entry.Value;
+            var game = await _gameAppService.GetByIdAsync(gameId);
+
+            // Kun host (første spiller) må trigger
+            if (game.Players.Count == 0 || game.Players[0].PlayerId != entry.Value.PlayerId)
+            {
+                await Clients.Caller.SendAsync(HubEvents.Error, "Only the host can trigger Yatzy celebration.");
+                return;
+            }
+
+            await _hubService.BroadcastYatzyTriggerAsync(roomCode, targetPlayerId, gifName);
+        }
+        catch (Exception ex)
+        {
+            await SendErrorAsync(ex);
+        }
+    }
+
     public async Task LeaveGame(LeaveGameRequest request)
     {
         try

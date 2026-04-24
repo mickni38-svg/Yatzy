@@ -1,6 +1,8 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
 import { Subscription } from 'rxjs';
 import { GameRealtimeService } from '../../core/services/game-realtime.service';
 import { PlayerSessionService } from '../../core/services/player-session.service';
@@ -12,10 +14,16 @@ import { ScoreSheetComponent } from '../../shared/components/score-sheet/score-s
 import { WebRtcService } from '../../core/services/webrtc.service';
 import { DiceSoundService } from '../../core/services/dice-sound.service';
 
+export interface GifEntry {
+  name: string;
+  file: string;
+  showOverlay?: boolean;
+}
+
 @Component({
   selector: 'app-game',
   standalone: true,
-  imports: [CommonModule, DiceTileComponent, ScoreSheetComponent],
+  imports: [CommonModule, FormsModule, DiceTileComponent, ScoreSheetComponent],
   templateUrl: './game.component.html',
   styleUrl: './game.component.scss'
 })
@@ -34,6 +42,8 @@ export class GameComponent implements OnInit, OnDestroy {
   /** Bruges til at undgå double-trigger: sæt til true mens DEN lokale spiller kaster */
   private isLocallyRolling = false;
   private previousRollNumber = 0;
+  /** True mens mindst én terning stadig ruller – skjuler score-foreslag */
+  diceSpinning = false;
 
   private updateAllStreams(remote: Map<string, MediaStream>): void {
     const map = new Map(remote);
@@ -47,8 +57,60 @@ export class GameComponent implements OnInit, OnDestroy {
   showScore = false;
   cameraEnabled = true;
 
+  /** PlayerId → true når den pågældende spiller skal vise Yatzy-GIF */
+  yatzyCelebrating = new Set<string>();
+  yatzyCelebrationGif = new Map<string, string>();
+  gifList: GifEntry[] = [];
+  selectedGif: GifEntry | null = null;
+  private yatzyTimers = new Map<string, ReturnType<typeof setTimeout>>();
+  private previousYatzyPlayers = new Set<string>();
+
   toggleCamera(): void {
     this.cameraEnabled = !this.cameraEnabled;
+  }
+
+  /** Vis en specifik GIF lokalt på en spillers tile */
+  private _showGif(playerId: string, gifFile: string): void {
+    if (this.yatzyTimers.has(playerId)) {
+      clearTimeout(this.yatzyTimers.get(playerId)!);
+    }
+    this.yatzyCelebrationGif = new Map(this.yatzyCelebrationGif).set(playerId, gifFile);
+    this.yatzyCelebrating = new Set(this.yatzyCelebrating).add(playerId);
+    const t = setTimeout(() => {
+      const next = new Set(this.yatzyCelebrating);
+      next.delete(playerId);
+      this.yatzyCelebrating = next;
+      this.yatzyTimers.delete(playerId);
+    }, 6000);
+    this.yatzyTimers.set(playerId, t);
+  }
+
+  /** Host klikker på knap: send valgt GIF til server → alle ser samme GIF */
+  triggerYatzyCelebration(playerId: string, sendToServer = false): void {
+    const gifFile = this.selectedGif?.file ?? 'yatzy-celebration.gif';
+    if (sendToServer && this.game) {
+      this.realtime.triggerYatzy(playerId, gifFile).catch(() => {/* best-effort */});
+      // Vis lokalt med det samme
+    }
+    this._showGif(playerId, gifFile);
+  }
+
+  compareGifs(a: GifEntry, b: GifEntry): boolean {
+    return a?.file === b?.file;
+  }
+
+  getCelebrationGif(playerId: string): string {
+    return this.yatzyCelebrationGif.get(playerId) ?? 'yatzy-celebration.gif';
+  }
+
+  showYatzyOverlay(playerId: string): boolean {
+    const file = this.yatzyCelebrationGif.get(playerId);
+    if (!file) return false;
+    return this.gifList.find(g => g.file === file)?.showOverlay ?? false;
+  }
+
+  isCelebrating(playerId: string): boolean {
+    return this.yatzyCelebrating.has(playerId);
   }
 
   private sub = new Subscription();
@@ -58,11 +120,25 @@ export class GameComponent implements OnInit, OnDestroy {
     private session: PlayerSessionService,
     private router: Router,
     public webrtc: WebRtcService,
-    private sound: DiceSoundService
+    private sound: DiceSoundService,
+    private http: HttpClient
   ) {}
 
   ngOnInit(): void {
     this.game = this.realtime.currentState;
+
+    // Indlæs GIF-konfiguration
+    this.http.get<GifEntry[]>('gif-config.json').subscribe({
+      next: list => {
+        this.gifList = list;
+        this.selectedGif = list[0] ?? null;
+      },
+      error: () => {
+        // Fallback hvis config ikke kan læses
+        this.gifList = [{ name: '🍕 Pizza-jubel', file: 'yatzy-celebration.gif' }];
+        this.selectedGif = this.gifList[0];
+      }
+    });
 
     if (!this.session.hasSession()) {
       this.router.navigate(['/']);
@@ -80,6 +156,34 @@ export class GameComponent implements OnInit, OnDestroy {
 
         const prevRoll = this.previousRollNumber;
         this.previousRollNumber = state.rollNumber;
+
+        // Detect om nogen netop har scoret Yatzy
+        for (const player of state.players) {
+          const hasYatzy = player.scoreEntries.some(
+            e => e.category === 'Yatzy' && e.isUsed && (e.score ?? 0) > 0
+          );
+          const hadYatzyBefore = this.previousYatzyPlayers.has(player.playerId);
+          if (hasYatzy && !hadYatzyBefore) {
+            // Brug altid den første GIF i config som automatisk Yatzy-fejrings-GIF
+            const gifFile = this.gifList[0]?.file ?? 'yatzy-celebration.gif';
+            const isWinner = player.playerId === this.myPlayerId;
+            const amHost = this.isIAmHost;
+            // Vinderen broadcaster til alle — host broadcaster som fallback
+            // Begge tjekker prioritet: vinder går først, host venter 300ms
+            const delay = isWinner ? 0 : (amHost ? 300 : -1);
+            if (delay >= 0) {
+              setTimeout(() => {
+                // Undgå dobbelt-broadcast: tjek om GIF allerede vises
+                if (!this.isCelebrating(player.playerId)) {
+                  this.realtime.triggerYatzy(player.playerId, gifFile).catch(() => {
+                    this._showGif(player.playerId, gifFile);
+                  });
+                }
+              }, delay);
+            }
+          }
+          if (hasYatzy) this.previousYatzyPlayers.add(player.playerId);
+        }
 
         this.game = state;
         this.hasSelectedCategory = false;
@@ -99,6 +203,13 @@ export class GameComponent implements OnInit, OnDestroy {
       this.realtime.error$.subscribe(msg => {
         this.errorMessage = msg;
         this.isActing = false;
+      })
+    );
+
+    // Lytt til TriggerYatzy-events fra serveren (broadcast fra host)
+    this.sub.add(
+      this.realtime.yatzy$.subscribe(({ playerId, gifName }) => {
+        this._showGif(playerId, gifName);
       })
     );
 
@@ -152,6 +263,7 @@ export class GameComponent implements OnInit, OnDestroy {
     this.animatedValues = dice.map(d => d.value);
     this.rollingDice = dice.map(() => false);
     freeIndices.forEach(i => (this.rollingDice[i] = true));
+    this.diceSpinning = true;
 
     if (this.rollInterval) clearInterval(this.rollInterval);
     this.rollInterval = setInterval(() => {
@@ -163,10 +275,9 @@ export class GameComponent implements OnInit, OnDestroy {
 
     if (isRoller) this.sound.startSpin();
 
-    // Kasteren: 3s spin, derefter stop en efter en med 1s interval
-    // Tilskuere: 3s spin, derefter alle terninger stopper med det samme
-    const stopDelay = isRoller ? 3000 : 3000;
-    const stopInterval = isRoller ? 1000 : 0;
+    // Samme forsinkelse og stop-sekvens uanset om man er kasteren eller tilskuer
+    const stopDelay = 3000;
+    const stopInterval = 1000;
     setTimeout(() => {
       if (this.rollInterval) { clearInterval(this.rollInterval); this.rollInterval = null; }
       if (isRoller) this.sound.stopSpin();
@@ -181,6 +292,10 @@ export class GameComponent implements OnInit, OnDestroy {
 
       setTimeout(() => {
         if (isRoller) { this.isActing = false; this.isLocallyRolling = false; }
+        // Alle terninger er stoppet – vis nu score-foreslag
+        this.diceSpinning = false;
+        // Tjek om nuværende spiller har kastet Yatzy (5 ens)
+        this._checkYatzyOnDice();
       }, freeIndices.length * stopInterval);
     }, stopDelay);
   }
@@ -190,6 +305,34 @@ export class GameComponent implements OnInit, OnDestroy {
     this.sound.stopSpin();
     this.rollingDice = [false, false, false, false, false];
     this.isLocallyRolling = false;
+    this.diceSpinning = false;
+  }
+
+  /** Tjek om alle 5 terninger (inkl. holdte) viser samme øjne → Yatzy */
+  private _checkYatzyOnDice(): void {
+    if (!this.game || !this.isMyTurn) return;
+
+    // Har spilleren allerede brugt Yatzy-kategorien?
+    const me = this.game.players.find(p => p.playerId === this.myPlayerId);
+    if (!me) return;
+    const yatzyAlreadyUsed = me.scoreEntries.some(
+      e => e.category === 'Yatzy' && e.isUsed
+    );
+    if (yatzyAlreadyUsed) return;
+
+    // Alle 5 terningers aktuelle v\u00e6rdier (animatedValues indeholder slut-v\u00e6rdier)
+    const vals = this.game.dice.map((d, i) =>
+      this.rollingDice[i] ? this.animatedValues[i] : d.value
+    );
+    if (vals.length !== 5) return;
+    const allSame = vals.every(v => v === vals[0]);
+    if (!allSame) return;
+
+    // Det er Yatzy! Broadcaster til alle
+    const gifFile = this.gifList[0]?.file ?? 'yatzy-celebration.gif';
+    this.realtime.triggerYatzy(this.myPlayerId!, gifFile).catch(() => {
+      this._showGif(this.myPlayerId!, gifFile);
+    });
   }
 
   async onToggleHold(position: number): Promise<void> {
@@ -198,7 +341,7 @@ export class GameComponent implements OnInit, OnDestroy {
   }
 
   async onSelectCategory(category: ScoreCategory): Promise<void> {
-    if (!this.game || !this.isMyTurn || this.game.rollNumber === 0) return;
+    if (!this.game || !this.isMyTurn || (this.game.rollNumber ?? 0) === 0) return;
     // Tilføjet: marker at kategori er valgt, så Hold-knapper deaktiveres
     this.hasSelectedCategory = true;
     this.isActing = true;
@@ -213,8 +356,10 @@ export class GameComponent implements OnInit, OnDestroy {
   get myPlayerId(): string | null { return this.session.playerId; }
   get myDisplayName(): string { return this.game?.players.find(p => p.playerId === this.myPlayerId)?.displayName ?? 'Spiller'; }
   get isMyTurn(): boolean { return this.game?.currentPlayerId === this.myPlayerId; }
+  get isIAmHost(): boolean { return !!this.myPlayerId && this.isHost(this.myPlayerId); }
   get canRoll(): boolean { return this.isMyTurn && (this.game?.rollNumber ?? 0) < 3; }
   get canSelectOnly(): boolean { return (this.game?.rollNumber ?? 0) >= 3; }
+  get canSelectEarly(): boolean { return this.isMyTurn && (this.game?.rollNumber ?? 0) > 0 && (this.game?.rollNumber ?? 0) < 3; }
   isHost(playerId: string): boolean { return this.game?.players[0]?.playerId === playerId; }
 
   /** CSS grid-template-columns baseret på antal spillere */
@@ -235,7 +380,13 @@ export class GameComponent implements OnInit, OnDestroy {
   async leaveGame(): Promise<void> {
     const gameId = this.game?.gameId;
     const playerId = this.myPlayerId;
-    this.webrtc.stop();
+
+    // Afmeld subscription så inkommende state-opdateringer ikke forstyrrer
+    this.sub.unsubscribe();
+
+    // Stop kamera og mikrofon
+    await this.webrtc.stop();
+
     try {
       if (gameId && playerId) {
         await this.realtime.leaveGame(gameId, playerId);
@@ -243,13 +394,19 @@ export class GameComponent implements OnInit, OnDestroy {
     } catch {
       // best-effort
     }
-    window.close();
-    // Fallback: hvis siden ikke kan lukkes (ikke åbnet via script), naviger til startsiden
+
+    // Stop SignalR-forbindelsen
+    try { await this.realtime.stop(); } catch { /* best-effort */ }
+
     this.router.navigate(['/']);
   }
 
   get currentPlayerName(): string {
     return this.game?.players.find(p => p.playerId === this.game?.currentPlayerId)?.displayName ?? '';
+  }
+
+  get activePlayers() {
+    return this.game?.players.filter(p => !p.hasLeft) ?? [];
   }
 
   get diceValues(): number[] {
@@ -263,7 +420,12 @@ export class GameComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.sub.unsubscribe();
     this._stopRollAnimation();
-    this.webrtc.stop();
+    this.yatzyTimers.forEach(t => clearTimeout(t));
+    this.yatzyTimers.clear();
+    // webrtc.stop() er allerede kaldt i leaveGame() — kald kun hvis stream stadig kører
+    if (this.webrtc.localStream) {
+      this.webrtc.stop();
+    }
   }
 }
 
