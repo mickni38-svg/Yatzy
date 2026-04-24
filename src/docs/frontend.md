@@ -49,7 +49,7 @@ router.navigate(['/game'], {
 
 ## LobbyComponent
 
-`src/yatzy-web/src/app/features/lobby/lobby.component.ts`
+[`lobby.component.ts`](https://github.com/mickni38-svg/Yatzy/blob/main/src/yatzy-web/src/app/features/lobby/lobby.component.ts) · [`lobby.component.html`](https://github.com/mickni38-svg/Yatzy/blob/main/src/yatzy-web/src/app/features/lobby/lobby.component.html) · [`lobby.component.scss`](https://github.com/mickni38-svg/Yatzy/blob/main/src/yatzy-web/src/app/features/lobby/lobby.component.scss)
 
 **Ansvar:** Formular til oprettelse og joining af spil. Kalder REST API, navigerer til `/game` ved `GameStarted`.
 
@@ -58,11 +58,17 @@ router.navigate(['/game'], {
 2. Bruger udfylder navn + rum-kode → `POST /api/games/{roomCode}/join` → gem state → forbind SignalR
 3. Host klikker Start → `gameRealtime.startGame(gameId)` → server sender `GameStarted` → naviger til `/game`
 
+> | Metode | Linje |
+> |---|---|
+> | [`createGame()`](https://github.com/mickni38-svg/Yatzy/blob/main/src/yatzy-web/src/app/features/lobby/lobby.component.ts#L61) | L61 |
+> | [`joinGame()`](https://github.com/mickni38-svg/Yatzy/blob/main/src/yatzy-web/src/app/features/lobby/lobby.component.ts#L83) | L83 |
+> | [`startGame()`](https://github.com/mickni38-svg/Yatzy/blob/main/src/yatzy-web/src/app/features/lobby/lobby.component.ts#L109) | L109 |
+
 ---
 
 ## GameComponent
 
-`src/yatzy-web/src/app/features/game/game.component.ts`
+[`game.component.ts`](https://github.com/mickni38-svg/Yatzy/blob/main/src/yatzy-web/src/app/features/game/game.component.ts) · [`game.component.html`](https://github.com/mickni38-svg/Yatzy/blob/main/src/yatzy-web/src/app/features/game/game.component.html) · [`game.component.scss`](https://github.com/mickni38-svg/Yatzy/blob/main/src/yatzy-web/src/app/features/game/game.component.scss)
 
 Hovedkomponenten for selve spillet. Håndterer al visuel spilstate.
 
@@ -90,6 +96,8 @@ get canRoll()           // isMyTurn && rollNumber < 3 && !diceSpinning
 #### `rollDice()`
 Kalder `gameRealtime.rollDice()`. Lokalt startes animationen via `_triggerAnimation()` straks (responsivitet).
 
+> [Se implementering → L227](https://github.com/mickni38-svg/Yatzy/blob/main/src/yatzy-web/src/app/features/game/game.component.ts#L227)
+
 #### `_triggerAnimation(dice, isRoller)`
 Starter CSS-animationer for alle terninger. Sætter `diceSpinning = true`. Stopper animationerne efter beregnet forsinkelse og kalder `_checkYatzyOnDice()`.
 
@@ -99,20 +107,24 @@ const stopInterval = isRoller ? Math.max(800, rollNumber * 400) : 1200;
 ```
 
 #### `_checkYatzyOnDice()`
-Kaldes når animationen stopper. Tjekker om alle 5 terninger viser samme værdi OG `Yatzy`-kategorien ikke er brugt. Hvis ja → `triggerYatzyCelebration(myPlayerId, true)`.
+Kaldes når animationen stopper. Tjekker om alle 5 terninger viser samme værdi OG `Yatzy`-kategorien ikke er brugt. Hvis ja → broadcaster `TriggerYatzy` til alle via SignalR.
+
+> [Se implementering → L312](https://github.com/mickni38-svg/Yatzy/blob/main/src/yatzy-web/src/app/features/game/game.component.ts#L312)
 
 #### `triggerYatzyCelebration(playerId, sendToServer)`
 Viser GIF lokalt og sender `TriggerYatzy` til serveren (hvis `sendToServer = true`), så alle spillere ser den samme fejring.
 
 ```typescript
-triggerYatzyCelebration(playerId: string, sendToServer: boolean) {
-  const gif = this._pickRandomGif();
-  this._showGif(playerId, gif.file);
-  if (sendToServer) {
-    this.gameRealtime.triggerYatzy(playerId, gif.file);
+triggerYatzyCelebration(playerId: string, sendToServer = false) {
+  const gifFile = this.selectedGif?.file ?? 'yatzy-celebration.gif';
+  if (sendToServer && this.game) {
+    this.realtime.triggerYatzy(playerId, gifFile);
   }
+  this._showGif(playerId, gifFile);
 }
 ```
+
+> [Se implementering → L89](https://github.com/mickni38-svg/Yatzy/blob/main/src/yatzy-web/src/app/features/game/game.component.ts#L89)
 
 #### `leaveGame()`
 Sekventiel oprydning:
@@ -122,12 +134,16 @@ Sekventiel oprydning:
 4. `await gameRealtime.stop()` — lukker SignalR-forbindelsen
 5. `router.navigate(['/'])` — tilbage til lobby
 
-#### `showYatzyOverlay(overlayEnabled)`
-Viser/skjuler YATZY-tekst-overlay oven på GIF'en (styret af `showOverlay`-feltet i `gif-config.json`).
+> [Se implementering → L380](https://github.com/mickni38-svg/Yatzy/blob/main/src/yatzy-web/src/app/features/game/game.component.ts#L380)
+
+#### `showYatzyOverlay(playerId)`
+Viser/skjuler YATZY-tekst-overlay oven på GIF'en — returnerer `true` hvis GIF'ens `showOverlay`-felt er sat i `gif-config.json`.
+
+> [Se implementering → L106](https://github.com/mickni38-svg/Yatzy/blob/main/src/yatzy-web/src/app/features/game/game.component.ts#L106)
 
 ---
 
-### Subscription setup (ngOnInit)
+### Subscription setup ([`ngOnInit` → L127](https://github.com/mickni38-svg/Yatzy/blob/main/src/yatzy-web/src/app/features/game/game.component.ts#L127))
 
 ```typescript
 // Spilstate-opdateringer
@@ -151,7 +167,7 @@ http.get<GifConfig[]>('/gif-config.json').subscribe(list => {
 
 ## ScoreSheetComponent
 
-`src/yatzy-web/src/app/shared/components/score-sheet/score-sheet.component.ts`
+[`score-sheet.component.ts`](https://github.com/mickni38-svg/Yatzy/blob/main/src/yatzy-web/src/app/shared/components/score-sheet/score-sheet.component.ts) · [`score-sheet.component.html`](https://github.com/mickni38-svg/Yatzy/blob/main/src/yatzy-web/src/app/shared/components/score-sheet/score-sheet.component.html)
 
 Viser scorearket for alle spillere som tabel.
 
@@ -159,29 +175,28 @@ Viser scorearket for alle spillere som tabel.
 ```typescript
 @Input() players: PlayerDto[]    // Alle spillere med scores
 @Input() myPlayerId: string      // Fremhæver lokal spillers kolonne
-@Input() currentPlayerId: string // Fremhæver aktiv spillers tur
 @Input() spinning: boolean       // Skjuler scoreforslag mens terninger animeres
 ```
 
-**`getSuggestion(category, player)`:**
+**[`getSuggestion(category)`](https://github.com/mickni38-svg/Yatzy/blob/main/src/yatzy-web/src/app/shared/components/score-sheet/score-sheet.component.ts#L62):**
 Beregner og viser en forhåndsvisning af hvad spilleren ville score i en kategori — returnerer `null` mens `spinning = true` for at undgå forstyrrende opdateringer under animation.
 
-**Bonus-badge:** Viser øvre sektion-sum og fremhæver med ring når bonus er opnået (≥ 63 point).
+**[`hasBonus(player)`](https://github.com/mickni38-svg/Yatzy/blob/main/src/yatzy-web/src/app/shared/components/score-sheet/score-sheet.component.ts#L89):** Viser bonus-badge og ring når øvre sektion ≥ 63 point.
 
 ---
 
 ## WebRtcService
 
-`src/yatzy-web/src/app/core/services/webrtc.service.ts`
+[`webrtc.service.ts`](https://github.com/mickni38-svg/Yatzy/blob/main/src/yatzy-web/src/app/core/services/webrtc.service.ts)
 
 Håndterer al WebRTC-logik:
 
-1. `getUserMedia()` — anmoder om kamera/mikrofon
+1. [`getUserMedia()`](https://github.com/mickni38-svg/Yatzy/blob/main/src/yatzy-web/src/app/core/services/webrtc.service.ts#L44) — anmoder om kamera/mikrofon
 2. Opretter `RTCPeerConnection` per remote spiller
 3. Håndterer `offer`/`answer`/`ICE candidate`-udveksling via `VideoHub`
-4. Eksponerer `localStream$` og `remoteStreams$` til template-binding
+4. Eksponerer `localStream` og `remoteStreams$` til template-binding
 
-**`stop()`** lukker alle peer-connections, stopper alle MediaStreamTracks og disconnecter fra `VideoHub`.
+**[`stop()`](https://github.com/mickni38-svg/Yatzy/blob/main/src/yatzy-web/src/app/core/services/webrtc.service.ts#L80)** lukker alle peer-connections, stopper alle MediaStreamTracks og disconnecter fra `VideoHub`.
 
 ---
 

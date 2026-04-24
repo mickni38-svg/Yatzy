@@ -101,33 +101,35 @@ Når en SignalR-forbindelse afbrydes (`OnDisconnectedAsync`), sættes spilleren 
 
 ## Angular SignalR-klient
 
-`src/yatzy-web/src/app/core/services/game-realtime.service.ts`
+[`game-realtime.service.ts`](https://github.com/mickni38-svg/Yatzy/blob/main/src/yatzy-web/src/app/core/services/game-realtime.service.ts)
 
 Wrapper om SignalR JS-klienten. Eksponerer RxJS-observables som komponenter kan subscribere på.
 
 **Subjects/Observables:**
 ```typescript
-gameState$: Subject<GameStateResponse>   // Alt spilstate
+gameState$: BehaviorSubject<GameStateDto | null>   // Alt spilstate
 yatzy$:     Subject<{ playerId: string, gifName: string }>
 ```
 
 **Metoder:**
-```typescript
-start(roomCode, playerId): Promise<void>   // Opretter forbindelse + JoinRoom
-stop(): Promise<void>                      // Lukker forbindelsen
-rollDice(gameId, playerId): void
-toggleHold(gameId, playerId, position): void
-selectScore(gameId, playerId, category): void
-triggerYatzy(targetPlayerId, gifName): void
-leaveGame(gameId, playerId): void
-startGame(gameId): void
-```
+
+| Metode | Linje |
+|---|---|
+| [`start()`](https://github.com/mickni38-svg/Yatzy/blob/main/src/yatzy-web/src/app/core/services/game-realtime.service.ts#L46) | L46 |
+| [`stop()`](https://github.com/mickni38-svg/Yatzy/blob/main/src/yatzy-web/src/app/core/services/game-realtime.service.ts#L53) | L53 |
+| [`joinRoom()`](https://github.com/mickni38-svg/Yatzy/blob/main/src/yatzy-web/src/app/core/services/game-realtime.service.ts#L61) | L61 |
+| [`rollDice()`](https://github.com/mickni38-svg/Yatzy/blob/main/src/yatzy-web/src/app/core/services/game-realtime.service.ts#L71) | L71 |
+| [`toggleHold()`](https://github.com/mickni38-svg/Yatzy/blob/main/src/yatzy-web/src/app/core/services/game-realtime.service.ts#L75) | L75 |
+| [`selectScore()`](https://github.com/mickni38-svg/Yatzy/blob/main/src/yatzy-web/src/app/core/services/game-realtime.service.ts#L79) | L79 |
+| [`triggerYatzy()`](https://github.com/mickni38-svg/Yatzy/blob/main/src/yatzy-web/src/app/core/services/game-realtime.service.ts#L87) | L87 |
+| [`leaveGame()`](https://github.com/mickni38-svg/Yatzy/blob/main/src/yatzy-web/src/app/core/services/game-realtime.service.ts#L83) | L83 |
+| [`registerHandlers()` (alle events)](https://github.com/mickni38-svg/Yatzy/blob/main/src/yatzy-web/src/app/core/services/game-realtime.service.ts#L95) | L95 |
 
 ---
 
 ## VideoHub
 
-`Yatzy.Api/Hubs/VideoHub.cs` — monteret på `/hubs/video`
+[`Yatzy.Api/Hubs/VideoHub.cs`](https://github.com/mickni38-svg/Yatzy/blob/main/src/Yatzy.Api/Hubs/VideoHub.cs) — monteret på `/hubs/video`
 
 Bruges udelukkende til **WebRTC signalering** — selve video/audio strømmer går peer-to-peer og passerer ikke serveren.
 
@@ -169,20 +171,20 @@ Begge: SendIceCandidate(roomCode, targetId, candidate)
 
 ## WebRTC-service (Angular)
 
-`src/yatzy-web/src/app/core/services/webrtc.service.ts`
+[`webrtc.service.ts`](https://github.com/mickni38-svg/Yatzy/blob/main/src/yatzy-web/src/app/core/services/webrtc.service.ts)
 
 Håndterer kamera/mikrofon-adgang og alle peer-to-peer forbindelser.
 
 **Nøglemetoder:**
-```typescript
-startLocalStream(): Promise<MediaStream>
-joinRoom(roomCode, playerId): void      // Starter signalering
-stop(): Promise<void>                   // Stopper stream + lukker alle peers
-```
+
+| Metode | Linje |
+|---|---|
+| [`start(roomCode, playerId)`](https://github.com/mickni38-svg/Yatzy/blob/main/src/yatzy-web/src/app/core/services/webrtc.service.ts#L44) | L44 — `getUserMedia` + forbind til VideoHub |
+| [`stop()`](https://github.com/mickni38-svg/Yatzy/blob/main/src/yatzy-web/src/app/core/services/webrtc.service.ts#L80) | L80 — lukker stream + alle peers |
 
 **Streams:**
-- `localStream$` — kamerafeed fra den lokale spiller
-- `remoteStreams$` — map over remote streams, keyed på playerId
+- `localStream` — kamerafeed fra den lokale spiller
+- `remoteStreams$` — `BehaviorSubject<Map<string, MediaStream>>` keyed på playerId
 
 > **Se:** [Frontend → VideoGrid](frontend.md#video-grid)
 

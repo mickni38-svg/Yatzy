@@ -14,7 +14,7 @@ Alle GIFs og indstillinger styres fra én konfigurationsfil — **ingen kodeænd
 
 ## Konfigurationsfilen
 
-**Sti:** `yatzy-web/public/gif-config.json`
+**Sti:** [`yatzy-web/public/gif-config.json`](https://github.com/mickni38-svg/Yatzy/blob/main/src/yatzy-web/public/gif-config.json)
 
 ```json
 [
@@ -97,15 +97,15 @@ Bruges typisk på GIFs der er stille/loopende baggrunde — ikke på GIFs der se
 ## Teknisk reference
 
 **Angular-siden:**
-- GIF-listen hentes ved komponentinitiering: `HttpClient.get<GifConfig[]>('/gif-config.json')`
-- `GifConfig` interface: `{ name: string; file: string; showOverlay: boolean }`
-- Tilfældig GIF-valg: `_pickRandomGif()` i `game.component.ts`
-- `_showGif(playerId, gifFile)` — sætter `activeGif` og `showGifOverlay = true`, auto-skjules efter 5 sekunder
+- GIF-listen hentes ved komponentinitiering: [`HttpClient.get<GifEntry[]>('/gif-config.json')`](https://github.com/mickni38-svg/Yatzy/blob/main/src/yatzy-web/src/app/features/game/game.component.ts#L131)
+- `GifEntry` interface: [`{ name, file, showOverlay? }`](https://github.com/mickni38-svg/Yatzy/blob/main/src/yatzy-web/src/app/features/game/game.component.ts#L17)
+- [`_showGif(playerId, gifFile)`](https://github.com/mickni38-svg/Yatzy/blob/main/src/yatzy-web/src/app/features/game/game.component.ts#L73) — sætter fejrings-GIF, auto-skjules efter 6 sekunder
+- [`showYatzyOverlay(playerId)`](https://github.com/mickni38-svg/Yatzy/blob/main/src/yatzy-web/src/app/features/game/game.component.ts#L106) — slår YATZY-overlay til/fra
 
 **Backend-siden:**
-- `GameHub.TriggerYatzy(targetPlayerId, gifName)` — kun host
-- `IGameHubService.BroadcastYatzyTriggerAsync(roomCode, targetPlayerId, gifName)`
-- Event-navn: `TriggerYatzy` (defineret i `HubEvents.cs`)
+- [`GameHub.TriggerYatzy`](https://github.com/mickni38-svg/Yatzy/blob/main/src/Yatzy.Api/Hubs/GameHub.cs#L148) — kun host
+- [`IGameHubService.BroadcastYatzyTriggerAsync`](https://github.com/mickni38-svg/Yatzy/blob/main/src/Yatzy.Api/Services/GameHubService.cs)
+- Event-navn: [`TriggerYatzy`](https://github.com/mickni38-svg/Yatzy/blob/main/src/Yatzy.Api/Hubs/HubEvents.cs)
 
 ---
 

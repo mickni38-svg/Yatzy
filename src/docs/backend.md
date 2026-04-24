@@ -66,7 +66,7 @@ GameStatus.Completed
 
 ### `Player`
 
-`Yatzy.Domain/Entities/Player.cs`
+[`Yatzy.Domain/Entities/Player.cs`](https://github.com/mickni38-svg/Yatzy/blob/main/src/Yatzy.Domain/Entities/Player.cs)
 
 Repræsenterer én spiller i et spil.
 
@@ -76,7 +76,7 @@ Repræsenterer én spiller i et spil.
 
 ### `ScoreSheet`
 
-`Yatzy.Domain/Entities/ScoreSheet.cs`
+[`Yatzy.Domain/Entities/ScoreSheet.cs`](https://github.com/mickni38-svg/Yatzy/blob/main/src/Yatzy.Domain/Entities/ScoreSheet.cs)
 
 Holder alle 15 score-entries for en spiller. Beregner øvre sektion, bonus og total score.
 
@@ -86,7 +86,7 @@ Holder alle 15 score-entries for en spiller. Beregner øvre sektion, bonus og to
 
 ### `ScoreCalculator`
 
-`Yatzy.Domain/Rules/ScoreCalculator.cs`
+[`Yatzy.Domain/Rules/ScoreCalculator.cs`](https://github.com/mickni38-svg/Yatzy/blob/main/src/Yatzy.Domain/Rules/ScoreCalculator.cs)
 
 Implementerer `IScoreCalculator`. Beregner point for alle 15 kategorier:
 
@@ -125,7 +125,7 @@ var points = calculator.Calculate(ScoreCategory.Yatzy, new[] { 4, 4, 4, 4, 4 });
 
 ### Enums
 
-**`GameStatus`** (`Yatzy.Domain/Enums/GameStatus.cs`):
+**[`GameStatus`](https://github.com/mickni38-svg/Yatzy/blob/main/src/Yatzy.Domain/Enums/GameStatus.cs)**:
 ```csharp
 WaitingForPlayers  // Lobby, under minimumgrænse
 ReadyToStart       // Nok spillere, afventer host
@@ -133,8 +133,8 @@ InProgress         // Spillet er i gang
 Completed          // Alle kategorier udfyldt
 ```
 
-**`ScoreCategory`** (`Yatzy.Domain/Enums/ScoreCategory.cs`):
-15 kategorier: `Ones`, `Twos`, `Threes`, `Fours`, `Fives`, `Sixes`, `OnePair`, `TwoPairs`, `ThreeOfAKind`, `FourOfAKind`, `SmallStraight`, `LargeStraight`, `FullHouse`, `Chance`, `Yatzy`.
+**[`ScoreCategory`](https://github.com/mickni38-svg/Yatzy/blob/main/src/Yatzy.Domain/Enums/ScoreCategory.cs)**:
+15 kategorier:
 
 ---
 
@@ -220,14 +220,14 @@ void Unregister(string connectionId)
 
 ### DTOs
 
-**`GameStateResponse`** — sendes til alle klienter ved enhver ændring:
+**[`GameStateResponse`](https://github.com/mickni38-svg/Yatzy/blob/main/src/Yatzy.Application/DTOs/GameStateResponse.cs)** — sendes til alle klienter ved enhver ændring:
 ```csharp
 GameId, RoomCode, Status, RoundNumber, RollNumber, CurrentPlayerId
 Players[]  → PlayerId, DisplayName, IsHost, IsConnected, HasLeft, TotalScore, ScoreEntries[]
 Dice[]     → Position, Value, IsHeld
 ```
 
-**Hub-request DTOs** (`HubRequests.cs`):
+**Hub-request DTOs** ([`HubRequests.cs`](https://github.com/mickni38-svg/Yatzy/blob/main/src/Yatzy.Application/DTOs/HubRequests.cs)):
 ```csharp
 StartGameRequest   { GameId }
 RollDiceRequest    { GameId, PlayerId }
@@ -240,7 +240,7 @@ LeaveGameRequest   { GameId, PlayerId }
 
 ## REST API
 
-`Yatzy.Api/Controllers/GamesController.cs`
+[`Yatzy.Api/Controllers/GamesController.cs`](https://github.com/mickni38-svg/Yatzy/blob/main/src/Yatzy.Api/Controllers/GamesController.cs)
 
 | Method | Route | Beskrivelse |
 |---|---|---|
@@ -253,7 +253,7 @@ Disse endpoints bruges kun ved oprettelse/join — alt gameplay sker via SignalR
 
 ## Middleware
 
-`Yatzy.Api/Middleware/ExceptionHandlingMiddleware.cs`
+[`Yatzy.Api/Middleware/ExceptionHandlingMiddleware.cs`](https://github.com/mickni38-svg/Yatzy/blob/main/src/Yatzy.Api/Middleware/ExceptionHandlingMiddleware.cs)
 
 Fanger alle ubehandlede exceptions og returnerer passende HTTP-statuskoder:
 - `NotFoundException` → 404

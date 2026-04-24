@@ -39,16 +39,16 @@ Yatzy er bygget efter **Clean Architecture**-princippet, hvor afhængigheder alt
 ```
 Yatzy/
 ├── src/
-│   ├── Yatzy.Domain/           ← Entiteter og regler
-│   ├── Yatzy.Application/      ← Use cases og DTOs
-│   ├── Yatzy.Api/              ← ASP.NET Core API + SignalR Hubs
-│   ├── Yatzy.Persistence/      ← EF Core + SQL-database
-│   ├── Yatzy.Infrastructure/   ← Infrastrukturtjenester
-│   └── yatzy-web/              ← Angular frontend
+│   ├── [Yatzy.Domain/](https://github.com/mickni38-svg/Yatzy/tree/main/src/Yatzy.Domain)           ← Entiteter og regler
+│   ├── [Yatzy.Application/](https://github.com/mickni38-svg/Yatzy/tree/main/src/Yatzy.Application)      ← Use cases og DTOs
+│   ├── [Yatzy.Api/](https://github.com/mickni38-svg/Yatzy/tree/main/src/Yatzy.Api)              ← ASP.NET Core API + SignalR Hubs
+│   ├── [Yatzy.Persistence/](https://github.com/mickni38-svg/Yatzy/tree/main/src/Yatzy.Persistence)      ← EF Core + SQL-database
+│   ├── [Yatzy.Infrastructure/](https://github.com/mickni38-svg/Yatzy/tree/main/src/Yatzy.Infrastructure)   ← Infrastrukturtjenester
+│   └── [yatzy-web/](https://github.com/mickni38-svg/Yatzy/tree/main/src/yatzy-web)              ← Angular frontend
 │       └── src/app/
-│           ├── core/           ← Services (SignalR, WebRTC)
-│           ├── features/       ← Sider (lobby, game)
-│           └── shared/         ← Genbrugelige komponenter
+│           ├── [core/](https://github.com/mickni38-svg/Yatzy/tree/main/src/yatzy-web/src/app/core)           ← Services (SignalR, WebRTC)
+│           ├── [features/](https://github.com/mickni38-svg/Yatzy/tree/main/src/yatzy-web/src/app/features)       ← Sider (lobby, game)
+│           └── [shared/](https://github.com/mickni38-svg/Yatzy/tree/main/src/yatzy-web/src/app/shared)         ← Genbrugelige komponenter
 └── docs/                       ← Denne dokumentation
 ```
 
@@ -108,7 +108,7 @@ Migrationer:
 - **Host-validering:** Kun første spiller (JoinOrder = 0) kan starte spil og sende Yatzy-fejringer
 - **Tur-validering:** `GameplayAppService` validerer at det er den rigtige spillers tur
 - **Domain-exceptions:** `DomainException`, `ValidationException`, `NotFoundException` fanges i `ExceptionHandlingMiddleware`
-- **CORS:** Kun tilladt fra `localhost:4200` i development; produktionsdomain i production
+- **CORS:** Kun tilladt fra `localhost:4200` i development; produktionsdomain i production ([`Program.cs`](https://github.com/mickni38-svg/Yatzy/blob/main/src/Yatzy.Api/Program.cs))
 
 ---
 
