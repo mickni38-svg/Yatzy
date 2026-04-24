@@ -12,4 +12,5 @@ public interface IGameHubService
     Task BroadcastHoldChangedAsync(string roomCode, GameStateResponse state);
     Task BroadcastScoreSelectedAsync(string roomCode, GameStateResponse state);
     Task BroadcastGameEndedAsync(string roomCode, GameStateResponse state);
+    Task BroadcastYatzyTriggerAsync(string roomCode, Guid targetPlayerId, string gifName);
 }

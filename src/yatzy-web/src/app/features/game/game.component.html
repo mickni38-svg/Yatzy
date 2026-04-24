@@ -67,7 +67,7 @@
             </p>
             <p class="cast-title" *ngIf="canSelectOnly && isMyTurn">Vælg en kategori</p>
             <p class="cast-title" *ngIf="canSelectOnly && !isMyTurn">Runde {{ game.roundNumber }}/13</p>
-            <p class="cast-sub" *ngIf="isMyTurn && !canSelectOnly && game.rollNumber > 0">Vælg hvilke terninger du vil holde</p>
+            <p class="cast-sub" *ngIf="isMyTurn && !canSelectOnly && game.rollNumber > 0">Vælg hvilke terninger du vil holde, eller vælg en kategori</p>
             <p class="cast-sub" *ngIf="isMyTurn && canSelectOnly">Klik på pointtavlen for at registrere din score</p>
             <p class="cast-sub waiting" *ngIf="!isMyTurn">Venter på {{ currentPlayerName }}…</p>
           </div>
@@ -111,7 +111,7 @@
              *ngIf="cameraEnabled"
              [style.grid-template-columns]="cameraGridCols"
              [style.grid-template-rows]="cameraGridRows">
-          <div class="camera-tile" *ngFor="let p of game.players">
+          <div class="camera-tile" *ngFor="let p of activePlayers">
             <div class="camera-label">
               <span class="online-dot">●</span>
               {{ p.displayName }}<span *ngIf="isHost(p.playerId)"> 👑</span><span *ngIf="p.playerId === myPlayerId" class="mic-icon"> 🎤</span>
@@ -123,7 +123,26 @@
             <div class="camera-no-stream"
                  *ngIf="(p.playerId === myPlayerId && !webrtc.localStream) || (p.playerId !== myPlayerId && !allStreams.get(p.playerId))">
             </div>
+            <!-- Yatzy fejring GIF overlay -->
+            <div class="yatzy-overlay" *ngIf="isCelebrating(p.playerId)">
+              <img [src]="getCelebrationGif(p.playerId)" alt="YATZY!" class="yatzy-gif" />
+              <div class="yatzy-text" *ngIf="showYatzyOverlay(p.playerId)">🎲 YATZY! 🎲</div>
+            </div>
           </div>
+        </div>
+
+        <!-- Host: manuel Yatzy-prank knap -->
+        <div class="host-yatzy-bar" *ngIf="isIAmHost">
+          <span class="host-yatzy-label">Host fun:</span>
+          <select class="gif-select" [(ngModel)]="selectedGif" [compareWith]="compareGifs">
+            <option *ngFor="let g of gifList" [ngValue]="g">{{ g.name }}</option>
+          </select>
+          <button class="btn-yatzy-prank"
+                  *ngFor="let p of activePlayers"
+                  (click)="triggerYatzyCelebration(p.playerId, true)"
+                  title="Vis GIF på {{ p.displayName }}">
+            🎉 {{ p.displayName }}
+          </button>
         </div>
 
       </main>
@@ -134,8 +153,9 @@
         <app-score-sheet
           [players]="game.players"
           [myPlayerId]="myPlayerId"
-          [canSelect]="canSelectOnly && isMyTurn"
+          [canSelect]="(canSelectOnly || canSelectEarly) && isMyTurn"
           [diceValues]="diceValues"
+          [spinning]="diceSpinning"
           (selectCategory)="onSelectCategory($event)">
         </app-score-sheet>
       </aside>

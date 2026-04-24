@@ -10,5 +10,6 @@ public static class HubEvents
     public const string HoldChanged       = "HoldChanged";
     public const string ScoreSelected     = "ScoreSelected";
     public const string GameEnded         = "GameEnded";
+    public const string TriggerYatzy      = "TriggerYatzy";
     public const string Error             = "Error";
 }

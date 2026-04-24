@@ -15,6 +15,7 @@ export class ScoreSheetComponent {
   @Input() myPlayerId: string | null = null;
   @Input() canSelect = false;
   @Input() diceValues: number[] = [];
+  @Input() spinning = false;
   @Output() selectCategory = new EventEmitter<ScoreCategory>();
 
   readonly upperCategories = [
@@ -59,7 +60,7 @@ export class ScoreSheetComponent {
   }
 
   getSuggestion(category: ScoreCategory): number | null {
-    if (!this.canSelect || this.diceValues.length !== 5) return null;
+    if (!this.canSelect || this.diceValues.length !== 5 || this.spinning) return null;
     return this.calcScore(category, this.diceValues);
   }
 

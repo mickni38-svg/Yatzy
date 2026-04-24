@@ -11,10 +11,12 @@ export class GameRealtimeService implements OnDestroy {
 
   private _gameState$ = new BehaviorSubject<GameStateDto | null>(null);
   private _error$ = new Subject<string>();
+  private _yatzy$ = new Subject<{ playerId: string; gifName: string }>();
   private _connected$ = new BehaviorSubject<boolean>(false);
 
   readonly gameState$ = this._gameState$.asObservable();
   readonly error$ = this._error$.asObservable();
+  readonly yatzy$ = this._yatzy$.asObservable();
   readonly connected$ = this._connected$.asObservable();
 
   private currentRoomCode: string | null = null;
@@ -49,6 +51,9 @@ export class GameRealtimeService implements OnDestroy {
   }
 
   async stop(): Promise<void> {
+    this._gameState$.next(null);
+    this.currentRoomCode = null;
+    this.currentPlayerId = null;
     await this.connection.stop();
     this._connected$.next(false);
   }
@@ -79,6 +84,10 @@ export class GameRealtimeService implements OnDestroy {
     await this.connection.invoke('LeaveGame', { gameId, playerId });
   }
 
+  async triggerYatzy(targetPlayerId: string, gifName: string): Promise<void> {
+    await this.connection.invoke('TriggerYatzy', targetPlayerId, gifName);
+  }
+
   get currentState(): GameStateDto | null {
     return this._gameState$.value;
   }
@@ -94,6 +103,7 @@ export class GameRealtimeService implements OnDestroy {
     this.connection.on('HoldChanged',      updateState);
     this.connection.on('ScoreSelected',    updateState);
     this.connection.on('GameEnded',        updateState);
+    this.connection.on('TriggerYatzy', (playerId: string, gifName: string) => this._yatzy$.next({ playerId, gifName }));
     this.connection.on('Error', (msg: string) => this._error$.next(msg));
   }
 

@@ -25,7 +25,6 @@ $greenhl: #66bb6a;
 
 .score-sheet {
   width:100%;
-  height:100%;
   border-collapse:collapse;
   font-size:.82rem;
   table-layout:fixed;
@@ -52,6 +51,7 @@ $greenhl: #66bb6a;
 
 /* Alle score-kolonner lige brede */
 .score-sheet thead th:not(.cat-col) { width:72px; min-width:56px; }
+.score-sheet td:not(.cat-name) { width:72px; min-width:56px; }
 
 /* Kategori-rækker */
 .score-sheet .score-row td { padding:4px 10px; border-bottom:1px solid $border; vertical-align:middle; }
@@ -123,7 +123,24 @@ $greenhl: #66bb6a;
 /* Bonus-række */
 .score-sheet .bonus-row td { padding:4px 10px; background:$bg3; border-bottom:1px solid $border; border-right:1px solid $border; vertical-align:middle; }
 .score-sheet .bonus-row td.me { background:rgba(46,125,50,.1); }
-.score-sheet .bonus-row td:not(.cat-name) { text-align:center; font-weight:700; color:$greenhl; }
+.score-sheet .bonus-row td:not(.cat-name) { text-align:center; }
+
+/* Bonus badge: fed hvid tekst med grøn ring */
+.bonus-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 2px solid $greenhl;
+  background: rgba(102,187,106,.15);
+  color: #fff;
+  font-size: .82rem;
+  font-weight: 900;
+  line-height: 1;
+  box-shadow: 0 0 6px rgba(102,187,106,.4);
+}
 
 /* Total-række (Sum nederst) */
 .score-sheet .total-row td { padding:6px 10px; font-weight:700; background:$green; color:#fff; font-size:.88rem; border-top:2px solid $green2; border-right:1px solid rgba(255,255,255,.15); }
