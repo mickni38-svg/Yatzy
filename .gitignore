@@ -23,6 +23,12 @@ src/yatzy-web/.angular/
 *.ldf
 database/
 
+# Secrets — must never be committed
+**/appsettings.Production.json
+**/appsettings.Staging.json
+**/*.secrets.json
+**/secrets.json
+
 # OS
 .DS_Store
 Thumbs.db
