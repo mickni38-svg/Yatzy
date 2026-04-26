@@ -37,6 +37,21 @@ public sealed class GameplayAppService : IGameplayAppService
         return MapToResponse(game);
     }
 
+    public async Task<(GameStateResponse State, Task PersistTask)> RollDiceFastAsync(RollDiceRequest request, CancellationToken cancellationToken = default)
+    {
+        var game = await RequireGameAsync(request.GameId, cancellationToken);
+
+        game.RollDice(request.PlayerId, _random);
+
+        var state = MapToResponse(game);
+
+        // Start DB-skrivning uden at afvente — returnér state straks
+        _gameRepository.Update(game);
+        var persistTask = _unitOfWork.SaveChangesAsync(CancellationToken.None);
+
+        return (state, persistTask);
+    }
+
     public async Task<GameStateResponse> ToggleHoldAsync(ToggleHoldRequest request, CancellationToken cancellationToken = default)
     {
         var game = await RequireGameAsync(request.GameId, cancellationToken);

@@ -106,8 +106,13 @@ public sealed class GameHub : Hub
     {
         try
         {
-            var state = await _gameplayAppService.RollDiceAsync(request);
-            await _hubService.BroadcastDiceRolledAsync(state.RoomCode, state);
+            var (state, persistTask) = await _gameplayAppService.RollDiceFastAsync(request);
+
+            // Broadcast til alle spillere og gem i DB parallelt
+            await Task.WhenAll(
+                _hubService.BroadcastDiceRolledAsync(state.RoomCode, state),
+                persistTask
+            );
         }
         catch (Exception ex)
         {
