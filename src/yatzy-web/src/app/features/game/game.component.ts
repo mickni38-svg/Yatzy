@@ -284,9 +284,11 @@ export class GameComponent implements OnInit, OnDestroy {
 
       freeIndices.forEach((dieIndex, order) => {
         setTimeout(() => {
+          this.animatedValues[dieIndex] = dice[dieIndex].value;
+          this.animatedValues = [...this.animatedValues];
           this.rollingDice[dieIndex] = false;
           this.rollingDice = [...this.rollingDice];
-          if (isRoller) this.sound.playBing();
+          this.sound.playBing();
         }, order * stopInterval);
       });
 
