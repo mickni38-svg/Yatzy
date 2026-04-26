@@ -34,9 +34,9 @@ Kun host (første spiller). Starter spillet og broadcaster `GameStarted` til all
 ```
 RollDice({ GameId: Guid, PlayerId: Guid })
 ```
-Ruller ikke-holdte terninger. Broadcaster `DiceRolled` til alle.
+Ruller ikke-holdte terninger. Broadcaster `DiceRolled` til alle spillere **parallelt** med DB-skrivning for minimal forsinkelse.
 
-> [Se implementering → L109](https://github.com/mickni38-svg/Yatzy/blob/main/src/Yatzy.Api/Hubs/GameHub.cs#L109)
+> [Se implementering → L105](https://github.com/mickni38-svg/Yatzy/blob/main/src/Yatzy.Api/Hubs/GameHub.cs#L105) · [Optimeringsdetaljer](../docs/backend.md#-performance-optimering--rolldicefastasync)
 
 #### `ToggleHold`
 ```

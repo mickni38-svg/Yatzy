@@ -66,23 +66,24 @@ Yatzy/
 [GameHub.RollDice(request)]
         │
         ▼
-[GameplayAppService.RollDiceAsync]
+[GameplayAppService.RollDiceFastAsync]  ⚡ optimeret
         │
         ▼
-[Game.Roll() — terningværdier randomiseres i Domain]
+[Game.RollDice() — terningværdier randomiseres i Domain]
         │
-        ▼
-[GameRepository.SaveChanges()]
-        │
-        ▼
-[GameHubService.BroadcastDiceRolledAsync]
-        │  SignalR → alle spillere i gruppen
+        ├──────────────────────────────────┐
+        ▼                                  ▼
+[BroadcastDiceRolledAsync]        [SaveChangesAsync]
+(SignalR → alle spillere)         (DB-skrivning)
+        │  parallelt via Task.WhenAll
         ▼
 [game-realtime.service.ts: gameState$ emitter]
         │
         ▼
 [game.component.ts opdaterer UI + starter animation]
 ```
+
+> **⚡ Performance:** Broadcast og DB-gem kører parallelt via [`Task.WhenAll`](https://github.com/mickni38-svg/Yatzy/blob/main/src/Yatzy.Api/Hubs/GameHub.cs#L105). Tilskuere modtager resultatet uden at vente på DB-skrivningen — se [`RollDiceFastAsync`](https://github.com/mickni38-svg/Yatzy/blob/main/src/Yatzy.Application/Services/GameplayAppService.cs#L40).
 
 ---
 

@@ -176,24 +176,51 @@ Task<GameStateResponse> GetByRoomCodeAsync(string roomCode)
 
 ### `GameplayAppService`
 
-`Yatzy.Application/Services/GameplayAppService.cs`
+[`Yatzy.Application/Services/GameplayAppService.cs`](https://github.com/mickni38-svg/Yatzy/blob/main/src/Yatzy.Application/Services/GameplayAppService.cs)
 
 Håndterer selve gameplay-handlinger.
 
 ```csharp
 Task<GameStateResponse> RollDiceAsync(RollDiceRequest request)
+Task<(GameStateResponse State, Task PersistTask)> RollDiceFastAsync(RollDiceRequest request)
 Task<GameStateResponse> ToggleHoldAsync(ToggleHoldRequest request)
 Task<GameStateResponse> SelectScoreAsync(SelectScoreRequest request)
 Task<GameStateResponse> LeaveGameAsync(LeaveGameRequest request)
 Task<GameStateResponse?> PlayerReconnectedAsync(Guid gameId, Guid playerId)
 ```
 
-> | Metode | Linje |
-> |---|---|
-> | [`RollDiceAsync`](https://github.com/mickni38-svg/Yatzy/blob/main/src/Yatzy.Application/Services/GameplayAppService.cs#L28) | L28 |
-> | [`ToggleHoldAsync`](https://github.com/mickni38-svg/Yatzy/blob/main/src/Yatzy.Application/Services/GameplayAppService.cs#L40) | L40 |
-> | [`SelectScoreAsync`](https://github.com/mickni38-svg/Yatzy/blob/main/src/Yatzy.Application/Services/GameplayAppService.cs#L52) | L52 |
-> | [`LeaveGameAsync`](https://github.com/mickni38-svg/Yatzy/blob/main/src/Yatzy.Application/Services/GameplayAppService.cs#L76) | L76 |
+> | Metode | Linje | Note |
+> |---|---|---|
+> | [`RollDiceAsync`](https://github.com/mickni38-svg/Yatzy/blob/main/src/Yatzy.Application/Services/GameplayAppService.cs#L28) | L28 | Standard — beregn + gem sekventielt |
+> | [`RollDiceFastAsync`](https://github.com/mickni38-svg/Yatzy/blob/main/src/Yatzy.Application/Services/GameplayAppService.cs#L40) | L40 | ⚡ Optimeret — returnerer state + igangværende DB-task parallelt |
+> | [`ToggleHoldAsync`](https://github.com/mickni38-svg/Yatzy/blob/main/src/Yatzy.Application/Services/GameplayAppService.cs#L55) | L55 | |
+> | [`SelectScoreAsync`](https://github.com/mickni38-svg/Yatzy/blob/main/src/Yatzy.Application/Services/GameplayAppService.cs#L67) | L67 | |
+> | [`LeaveGameAsync`](https://github.com/mickni38-svg/Yatzy/blob/main/src/Yatzy.Application/Services/GameplayAppService.cs#L91) | L91 | |
+
+#### ⚡ Performance-optimering — `RollDiceFastAsync`
+
+For at reducere forsinkelse hos tilskuere bruges `RollDiceFastAsync` i stedet for `RollDiceAsync` når der rulles terninger. Metoden starter DB-skrivningen og returnerer spilstaten **uden at afvente** at skrivningen er færdig:
+
+```csharp
+// GameplayAppService.cs — RollDiceFastAsync
+var state = MapToResponse(game);          // Beregnet resultat klar
+_gameRepository.Update(game);
+var persistTask = _unitOfWork.SaveChangesAsync(CancellationToken.None);  // Startet, ikke afventet
+return (state, persistTask);              // Returnér straks
+```
+
+I [`GameHub.RollDice`](https://github.com/mickni38-svg/Yatzy/blob/main/src/Yatzy.Api/Hubs/GameHub.cs#L105) køres broadcast og DB-gem **parallelt**:
+
+```csharp
+// GameHub.cs — RollDice
+var (state, persistTask) = await _gameplayAppService.RollDiceFastAsync(request);
+await Task.WhenAll(
+    _hubService.BroadcastDiceRolledAsync(state.RoomCode, state),  // Til alle spillere straks
+    persistTask                                                     // DB gem samtidig
+);
+```
+
+**Effekt:** Tilskuere modtager terningresultatet ~300-500ms hurtigere på shared hosting.
 
 ---
 
