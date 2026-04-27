@@ -26,6 +26,9 @@ public sealed class GameHubService : IGameHubService
     public Task BroadcastGameStartedAsync(string roomCode, GameStateResponse state) =>
         _hubContext.Clients.Group(roomCode).SendAsync(HubEvents.GameStarted, state);
 
+    public Task BroadcastDiceRollingAsync(string roomCode, IReadOnlyList<int> rollingPositions) =>
+        _hubContext.Clients.Group(roomCode).SendAsync(HubEvents.DiceRolling, rollingPositions);
+
     public Task BroadcastDiceRolledAsync(string roomCode, GameStateResponse state) =>
         _hubContext.Clients.Group(roomCode).SendAsync(HubEvents.DiceRolled, state);
 
