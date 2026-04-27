@@ -1,0 +1,306 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Name="RootPage"
+    x:Class="BatchPay.Frontend.Views.CreateGroupPaymentPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:vm="clr-namespace:BatchPay.Frontend.ViewModels"
+    xmlns:models="clr-namespace:BatchPay.Frontend.Models"
+    x:DataType="vm:CreateGroupViewModel"
+    BackgroundColor="#000000"
+    Padding="10,8">
+
+    <Grid RowDefinitions="Auto,Auto,Auto,Auto,*,Auto" RowSpacing="0">
+
+        <!-- Titel -->
+        <Frame Grid.Row="0"
+               BackgroundColor="#0B0B0D"
+               BorderColor="#1A1D22"
+               CornerRadius="14"
+               HasShadow="False"
+               Padding="10,8"
+               Margin="0,0,0,10">
+            <Grid RowDefinitions="Auto,Auto" RowSpacing="4">
+                <Label Text="Titel"
+                       TextColor="#BDBDBD"
+                       FontSize="12" />
+                <Entry Grid.Row="1"
+                       Text="{Binding Title}"
+                       TextColor="#EDEDED"
+                       Placeholder="Fx: Pizza i aften"
+                       PlaceholderColor="#6F6F73"
+                       FontSize="14"
+                       HeightRequest="45"
+                       VerticalOptions="Center" />
+            </Grid>
+        </Frame>
+
+        <!-- Besked -->
+        <Frame Grid.Row="1"
+               BackgroundColor="#0B0B0D"
+               BorderColor="#1A1D22"
+               CornerRadius="14"
+               HasShadow="False"
+               Padding="10,8"
+               Margin="0,0,0,10">
+            <Grid RowDefinitions="Auto,Auto" RowSpacing="4">
+                <Label Text="Besked (valgfri)"
+                       TextColor="#BDBDBD"
+                       FontSize="12" />
+                <Editor Grid.Row="1"
+                        Text="{Binding Message}"
+                        TextColor="#EDEDED"
+                        Placeholder="Skriv en besked..."
+                        PlaceholderColor="#6F6F73"
+                        FontSize="14"
+                        HeightRequest="45"
+                        AutoSize="Disabled" />
+            </Grid>
+        </Frame>
+
+        <!-- Ikon valg -->
+        <Frame Grid.Row="2"
+               BackgroundColor="#0B0B0D"
+               BorderColor="#1A1D22"
+               CornerRadius="14"
+               HasShadow="False"
+               Padding="10"
+               Margin="0,0,0,10">
+            <VerticalStackLayout Spacing="8">
+                <Label Text="Vælg ikon"
+                       TextColor="#BDBDBD"
+                       FontSize="12" />
+
+                <CollectionView
+                    ItemsSource="{Binding IconOptions}"
+                    ItemsLayout="HorizontalList"
+                    SelectionMode="Single"
+                    SelectedItem="{Binding SelectedIcon, Mode=TwoWay}"
+                    BackgroundColor="Transparent"
+                    HeightRequest="46">
+
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="models:SelectableIconOption">
+                            <Frame
+                                CornerRadius="12"
+                                HasShadow="False"
+                                Padding="8"
+                                HeightRequest="46"
+                                WidthRequest="46"
+                                BackgroundColor="#0B0B0D"
+                                BorderColor="#1A1D22">
+
+                                <Frame.GestureRecognizers>
+                                    <TapGestureRecognizer
+                                        Command="{Binding Source={x:Reference RootPage}, Path=BindingContext.SelectIconCommand}"
+                                        CommandParameter="{Binding .}" />
+                                </Frame.GestureRecognizers>
+
+                                <Grid>
+                                    <Image
+                                        WidthRequest="22"
+                                        HeightRequest="22"
+                                        HorizontalOptions="Center"
+                                        VerticalOptions="Center"
+                                        Source="{Binding IconKey}" />
+
+                                    <Frame
+                                        IsVisible="{Binding IsSelected}"
+                                        BorderColor="#2FAE7B"
+                                        BackgroundColor="Transparent"
+                                        CornerRadius="12"
+                                        HasShadow="False"
+                                        Padding="0" />
+                                </Grid>
+
+                                <Frame.Triggers>
+                                    <DataTrigger
+                                        TargetType="Frame"
+                                        Value="True"
+                                        Binding="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}},
+                                  Path=BindingContext.SelectedIcon,
+                                  Converter={StaticResource ReferenceEqualsConverter},
+                                  ConverterParameter={Binding .}}">
+                                        <Setter Property="BorderColor" Value="#2FAE7B" />
+                                        <Setter Property="BackgroundColor" Value="#0E1116" />
+                                    </DataTrigger>
+                                </Frame.Triggers>
+                            </Frame>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </VerticalStackLayout>
+        </Frame>
+
+        <!-- Search row -->
+        <Grid Grid.Row="3"
+              ColumnDefinitions="*,Auto"
+              ColumnSpacing="10">
+
+            <Frame Grid.Column="0"
+                   BackgroundColor="#0B0B0D"
+                   BorderColor="#1A1D22"
+                   CornerRadius="14"
+                   HasShadow="False"
+                   Padding="10,0"
+                   HeightRequest="38">
+                <Entry
+                    Placeholder="Søg i venner…"
+                    PlaceholderColor="#6F6F73"
+                    TextColor="#EDEDED"
+                    FontSize="13"
+                    HeightRequest="38"
+                    Text="{Binding FriendSearchText}" />
+            </Frame>
+
+            <Button
+                Grid.Column="1"
+                Text="Find"
+                BackgroundColor="#0B0B0D"
+                TextColor="#EDEDED"
+                BorderColor="#1A1D22"
+                CornerRadius="14"
+                FontSize="13"
+                Padding="14,6"
+                HeightRequest="38"
+                Command="{Binding OpenFriendSearchCommand}" />
+        </Grid>
+
+        <!-- Friends list -->
+        <CollectionView
+            Grid.Row="4"
+            ItemsSource="{Binding PotentialMembers }"
+            SelectionMode="None"
+            BackgroundColor="#000000"
+            Margin="0,12,0,0">
+
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="models:SelectableDirectoryEntry">
+
+                    <Grid RowDefinitions="Auto,Auto,Auto" ColumnDefinitions="40,*,Auto"
+                          ColumnSpacing="10" Padding="0,10">
+
+                        <Frame
+                            Grid.Row="0"
+                            Grid.Column="0"
+                            WidthRequest="34"
+                            HeightRequest="34"
+                            CornerRadius="17"
+                            BackgroundColor="{Binding AvatarColor}"
+                            HasShadow="False"
+                            Padding="0"
+                            VerticalOptions="Center"
+                            Grid.RowSpan="2">
+
+                            <Label
+                                Text="{Binding Initials}"
+                                TextColor="White"
+                                FontAttributes="Bold"
+                                FontSize="11"
+                                HorizontalTextAlignment="Center"
+                                VerticalTextAlignment="Center"
+                                HorizontalOptions="Fill"
+                                VerticalOptions="Fill" />
+                        </Frame>
+
+                        <Label
+                            Grid.Column="1"
+                            Text="{Binding DisplayName}"
+                            TextColor="#EDEDED"
+                            FontSize="14"
+                            LineBreakMode="TailTruncation"
+                            VerticalOptions="End" />
+
+                        <Label
+                            Grid.Column="1"
+                            Grid.Row="1"
+                            Text="{Binding Handle, StringFormat='@{0}'}"
+                            TextColor="#9AA0A6"
+                            FontSize="11"
+                            LineBreakMode="TailTruncation"
+                            VerticalOptions="Start" />
+
+                        <Grid Grid.Column="2"
+                              Grid.RowSpan="2"
+                              WidthRequest="34"
+                              HeightRequest="34"
+                              HorizontalOptions="End"
+                              VerticalOptions="Center">
+
+                            <Frame
+    WidthRequest="22"
+    HeightRequest="22"
+    CornerRadius="11"
+    Padding="0"
+    HasShadow="False"
+    BorderColor="#2A2F36"
+    BackgroundColor="Transparent"
+    HorizontalOptions="Center"
+    VerticalOptions="Center"
+    IsVisible="{Binding IsSelected, Converter={StaticResource InverseBoolConverter}}">
+                                <Frame.GestureRecognizers>
+                                    <TapGestureRecognizer
+            Command="{Binding Source={x:Reference RootPage}, Path=BindingContext.ToggleSelectCommand}"
+            CommandParameter="{Binding .}" />
+                                </Frame.GestureRecognizers>
+                            </Frame>
+
+                            <Frame
+                                WidthRequest="22"
+                                HeightRequest="22"
+                                CornerRadius="11"
+                                Padding="0"
+                                HasShadow="False"
+                                BorderColor="#2FAE7B"
+                                BackgroundColor="#0E1116"
+                                HorizontalOptions="Center"
+                                VerticalOptions="Center"
+                                IsVisible="{Binding IsSelected}">
+                                <Grid>
+                                    <Label
+                                        Text="✓"
+                                        TextColor="#2FAE7B"
+                                        FontSize="16"
+                                        FontAttributes="Bold"
+                                        HorizontalOptions="Center"
+                                        VerticalOptions="Center"
+                                        HorizontalTextAlignment="Center"
+                                        VerticalTextAlignment="Center" />
+                                </Grid>
+                                <Frame.GestureRecognizers>
+                                    <TapGestureRecognizer
+                                        Command="{Binding Source={x:Reference RootPage}, Path=BindingContext.ToggleFriendCommand}"
+                                        CommandParameter="{Binding .}" />
+                                </Frame.GestureRecognizers>
+                            </Frame>
+
+                        </Grid>
+
+                        <BoxView
+                            Grid.Row="2"
+                            Grid.ColumnSpan="3"
+                            HeightRequest="1"
+                            Margin="36,8,0,0"
+                            BackgroundColor="#1A1D22" />
+                    </Grid>
+
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+        <!-- Create -->
+        <Button
+            Grid.Row="5"
+            Text="Opret gruppebetaling"
+            BackgroundColor="#0B0B0D"
+            TextColor="#EDEDED"
+            BorderColor="#1A1D22"
+            CornerRadius="16"
+            HeightRequest="42"
+            FontSize="13"
+            Margin="0,10,0,0"
+            IsEnabled="{Binding HasSelection}"
+            Command="{Binding CreateGroupCommand}" />
+
+    </Grid>
+</ContentPage>

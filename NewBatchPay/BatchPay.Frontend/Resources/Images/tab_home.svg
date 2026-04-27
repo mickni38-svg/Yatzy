@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Home">
+    <path d="M10 30L32 12l22 18v22c0 3-2 5-5 5H15c-3 0-5-2-5-5V30z"
+          fill="#E8F7F4" opacity="0.92"/>
+    <path d="M26 57V38h12v19" fill="#071217" opacity="0.85"/>
+</svg>

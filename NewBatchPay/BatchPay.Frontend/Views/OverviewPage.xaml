@@ -1,0 +1,307 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Name="RootPage"
+    x:Class="BatchPay.Frontend.Views.OverviewPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:vm="clr-namespace:BatchPay.Frontend.ViewModels"
+    x:DataType="vm:OverviewViewModel"
+    BackgroundColor="#050816"
+    Padding="14,8,14,10">
+
+    <Grid RowDefinitions="Auto,*,Auto"
+          RowSpacing="12">
+
+        <!-- HEADER: KUN DEN VALGTE ORDRE I BOKS -->
+        <Grid Grid.Row="0">
+
+            <VerticalStackLayout
+                BindableLayout.ItemsSource="{Binding Tabs}"
+                Spacing="0">
+
+                <BindableLayout.ItemTemplate>
+                    <DataTemplate x:DataType="vm:GroupPaymentTabVm">
+
+                        <Border IsVisible="{Binding IsSelected}"
+                                StrokeThickness="1.6"
+                                StrokeShape="RoundRectangle 22"
+                                BackgroundColor="#08131C"
+                                Padding="16,14">
+
+                            <Border.Stroke>
+                                <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                                    <GradientStop Color="#F0B84B" Offset="0.0" />
+                                    <GradientStop Color="#16D8F5" Offset="1.0" />
+                                </LinearGradientBrush>
+                            </Border.Stroke>
+
+                            <Grid ColumnDefinitions="Auto,*"
+                                  RowDefinitions="Auto,Auto"
+                                  ColumnSpacing="12"
+                                  RowSpacing="2">
+
+                                <!-- icon -->
+                                <Border Grid.RowSpan="2"
+                                        WidthRequest="50"
+                                        HeightRequest="50"
+                                        StrokeThickness="1.2"
+                                        Stroke="#F0B84B"
+                                        BackgroundColor="#0B1822"
+                                        StrokeShape="RoundRectangle 25"
+                                        Padding="11"
+                                        VerticalOptions="Center">
+                                    <Image Source="{Binding IconSource}"
+                                           WidthRequest="24"
+                                           HeightRequest="24"
+                                           Aspect="AspectFit"
+                                           HorizontalOptions="Center"
+                                           VerticalOptions="Center" />
+                                </Border>
+
+                                <!-- title -->
+                                <Label Grid.Column="1"
+                                       Text="{Binding Title}"
+                                       TextColor="White"
+                                       FontSize="17"
+                                       FontAttributes="Bold"
+                                       VerticalOptions="End"
+                                       LineBreakMode="TailTruncation" />
+
+                                <!-- subtitle -->
+                                <Label Grid.Column="1"
+                                       Grid.Row="1"
+                                       Text="{Binding MerchantDisplayName}"
+                                       TextColor="#B7C6D0"
+                                       FontSize="13"
+                                       LineBreakMode="TailTruncation" />
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </BindableLayout.ItemTemplate>
+            </VerticalStackLayout>
+        </Grid>
+
+        <!-- MEMBER LIST: FLADE RÆKKER -->
+        <CollectionView Grid.Row="1"
+                        ItemsSource="{Binding MemberAccordions}"
+                        SelectionMode="None"
+                        Margin="0,2,0,0">
+
+            <CollectionView.EmptyView>
+                <Label Text="Ingen deltagere"
+                       TextColor="#7E97A4"
+                       HorizontalOptions="Center"
+                       VerticalOptions="Center"
+                       Margin="0,20" />
+            </CollectionView.EmptyView>
+
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="vm:GroupPaymentMemberVm">
+
+                    <Grid RowDefinitions="Auto,Auto,1"
+                          Padding="0,2">
+
+                        <!-- FLAD RÆKKE -->
+                        <Grid ColumnDefinitions="46,*,Auto"
+                              ColumnSpacing="12"
+                              Padding="0,10">
+
+                            <Grid.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding ToggleCommand}" />
+                            </Grid.GestureRecognizers>
+
+                            <!-- avatar -->
+                            <Border WidthRequest="40"
+                                    HeightRequest="40"
+                                    StrokeThickness="1.4"
+                                    BackgroundColor="{Binding AvatarColor}"
+                                    Stroke="#F0C85A"
+                                    StrokeShape="RoundRectangle 20"
+                                    Padding="0"
+                                    VerticalOptions="Center">
+                                <Label Text="{Binding Initials}"
+                                       TextColor="White"
+                                       FontSize="12"
+                                       FontAttributes="Bold"
+                                       HorizontalTextAlignment="Center"
+                                       VerticalTextAlignment="Center"
+                                       HorizontalOptions="Fill"
+                                       VerticalOptions="Fill" />
+                            </Border>
+
+                            <!-- text -->
+                            <VerticalStackLayout Grid.Column="1"
+                                                 Spacing="0"
+                                                 VerticalOptions="Center">
+                                <Label Text="{Binding DisplayName}"
+                                       TextColor="White"
+                                       FontSize="14"
+                                       FontAttributes="Bold"
+                                       LineBreakMode="TailTruncation" />
+                                <Label Text="{Binding UserId, StringFormat='Id: {0}'}"
+                                       TextColor="#8EA3AF"
+                                       FontSize="10"
+                                       Margin="0,-1,0,0" />
+                            </VerticalStackLayout>
+
+                            <!-- status + chevron -->
+                            <HorizontalStackLayout Grid.Column="2"
+                                                   Spacing="8"
+                                                   VerticalOptions="Center">
+
+                                <Border Padding="10,4"
+                                        StrokeThickness="0"
+                                        BackgroundColor="#102636"
+                                        StrokeShape="RoundRectangle 14">
+                                    <Border.Triggers>
+                                        <DataTrigger TargetType="Border"
+                                                     Binding="{Binding HasOrder}"
+                                                     Value="True">
+                                            <Setter Property="BackgroundColor" Value="#17423A" />
+                                        </DataTrigger>
+                                    </Border.Triggers>
+
+                                    <Label Text="{Binding PaymentStatusText}"
+                                           TextColor="#D7E5F2"
+                                           FontSize="11"
+                                           VerticalOptions="Center">
+                                        <Label.Triggers>
+                                            <DataTrigger TargetType="Label"
+                                                         Binding="{Binding HasOrder}"
+                                                         Value="True">
+                                                <Setter Property="TextColor" Value="#D9FFD2" />
+                                            </DataTrigger>
+                                        </Label.Triggers>
+                                    </Label>
+                                </Border>
+
+                                <Label Text="›"
+                                       FontSize="20"
+                                       TextColor="#B5C6D0"
+                                       VerticalOptions="Center">
+                                    <Label.Triggers>
+                                        <DataTrigger TargetType="Label"
+                                                     Binding="{Binding HasOrder}"
+                                                     Value="True">
+                                            <Setter Property="TextColor" Value="#8EF3D7" />
+                                        </DataTrigger>
+                                        <DataTrigger TargetType="Label"
+                                                     Binding="{Binding IsExpanded}"
+                                                     Value="True">
+                                            <Setter Property="Rotation" Value="90" />
+                                        </DataTrigger>
+                                        <DataTrigger TargetType="Label"
+                                                     Binding="{Binding IsExpanded}"
+                                                     Value="False">
+                                            <Setter Property="Rotation" Value="0" />
+                                        </DataTrigger>
+                                    </Label.Triggers>
+                                </Label>
+                            </HorizontalStackLayout>
+                        </Grid>
+
+                        <!-- ACCORDION UNDER RÆKKEN - UDEN BOKS -->
+                        <Grid Grid.Row="1"
+                              IsVisible="{Binding IsExpanded}"
+                              Padding="46,0,0,10">
+
+                            <VerticalStackLayout Spacing="6">
+
+                                <Label Text="Ingen ordre endnu"
+                                       TextColor="#8192A0"
+                                       FontSize="11">
+                                    <Label.Triggers>
+                                        <DataTrigger TargetType="Label"
+                                                     Binding="{Binding HasOrder}"
+                                                     Value="True">
+                                            <Setter Property="IsVisible" Value="False" />
+                                        </DataTrigger>
+                                    </Label.Triggers>
+                                </Label>
+
+                                <VerticalStackLayout IsVisible="{Binding HasOrder}"
+                                                     BindableLayout.ItemsSource="{Binding OrderLines}"
+                                                     Spacing="6">
+                                    <BindableLayout.ItemTemplate>
+                                        <DataTemplate x:DataType="vm:OrderLineVm">
+                                            <Grid ColumnDefinitions="18,*,Auto"
+                                                  ColumnSpacing="8">
+                                                <Label Text="{Binding Quantity}"
+                                                       TextColor="#D8E4F0"
+                                                       FontSize="11"
+                                                       VerticalOptions="Start" />
+                                                <Label Grid.Column="1"
+                                                       Text="{Binding ItemName}"
+                                                       TextColor="#F1F5FA"
+                                                       FontSize="11"
+                                                       LineBreakMode="WordWrap"
+                                                       VerticalOptions="Start"
+                                                       HorizontalTextAlignment="Start" />
+                                                <Label Grid.Column="2"
+                                                       Text="{Binding UnitPriceText}"
+                                                       TextColor="#D8E4F0"
+                                                       FontSize="11"
+                                                       HorizontalTextAlignment="End"
+                                                       VerticalOptions="Start" />
+                                            </Grid>
+                                        </DataTemplate>
+                                    </BindableLayout.ItemTemplate>
+                                </VerticalStackLayout>
+
+                                <BoxView HeightRequest="1"
+                                         Color="#173244"
+                                         IsVisible="{Binding HasOrder}" />
+
+                                <Grid ColumnDefinitions="*,Auto"
+                                      IsVisible="{Binding HasOrder}">
+                                    <Label Text="Total"
+                                           TextColor="#D8E4F0"
+                                           FontSize="11"
+                                           VerticalOptions="Start" />
+                                    <Label Grid.Column="1"
+                                           Text="{Binding OrderTotalText}"
+                                           TextColor="White"
+                                           FontSize="11"
+                                           FontAttributes="Bold"
+                                           HorizontalTextAlignment="End"
+                                           VerticalOptions="Start" />
+                                </Grid>
+                            </VerticalStackLayout>
+                        </Grid>
+
+                        <!-- separator -->
+                        <BoxView Grid.Row="2"
+                                 HeightRequest="1"
+                                 Color="#173244"
+                                 Margin="46,0,0,0" />
+                    </Grid>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+        <!-- PAY BUTTON -->
+        <Border Grid.Row="2"
+                StrokeThickness="2"
+                StrokeShape="RoundRectangle 28"
+                HeightRequest="56"
+                Padding="0"
+                BackgroundColor="#163549">
+
+            <Border.Stroke>
+                <LinearGradientBrush EndPoint="1,0">
+                    <GradientStop Color="#26E5FF" Offset="0.0" />
+                    <GradientStop Color="#F0C85A" Offset="0.5" />
+                    <GradientStop Color="#26E5FF" Offset="1.0" />
+                </LinearGradientBrush>
+            </Border.Stroke>
+
+            <Button Text="Betal ordre"
+                    BackgroundColor="Transparent"
+                    TextColor="White"
+                    FontAttributes="Bold"
+                    FontSize="16"
+                    CornerRadius="28"
+                    Command="{Binding PayOrderCommand}" />
+        </Border>
+    </Grid>
+</ContentPage>

@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 800" role="img" aria-label="Home background">
+    <defs>
+        <linearGradient id="base" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#0B0B0D"/>
+            <stop offset="1" stop-color="#000000"/>
+        </linearGradient>
+
+        <linearGradient id="waveG" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0" stop-color="#2FAE7B"/>
+            <stop offset="0.55" stop-color="#56CCF2"/>
+            <stop offset="1" stop-color="#2FAE7B"/>
+        </linearGradient>
+
+        <linearGradient id="waveA" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0" stop-color="#F2C94C"/>
+            <stop offset="1" stop-color="#2FAE7B"/>
+        </linearGradient>
+    </defs>
+
+    <rect width="360" height="800" fill="url(#base)"/>
+
+    <!-- Top haze -->
+    <path d="M0 0H360V150C280 120 220 120 160 140C95 162 50 162 0 150V0Z"
+          fill="#0E1116" opacity="0.85"/>
+
+    <!-- Crisp waves -->
+    <path d="M-10 150C60 125 135 130 210 148C285 165 325 165 370 150"
+          fill="none" stroke="url(#waveG)" stroke-width="2.2" opacity="0.18"/>
+    <path d="M-10 190C65 165 135 170 210 192C285 214 325 218 370 196"
+          fill="none" stroke="url(#waveA)" stroke-width="1.8" opacity="0.13"/>
+
+    <path d="M-10 620C65 600 135 605 210 622C285 640 325 642 370 625"
+          fill="none" stroke="url(#waveG)" stroke-width="2.6" opacity="0.16"/>
+    <path d="M-10 680C70 660 135 666 210 685C285 705 325 708 370 690"
+          fill="none" stroke="url(#waveA)" stroke-width="2.0" opacity="0.12"/>
+
+    <!-- Particles -->
+    <g fill="#2FAE7B" opacity="0.16">
+        <circle cx="42" cy="220" r="1.6"/>
+        <circle cx="78" cy="260" r="1.2"/>
+        <circle cx="300" cy="235" r="1.6"/>
+        <circle cx="320" cy="280" r="1.2"/>
+        <circle cx="120" cy="360" r="1.4"/>
+        <circle cx="240" cy="330" r="1.4"/>
+        <circle cx="60" cy="520" r="1.6"/>
+        <circle cx="310" cy="500" r="1.6"/>
+        <circle cx="190" cy="565" r="1.2"/>
+    </g>
+
+    <g fill="#56CCF2" opacity="0.12">
+        <circle cx="95" cy="300" r="1.4"/>
+        <circle cx="330" cy="325" r="1.4"/>
+        <circle cx="260" cy="410" r="1.2"/>
+        <circle cx="90" cy="470" r="1.2"/>
+        <circle cx="280" cy="560" r="1.2"/>
+    </g>
+
+    <g fill="#F2C94C" opacity="0.10">
+        <circle cx="160" cy="260" r="1.2"/>
+        <circle cx="220" cy="270" r="1.2"/>
+        <circle cx="190" cy="440" r="1.2"/>
+        <circle cx="210" cy="720" r="1.2"/>
+    </g>
+</svg>

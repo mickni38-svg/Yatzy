@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 260" role="img" aria-label="Header background">
+    <!-- Base -->
+    <rect width="1600" height="260" fill="#0B0B0D"/>
+
+    <!-- Left depth -->
+    <path d="M0 0H520L760 260H0V0Z" fill="#0E1116"/>
+
+    <!-- Right depth -->
+    <path d="M1060 -40L1600 60V300L980 220Z" fill="#0E1116"/>
+
+    <!-- Accent shapes -->
+    <path d="M0 40C220 10 420 40 620 150C780 240 980 260 1240 200C1410 160 1520 140 1600 150V260H0V40Z"
+          fill="#2FAE7B" opacity="0.14"/>
+
+    <path d="M0 120C260 70 430 110 620 180C840 260 1040 250 1330 170C1460 135 1545 120 1600 126V260H0V120Z"
+          fill="#2FAE7B" opacity="0.10"/>
+
+    <!-- Small dots -->
+    <circle cx="220" cy="86" r="10" fill="#2FAE7B" opacity="0.18"/>
+    <circle cx="260" cy="110" r="6" fill="#2FAE7B" opacity="0.14"/>
+    <circle cx="1320" cy="80" r="10" fill="#2FAE7B" opacity="0.16"/>
+    <circle cx="1360" cy="110" r="6" fill="#2FAE7B" opacity="0.12"/>
+</svg>

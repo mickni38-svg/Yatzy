@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+  <meta charset="UTF-8">
+  <title>BatchPay - Venner</title>
+  <style>
+    body {
+      background-color: #0f172a;
+      color: #f1f5f9;
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      padding: 20px;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    h2 {
+      font-size: 1.4rem;
+      margin-bottom: 15px;
+      color: #e2e8f0;
+    }
+
+    .search-box {
+      display: flex;
+      margin-bottom: 20px;
+    }
+
+    .search-box input {
+      flex: 1;
+      padding: 10px;
+      border: 1px solid #334155;
+      border-radius: 6px 0 0 6px;
+      background-color: #1e293b;
+      color: #f1f5f9;
+      outline: none;
+    }
+
+    .search-box button {
+      padding: 10px 16px;
+      border: none;
+      border-radius: 0 6px 6px 0;
+      background-color: #2563eb;
+      color: white;
+      cursor: pointer;
+    }
+
+    .search-box button:hover {
+      background-color: #1d4ed8;
+    }
+
+    .result-card {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background-color: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 10px;
+      padding: 12px 15px;
+      margin-bottom: 12px;
+    }
+
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .avatar {
+      background-color: #2563eb;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      color: white;
+    }
+
+    .user-details {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .user-details span:first-child {
+      font-weight: bold;
+    }
+
+    .add-btn {
+      background-color: #22c55e;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 6px 12px;
+      cursor: pointer;
+    }
+
+    .add-btn:hover {
+      background-color: #16a34a;
+    }
+
+    .status {
+      font-size: 0.9rem;
+      padding: 4px 8px;
+      border-radius: 6px;
+    }
+
+    .status.pending {
+      background-color: #475569;
+      color: #f1f5f9;
+    }
+
+    .status.accepted {
+      background-color: #15803d;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Søg efter bruger</h2>
+
+    <!-- Søgefelt -->
+    <div class="search-box">
+      <input type="text" placeholder="Søg efter navn, email eller telefon">
+      <button>🔍 Søg</button>
+    </div>
+
+    <!-- Resultater -->
+    <div class="result-card">
+      <div class="user-info">
+        <div class="avatar">MJ</div>
+        <div class="user-details">
+          <span>Maja Hansen</span>
+          <span>maja@demo.dk</span>
+        </div>
+      </div>
+      <button class="add-btn">Tilføj ven</button>
+    </div>
+
+    <div class="result-card">
+      <div class="user-info">
+        <div class="avatar">NO</div>
+        <div class="user-details">
+          <span>Noah Kristensen</span>
+          <span>noah@demo.dk</span>
+        </div>
+      </div>
+      <span class="status pending">Afventer...</span>
+    </div>
+
+    <div class="result-card">
+      <div class="user-info">
+        <div class="avatar">LI</div>
+        <div class="user-details">
+          <span>Liva Sørensen</span>
+          <span>liva@demo.dk</span>
+        </div>
+      </div>
+      <span class="status accepted">Allerede ven ✔</span>
+    </div>
+  </div>
+</body>
+</html>

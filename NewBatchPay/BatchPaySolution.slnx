@@ -1,0 +1,9 @@
+<Solution>
+  <Project Path="BatchPay.Api/BatchPay.Api.csproj" />
+  <Project Path="BatchPay.Contracts/BatchPay.Contracts.csproj" />
+  <Project Path="BatchPay.Data/BatchPay.Data.csproj" />
+  <Project Path="BatchPay.Frontend/BatchPay.Frontend.csproj">
+    <Deploy Solution="Debug|*" />
+  </Project>
+  <Project Path="BatchPay.Logic/BatchPay.Logic.csproj" />
+</Solution>

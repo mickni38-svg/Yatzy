@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="BatchPay.Frontend.Views.MessagesPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:vm="clr-namespace:BatchPay.Frontend.ViewModels"
+    xmlns:dto="clr-namespace:BatchPay.Contracts.Dto;assembly=BatchPay.Contracts"
+    x:DataType="vm:MessagesViewModel"
+    BackgroundColor="#000000"
+    Padding="16">
+
+    <Grid RowDefinitions="Auto,*" RowSpacing="12">
+        <Frame Grid.Row="0"
+               BackgroundColor="#0B0B0D"
+               BorderColor="#1A1D22"
+               CornerRadius="16"
+               HasShadow="False"
+               Padding="14">
+            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+                <VerticalStackLayout Spacing="6">
+                    <Label Text="Beskeder"
+                           TextColor="#EDEDED"
+                           FontSize="18"
+                           FontAttributes="Bold" />
+                    <Label Text="{Binding StatusMessage}"
+                           TextColor="#9AA0A6"
+                           FontSize="13" />
+                </VerticalStackLayout>
+
+                <!--<Button Text="Opdater"
+                        Command="{Binding LoadCommand}"
+                        BackgroundColor="#0B0B0D"
+                        BorderColor="#2A313B"
+                        BorderWidth="1.6"
+                        TextColor="#EDEDED"
+                        CornerRadius="16"
+                        HeightRequest="40" />-->
+            </Grid>
+        </Frame>
+
+        <Frame Grid.Row="1"
+               BackgroundColor="#0B0B0D"
+               BorderColor="#1A1D22"
+               CornerRadius="16"
+               HasShadow="False"
+               Padding="10">
+
+            <CollectionView ItemsSource="{Binding Notifications}">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="dto:NotificationDto">
+                        <Border Stroke="#1A1D22"
+                                StrokeThickness="1"
+                                Background="#0E1116"
+                                StrokeShape="RoundRectangle 14"
+                                Padding="12"
+                                Margin="0,0,0,10">
+
+                            <VerticalStackLayout Spacing="10">
+                                <Label Text="{Binding Title}"
+                                       TextColor="#EDEDED"
+                                       FontAttributes="Bold"
+                                       FontSize="14"
+                                       LineBreakMode="WordWrap" />
+
+                                <Label Text="{Binding Body}"
+                                       TextColor="#9AA0A6"
+                                       FontSize="12"
+                                       LineBreakMode="WordWrap" />
+
+                                <Grid ColumnDefinitions="Auto,*"
+                                      RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto"
+                                      ColumnSpacing="10"
+                                      RowSpacing="4">
+
+                                    <Label Grid.Row="1" Grid.Column="0" Text="Titel:" TextColor="#6E7781" FontSize="11" />
+                                    <Label Grid.Row="1" Grid.Column="1" Text="{Binding Title}" TextColor="#9AA0A6" FontSize="11" />
+
+                                    <Label Grid.Row="2" Grid.Column="0" Text="Titel:" TextColor="#6E7781" FontSize="11" />
+                                    <Label Grid.Row="2" Grid.Column="1" Text="{Binding Body}" TextColor="#9AA0A6" FontSize="11" />
+                                    
+                                    <Label Grid.Row="3" Grid.Column="0" Text="GroupPaymentId:" TextColor="#6E7781" FontSize="11" />
+                                    <Label Grid.Row="4" Grid.Column="1" Text="{Binding GroupPaymentId}" TextColor="#9AA0A6" FontSize="11" />
+
+                                    <Label Grid.Row="4" Grid.Column="0" Text="CreatedAtUtc:" TextColor="#6E7781" FontSize="11" />
+                                    <Label Grid.Row="4" Grid.Column="1" Text="{Binding CreatedAtUtc}" TextColor="#9AA0A6" FontSize="11" />
+
+                                    <Label Grid.Row="5" Grid.Column="0" Text="LinkUrl:" TextColor="#6E7781" FontSize="11" VerticalOptions="Start" />
+                                    <Label Grid.Row="5"
+                                           Grid.Column="1"
+                                           Text="{Binding LinkUrl}"
+                                           TextColor="#4EA1FF"
+                                           FontSize="12"
+                                           LineBreakMode="CharacterWrap"
+                                           TextDecorations="Underline">
+                                        <Label.GestureRecognizers>
+                                            <TapGestureRecognizer
+                                                Command="{Binding Source={RelativeSource AncestorType={x:Type vm:MessagesViewModel}}, Path=OpenCommand}"
+                                                CommandParameter="{Binding .}" />
+                                        </Label.GestureRecognizers>
+                                    </Label>
+
+                                </Grid>
+                            </VerticalStackLayout>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+        </Frame>
+    </Grid>
+</ContentPage>

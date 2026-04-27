@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>BatchPay – Ordrer</title>
+  <style>
+    :root{
+      --bg:#081216; --panel:#0b181b; --panel2:#0a1517; --panel3:#0d2022;
+      --line:#14323a; --text:#e8f7f4; --muted:#9fb8b4;
+      --accent:#22c55e; --accent-2:#14b8a6; --warn:#f59e0b; --ok:#10b981;
+      --chip:#0e2528;
+    }
+    body.theme-g{ --bg:#081216; --panel:#0b181b; --panel2:#0a1517; --panel3:#0d2022; --line:#14323a; --text:#e8f7f4; --muted:#9fb8b4; --accent:#22c55e; --accent-2:#14b8a6; --warn:#f59e0b; --ok:#10b981; --chip:#0e2528; }
+    body.theme-b{ --bg:#08101f; --panel:#0a1428; --panel2:#0a1222; --panel3:#0c1b36; --line:#1a2e63; --text:#e7edff; --muted:#a7b5db; --accent:#60a5fa; --accent-2:#1d4ed8; --warn:#f59e0b; --ok:#22c55e; --chip:#0b1337; }
+    body.theme-v{ --bg:#0e0a16; --panel:#150e28; --panel2:#110b21; --panel3:#1a1237; --line:#2a1f59; --text:#f1eaff; --muted:#c8b8e6; --accent:#c084fc; --accent-2:#7c3aed; --warn:#f59e0b; --ok:#22c55e; --chip:#1a0f3b; }
+    body.theme-o{ --bg:#120c06; --panel:#1a1209; --panel2:#160f0b; --panel3:#24150a; --line:#3a2817; --text:#fff4ec; --muted:#e4cbb9; --accent:#fbbf24; --accent-2:#d97706; --warn:#f59e0b; --ok:#22c55e; --chip:#2c170a; }
+
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--text);font-size:14px}
+    .page{max-width:1024px;margin:16px auto;padding:0 12px}
+    .card{background:linear-gradient(180deg,var(--panel),var(--panel2));border:1px solid var(--line);border-radius:16px;box-shadow:0 20px 80px rgba(0,0,0,.35);overflow:hidden}
+    .header{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border-bottom:1px solid var(--line);background:color-mix(in oklab, var(--panel2), #000 18%)}
+    .brand{display:flex;align-items:center;gap:10px}
+    .logo{width:32px;height:32px;border-radius:9px;display:inline-flex;align-items:center;justify-content:center;background:radial-gradient(100px 60px at -20% -20%, color-mix(in oklab, var(--accent), transparent 70%), transparent 60%), #071316;border:1px solid color-mix(in oklab, var(--accent-2), #000 60%)}
+    .logo svg{width:18px;height:18px}
+    .title{font-weight:800}
+    .merchant{font-size:12px;color:var(--muted)}
+    .user{font-size:12px;color:var(--muted)}
+
+    .topbar{display:flex;align-items:center;gap:10px;padding:10px 12px;border-bottom:1px solid var(--line);background:var(--panel2)}
+    .toggle{position:relative;width:44px;height:24px;border-radius:999px;background:#0f2f2b;border:1px solid #145a55;cursor:pointer}
+    .toggle::after{content:"";position:absolute;top:2px;left:2px;width:18px;height:18px;border-radius:50%;background:#a7f3d0;transition:all .2s ease}
+    .toggle.on{background:#064e3b;border-color:#0f766e}
+    .toggle.on::after{left:23px;background:#34d399}
+    .swatches{display:flex;gap:6px;align-items:center;margin-left:auto}
+    .sw{width:12px;height:12px;border-radius:999px;border:2px solid #0a2224;box-shadow:0 0 0 1px #0a2224 inset;cursor:pointer}
+    .sw.g{background:linear-gradient(180deg,var(--accent),#0f766e)}
+    .sw.b{background:linear-gradient(180deg,#60a5fa,#1d4ed8)}
+    .sw.v{background:linear-gradient(180deg,#c084fc,#7c3aed)}
+    .sw.o{background:linear-gradient(180deg,#fbbf24,#d97706)}
+
+    .tabs{display:flex;gap:18px;background:var(--panel2);border-top:1px solid #0d2628;border-bottom:1px solid var(--line);padding:8px 12px;overflow-x:auto}
+    .tab{appearance:none;background:transparent;border:none;color:#cfe9e6;padding:8px 0;font-weight:800;cursor:pointer;border-bottom:2px solid transparent}
+    .tab.active{color:#fff;border-bottom-color:var(--accent-2)}
+
+    .content{padding:10px;display:grid;gap:10px}
+    .badge{font-size:11px;padding:2px 8px;border:1px solid #1b4a46;border-radius:999px;background:#0b2422;color:#bbfff4}
+    .badge.warn{border-color:#5e4a0f;background:#241c08;color:#fde68a}
+    .badge.ok{border-color:#0e4a36;background:#0a241a;color:#baf7d3}
+    .badge.neutral{border-color:#274358;background:#0b2231;color:#cfe6ff}
+    .chipAdmin{font-size:10px;padding:2px 6px;border-radius:999px;border:1px solid color-mix(in oklab, var(--accent-2), #000 30%);background:color-mix(in oklab, var(--accent-2), #000 90%);color:color-mix(in oklab, var(--text), white 10%)}
+
+    .btn{padding:9px 12px;border-radius:12px;border:1px solid color-mix(in oklab, var(--accent-2), #000 40%);background:#0b2023;color:#e2f7f4;cursor:pointer;font-size:13px}
+    .btn.primary{border-color:color-mix(in oklab, var(--accent), #000 40%);background:linear-gradient(180deg,var(--accent),var(--accent-2));color:#052312;font-weight:900}
+    .btn.ghost{background:transparent;border-color:#113538}
+    .btn:disabled{opacity:.6;cursor:not-allowed}
+
+    .order{border:1px solid var(--line);background:#0c191b;border-radius:14px;overflow:hidden;transition:box-shadow .2s ease, border-color .2s ease}
+    .orderHead{display:flex;align-items:center;gap:8px;justify-content:space-between;padding:10px 12px;background:color-mix(in oklab, var(--panel3), #000 22%)} /* darker */
+    .orderTitle{display:flex;align-items:center;gap:10px}
+    .caret{width:24px;height:24px;border:1px solid #1a3d3f;border-radius:6px;display:inline-flex;align-items:center;justify-content:center;background:#061517;color:#78c2b8;cursor:pointer;font-size:12px} /* bigger */
+    .orderBody{display:none;border-top:1px dashed var(--line);padding:10px 12px}
+    .order.open .orderBody{display:block}
+
+    body.boost-admin .order[data-admin="demo"]{ border-color:color-mix(in oklab, var(--accent), #000 30%); box-shadow:0 0 0 2px color-mix(in oklab, var(--accent), #000 60%) inset, 0 0 30px rgba(0,0,0,.35); }
+    body.boost-admin .order[data-admin="demo"] .orderHead{ background:color-mix(in oklab, var(--panel3), var(--accent-2) 20%); }
+
+    .toolbar{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-bottom:8px}
+    .toolbar .btn.primary{grid-column:1/-1}
+
+    .people{display:flex;flex-direction:column;gap:8px}
+    .person{border:1px solid var(--line);background:#0e2123;border-radius:12px;overflow:hidden}
+    .pHead{display:flex;align-items:center;justify-content:space-between;padding:8px 10px;gap:8px;background:color-mix(in oklab, var(--panel2), #000 10%)}
+    .pLeft{display:flex;align-items:center;gap:10px;min-width:0}
+    .ava{width:22px;height:22px;border-radius:50%;border:1px solid #0b6b5b;background:#0a2a24;display:flex;align-items:center;justify-content:center;color:#b7fff0;font-size:10px}
+    .name{font-weight:700;font-size:13px}
+    .pMeta{display:flex;align-items:center;gap:8px}
+    .sum{font-variant-numeric:tabular-nums;white-space:nowrap}
+    .pBody{display:none;border-top:1px dashed var(--line);background:#0b1f21;padding:8px 10px}
+    .person.open .pBody{display:block}
+    .line{display:flex;align-items:center;justify-content:space-between;padding:6px 8px;border:1px solid var(--line);border-radius:9px;background:#0c2326;margin-top:6px}
+
+    .items{display:flex;flex-direction:column;gap:8px;margin-top:8px}
+    .item{border:1px solid var(--line);background:#0e2124;border-radius:12px;padding:8px 10px}
+    .chips{display:flex;gap:6px;flex-wrap:wrap}
+    .chip{display:inline-flex;gap:6px;align-items:center;padding:4px 7px;border-radius:999px;background:var(--chip);border:1px solid #175a60;color:#c3efff;font-size:11px}
+
+    .toastWrap{position:fixed;right:16px;bottom:16px;display:flex;flex-direction:column;gap:8px;z-index:60}
+    .toast{background:#0a241a;border:1px solid #0c6b4a;color:#c7ffea;padding:10px 12px;border-radius:12px;box-shadow:0 10px 40px rgba(0,0,0,.4)}
+
+    .overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;padding:20px;z-index:80}
+    .overlay.open{display:flex}
+    .modal{width:100%;max-width:520px;background:linear-gradient(180deg,var(--panel2),var(--panel));border:1px solid var(--line);border-radius:14px;box-shadow:0 30px 100px rgba(0,0,0,.6);overflow:hidden}
+    .m-head{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border-bottom:1px solid var(--line)}
+    .m-title{font-weight:800}
+    .m-body{padding:12px;line-height:1.55;color:color-mix(in oklab, var(--text), white 8%)}
+    .m-foot{padding:10px 12px;border-top:1px solid var(--line);display:flex;justify-content:flex-end;gap:8px}
+    .x{all:unset;cursor:pointer;color:var(--muted);padding:8px;border-radius:10px}
+    .x:hover{background:color-mix(in oklab, var(--panel), #000 10%)}
+    .person.mine{outline:2px solid color-mix(in oklab, var(--accent-2), #000 40%); background:color-mix(in oklab, #0b1f21, var(--accent-2) 14%);}
+    
+    .person .pHead{display:flex;align-items:center;justify-content:space-between;}
+    .person .pLeft{display:flex;align-items:center;gap:8px;flex:1;}
+    .person .caret{margin-right:6px;}
+.chip.mine{border-color:color-mix(in oklab, var(--accent-2), #000 10%); background:color-mix(in oklab, var(--chip), var(--accent-2) 25%);}
+    .order.mine-admin .orderHead{background:color-mix(in oklab, var(--panel3), var(--accent-2) 28%);}
+
+    .orderTitle .caret{margin-right:6px}
+    .pLeft .caret{margin-right:6px}
+
+  </style>
+</head>
+<body class="theme-g">
+  <div class="page">
+    <div class="card">
+      <div class="header">
+        <div class="brand">
+          <span class="logo" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="4" y="6" width="10" height="6" rx="2"></rect>
+              <rect x="10" y="12" width="10" height="6" rx="2"></rect>
+            </svg>
+          </span>
+          <div>
+            <div class="title">BatchPay</div>
+            <div class="merchant">Integreret i: Tony's Pizza · Demo</div>
+          </div>
+        </div>
+        <div class="user" id="userInfo">Logget ind</div>
+      </div>
+
+      <div class="topbar">
+        <div id="boost" class="toggle" title="Fremhæv administrator" aria-pressed="false"></div>
+        <div class="merchant">Fremhæv administrator</div>
+        <div class="swatches" title="Tema">
+          <span class="sw g" data-theme="g"></span>
+          <span class="sw b" data-theme="b"></span>
+          <span class="sw v" data-theme="v"></span>
+          <span class="sw o" data-theme="o"></span>
+        </div>
+      </div>
+
+      <div class="tabs">
+        <button class="tab active" data-tab="people">Oversigt pr. person</button>
+        <button class="tab" data-tab="items">Oversigt pr. vare</button>
+      </div>
+
+      <div class="content" id="content"></div>
+    </div>
+  </div>
+
+  <div class="toastWrap" id="toasts"></div>
+
+  <div id="inviteOverlay" class="overlay" aria-hidden="true">
+    <div class="modal">
+      <div class="m-head">
+        <div class="m-title">Invitation til gruppeordre</div>
+        <button class="x" aria-label="Luk" onclick="closeInvite()">✕</button>
+      </div>
+      <div class="m-body" id="inviteBody"></div>
+      <div class="m-foot">
+        <button class="btn" onclick="closeInvite()">Luk</button>
+        <button id="joinBtn" class="btn primary" onclick="acceptInvite()">Tilmeld og betal</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const username = localStorage.getItem('bp_username') || 'Demo-bruger';
+    document.getElementById('userInfo').textContent = 'Logget ind som: ' + username;
+    const currentUser = 'demo';
+
+    const savedTheme = localStorage.getItem('bp_theme') || 'g';
+    document.body.className = 'theme-'+savedTheme;
+    document.querySelectorAll('.sw').forEach(s=>s.addEventListener('click', ()=>{
+      const t = s.getAttribute('data-theme');
+      document.body.className = 'theme-'+t;
+      localStorage.setItem('bp_theme', t);
+    }));
+
+    const boostEl = document.getElementById('boost');
+    const boostState = localStorage.getItem('bp_boost_admin') === '1';
+    if(boostState){ boostEl.classList.add('on'); boostEl.setAttribute('aria-pressed','true'); document.body.classList.add('boost-admin'); }
+    boostEl.addEventListener('click', ()=>{
+      const on = boostEl.classList.toggle('on');
+      boostEl.setAttribute('aria-pressed', on?'true':'false');
+      document.body.classList.toggle('boost-admin', on);
+      localStorage.setItem('bp_boost_admin', on?'1':'0');
+    });
+
+    const orders = [
+      { id:'ord1', title:"Tony's Pizza · Fredagshygge", admin:'maja', status:'ongoing',
+        lines:[ {key:'marg',name:'Margherita',price:85}, {key:'pep',name:'Pepperoni',price:100}, {key:'cola',name:'Cola 0,5L',price:45} ],
+        people:[
+          {uid:'maja',name:'Maja',initials:'MJ',lines:{pep:{base:100,enabled:true}},state:'paid'},
+          {uid:'demo',name: username + " (dig)",initials:'DE',lines:{},state:'pending'},
+          {uid:'liva',name:'Liva',initials:'LI',lines:{cola:{base:45,enabled:true}},state:'paid'},
+          {uid:'noah',name:'Noah',initials:'NO',lines:{},state:'pending'}
+        ],
+        open:true
+      },
+      { id:'ord2', title:"Tony's Pizza · Team aften", admin:'noah', status:'done',
+        lines:[ {key:'marg',name:'Margherita',price:85}, {key:'cola',name:'Cola 0,5L',price:45} ],
+        people:[
+          {uid:'maja',name:'Maja',initials:'MJ',lines:{marg:{base:85,enabled:true}},state:'paid'},
+          {uid:'noah',name:'Noah',initials:'NO',lines:{cola:{base:45,enabled:true}},state:'paid'},
+          {uid:'demo',name: username + " (dig)",initials:'DE',lines:{},state:'paid'}
+        ],
+        open:false
+      },
+      { id:'ord3', title:"Takeaway · Fodboldaften", admin:'demo', status:'done',
+        lines:[ {key:'burger',name:'Burger menu',price:120}, {key:'cola',name:'Cola 0,5L',price:20} ],
+        people:[
+          {uid:'demo',name: username + " (dig)",initials:'DE',lines:{burger:{base:120,enabled:true},cola:{base:20,enabled:true}},state:'paid'},
+          {uid:'mikkel',name:'Mikkel',initials:'MI',lines:{},state:'paid'},
+          {uid:'sara',name:'Sara',initials:'SA',lines:{},state:'paid'}
+        ],
+        open:false
+      }
+    ];
+
+    let currentTab='people';
+
+    function orderTotal(o){ return o.lines.reduce((a,l)=>a+l.price,0); }
+    function personSum(p){ return Object.values(p.lines).reduce((a,x)=>a+(x.enabled?x.base:0),0); }
+    function paidCount(o){ return o.people.filter(p=>p.state==='paid').length; }
+
+    function toast(msg){
+      const wrap=document.getElementById('toasts');
+      const t=document.createElement('div'); t.className='toast'; t.textContent=msg;
+      wrap.appendChild(t); setTimeout(()=>{ t.style.opacity='0'; t.style.transform='translateY(10px)'; }, 2800);
+      setTimeout(()=>{ wrap.removeChild(t); }, 3400);
+    }
+
+    function finalizeIfComplete(o){
+      if(o.status==='ongoing' && paidCount(o)===o.people.length){
+        o.status='done'; toast('Alle betalt – \"'+o.title+'\" er fuldført.');
+      }
+    }
+
+    function estimateMyAmount(){
+      const inv = JSON.parse(localStorage.getItem('bp_invite_lines')||'[]');
+      let s=0; if(inv.includes('marg')) s+=85; if(inv.includes('cola')) s+=45; if(inv.includes('pep')) s+=100; return s||'—';
+    }
+
+    function canPay(o){
+      const me = o.people.find(p=>p.uid===currentUser);
+      return o.status==='ongoing' && me && me.state==='pending';
+    }
+
+    function applyPayment(o, fromInvite=false){
+      const me = o.people.find(p=>p.uid===currentUser);
+      const inv = JSON.parse(localStorage.getItem('bp_invite_lines')||'[]');
+      me.lines={};
+      if(inv.includes('marg')) me.lines.marg={base:85,enabled:true};
+      if(inv.includes('cola')) me.lines.cola={base:45,enabled:true};
+      if(inv.includes('pep')) me.lines.pep={base:100,enabled:true};
+      if(Object.keys(me.lines).length===0 && !fromInvite){ me.lines.marg={base:85,enabled:true}; me.lines.cola={base:45,enabled:true}; }
+      me.state='paid';
+      localStorage.removeItem('bp_invite_lines');
+      localStorage.removeItem('bp_invite_group');
+      toast('Din betaling er gennemført – ordrelinjer tilføjet.');
+      renderTab();
+    }
+
+    function render(){
+      const wrap=document.getElementById('content');
+      wrap.innerHTML='';
+      orders.forEach((o,idx)=>{
+        finalizeIfComplete(o);
+        const order = document.createElement('div'); order.className='order'+(o.open?' open':'')+(o.admin===currentUser?' mine-admin':''); order.dataset.admin = o.admin==='demo' ? 'demo' : 'other';
+
+        const head = document.createElement('div'); head.className='orderHead';
+        head.innerHTML = `<div class="orderTitle"><span class="caret" data-i="${idx}">▾</span><strong>${o.title}</strong> ${o.admin==='demo' ? '<span class="chipAdmin">ADMIN</span>' : ''} <span class="merchant">· Administrator: ${o.admin==='demo'?username:o.admin[0].toUpperCase()+o.admin.slice(1)}</span></div>
+          <div>
+            <span class="badge neutral">Total DKK ${orderTotal(o)}</span>
+            <span class="badge"><b>${paidCount(o)}/${o.people.length} betalt</b></span>
+            <span class="badge ${o.status==='done'?'ok':'warn'}">${o.status==='done'?'Fuldført':'I gang'}</span>
+          </div>`;
+
+        const body = document.createElement('div'); body.className='orderBody';
+        body.innerHTML = `
+          <div class="toolbar">
+            <button class="btn">Kopiér link</button>
+            <button class="btn ghost">Forlad ordre</button>
+            <button class="btn primary" id="pay_${idx}" ${canPay(o)?'':'disabled'}>${o.status==='done'?'Ordre fuldført': (canPay(o)?'Betal din andel (DKK '+estimateMyAmount()+')':'Afventer andre…')}</button>
+          </div>
+          <div id="people_${idx}" class="people"></div>`;
+
+        order.appendChild(head); order.appendChild(body); wrap.appendChild(order);
+
+        head.querySelector('.caret').addEventListener('click', ()=>{
+          o.open=!o.open; order.classList.toggle('open');
+        });
+
+        const payBtn = body.querySelector('#pay_'+idx);
+        if(canPay(o)){ payBtn.addEventListener('click', ()=>{ applyPayment(o); }); }
+
+        const list = body.querySelector('#people_'+idx); list.innerHTML='';
+        o.people.forEach((p,pi)=>{
+          const person = document.createElement('div');
+          person.className = 'person' + (p.uid===currentUser ? ' open mine' : '');
+
+          const hasLines = Object.keys(p.lines).length>0;
+          const st = p.state==='paid' ? '<span class="badge ok">Betalt</span>' : '<span class="badge warn">Afventer</span>';
+
+          person.innerHTML = `
+            <div class="pHead">
+              <div class="pLeft">
+                <span class="caret small" data-o="${idx}" data-p="${pi}">▾</span>
+                <div class="ava">${p.initials}</div>
+                <div>
+                  <div class="name">${p.name}</div>
+                  <div class="merchant">${p.uid===o.admin?'Administrator':''}</div>
+                </div>
+              </div>
+              <div class="pMeta">
+                ${st}
+                <div class="sum"><span class="merchant">Sum</span> <b>DKK ${personSum(p)}</b></div>
+              </div>
+            </div>
+            <div class="pBody" id="pb_${idx}_${pi}">${hasLines ? renderLinesHTML(o,p) : ''}</div>
+          `;
+
+          list.appendChild(person);
+          person.querySelector('.caret').addEventListener('click', ()=> person.classList.toggle('open'));
+        });
+      });
+    }
+
+    function renderLinesHTML(o,p){
+      return Object.entries(p.lines).map(([key,meta])=>{
+        if(!meta.enabled||meta.base<=0) return '';
+        const ln=o.lines.find(l=>l.key===key);
+        return `<div class="line"><div>${ln.name}</div><strong>DKK ${meta.base}</strong></div>`;
+      }).join('');
+    }
+
+    document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click', ()=>{
+      document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+      b.classList.add('active'); currentTab=b.dataset.tab; renderTab();
+    }));
+
+    function renderItemsTab(){
+      const wrap=document.getElementById('content'); wrap.innerHTML='';
+      orders.forEach((o,idx)=>{
+        finalizeIfComplete(o);
+        const order = document.createElement('div'); order.className = 'order'+(o.status==='ongoing'?' open':''); order.dataset.admin = o.admin==='demo' ? 'demo' : 'other';
+        order.innerHTML = `
+          <div class="orderHead">
+            <div class="orderTitle"><span class="caret" data-i="${idx}">▾</span><strong>${o.title}</strong> ${o.admin==='demo' ? '<span class="chipAdmin">ADMIN</span>' : ''} <span class="merchant">· Administrator: ${o.admin==='demo'?username:o.admin}</span></div>
+            <div>
+              <span class="badge neutral">Total DKK ${orderTotal(o)}</span>
+              <span class="badge"><b>${paidCount(o)}/${o.people.length} betalt</b></span>
+              <span class="badge ${o.status==='done'?'ok':'warn'}">${o.status==='done'?'Fuldført':'I gang'}</span>
+            </div>
+          </div>
+          <div class="orderBody"><div class="items" id="items_${idx}"></div></div>`;
+        wrap.appendChild(order);
+
+        // Toggle order accordion (default closed)
+        order.querySelector('.orderHead .caret').addEventListener('click', ()=>{
+          order.classList.toggle('open');
+        });
+
+        const list = order.querySelector('#items_'+idx);
+        o.lines.forEach(line=>{
+          const chips=[];
+          o.people.forEach(p=>{
+            if(p.state!=='paid') return;
+            const it=p.lines[line.key];
+            if(it && it.enabled && it.base>0){
+              chips.push(`<span class="chip ${p.uid===currentUser?'mine':''}">✅ ${p.name.split(' ')[0]} · DKK ${it.base}</span>`);
+            }
+          });
+          const div=document.createElement('div'); div.className='item';
+          div.innerHTML=`<div style="display:flex;justify-content:space-between;margin-bottom:4px">
+            <div><b>${line.name}</b><div class="merchant">Linjetotal: DKK ${line.price}</div></div>
+            <div class="merchant">${chips.length} deltagere</div>
+          </div>
+          <div class="chips">${chips.join('') || '<span class="merchant">Ingen betalte på denne linje</span>'}</div>`;
+          list.appendChild(div);
+        });
+      });
+    }
+
+    function renderTab(){ if(currentTab==='items') renderItemsTab(); else render(); }
+    renderTab();
+
+    // Invitation overlay helpers
+    function openInvite(){ const ov=document.getElementById('inviteOverlay'); ov.classList.add('open'); ov.setAttribute('aria-hidden','false'); }
+    function closeInvite(){ const ov=document.getElementById('inviteOverlay'); ov.classList.remove('open'); ov.setAttribute('aria-hidden','true'); }
+
+    function showInviteIfAny(){
+      const qp = new URLSearchParams(location.search);
+      const hasQP = qp.get('showInvite')==='1';
+      const invGroup = localStorage.getItem('bp_invite_group');
+      const invLines = JSON.parse(localStorage.getItem('bp_invite_lines')||'[]');
+      if(hasQP || invGroup){
+        const body = document.getElementById('inviteBody');
+        body.innerHTML = `<p>Du er inviteret til <b>Tony's Pizza · Fredagshygge</b>.</p>
+        <p>Dine valgte varer (fra Wokshop):</p>
+        <ul style="margin-top:0.2rem">
+          ${invLines.includes('marg')?'<li>Margherita – DKK 85</li>':''}
+          ${invLines.includes('cola')?'<li>Cola 0,5L – DKK 45</li>':''}
+          ${invLines.includes('pep')?'<li>Pepperoni – DKK 100</li>':''}
+        </ul>
+        <p>Tryk <b>Tilmeld og betal</b>, så registreres din betaling, og du vises som <b>Betalt</b>.</p>`;
+        openInvite();
+      }
+    }
+
+    function acceptInvite(){
+      const o = orders.find(x=>x.status==='ongoing') || orders[0];
+      applyPayment(o, true);
+      closeInvite();
+    }
+
+    showInviteIfAny();
+  </script>
+</body>
+</html>

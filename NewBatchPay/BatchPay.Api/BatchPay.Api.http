@@ -1,0 +1,6 @@
+@BatchPay.Api_HostAddress = http://localhost:5125
+
+GET {{BatchPay.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

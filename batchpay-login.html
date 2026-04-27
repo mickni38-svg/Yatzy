@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>BatchPay – Login (demo)</title>
+  <style>
+    :root{--bg:#07111a;--panel:#0b1720;--line:#113040;--text:#e6f1f5;--muted:#93a4b8;--accent:#34d399;--accent-strong:#059669;}
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--text);display:grid;place-items:center;min-height:100vh}
+    .card{width:min(520px,92vw);background:linear-gradient(180deg,var(--panel),#0a141b);border:1px solid var(--line);border-radius:16px;box-shadow:0 18px 80px rgba(0,0,0,.4);padding:22px}
+    h1{margin:.2rem 0 1rem 0}
+    label{display:block;margin:.4rem 0 .2rem 0;color:var(--muted);font-size:14px}
+    input{width:100%;padding:12px;border-radius:10px;border:1px solid #173243;background:#08121a;color:var(--text)}
+    .btn{width:100%;margin-top:14px;padding:12px;border-radius:12px;border:1px solid var(--accent-strong);background:linear-gradient(180deg,var(--accent),var(--accent-strong));color:#041611;font-weight:800;cursor:pointer}
+    .muted{color:var(--muted);font-size:13px;margin-top:10px}
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>BatchPay – Log ind</h1>
+    <label>Brugernavn</label>
+    <input id="u" value="Demo-bruger">
+    <label>Adgangskode</label>
+    <input id="p" type="password" value="demo123">
+    <button class="btn" onclick="go()">Log ind</button>
+    <div class="muted">Demo: Ingen validering. Dine oplysninger gemmes lokalt så felterne huskes.</div>
+  </div>
+
+  <script>
+    if(localStorage.getItem('bp_username')){ document.getElementById('u').value = localStorage.getItem('bp_username'); }
+    if(localStorage.getItem('bp_password')){ document.getElementById('p').value = localStorage.getItem('bp_password'); }
+    function go(){
+      localStorage.setItem('bp_username', document.getElementById('u').value);
+      localStorage.setItem('bp_password', document.getElementById('p').value);
+      localStorage.setItem('bp_logged_in','true');
+      const invite = new URLSearchParams(location.search).get('invite');
+      location.href = 'batchpay-orders.html' + (invite ? '?showInvite=1' : '');
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Shell
+    x:Class="BatchPay.Frontend.AppShell"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    Shell.FlyoutBehavior="Disabled"
+    BackgroundColor="#0F0F10"
+
+    Shell.NavBarIsVisible="True"
+    Shell.NavBarHasShadow="False"
+
+    Shell.TabBarBackgroundColor="#071217"
+    Shell.TabBarForegroundColor="#E8F7F4"
+    Shell.TabBarTitleColor="#E8F7F4"
+    Shell.TabBarUnselectedColor="#667174"
+    Shell.TabBarDisabledColor="#333838">
+
+    <TabBar>
+        <ShellContent x:Name="HomeTab" Route="home" Title="Forside" Icon="tab_home.svg" />
+        <ShellContent x:Name="OverviewTab" Route="overview" Title="Overblik" Icon="tab_overview.svg" />
+        <ShellContent x:Name="CreateTab" Route="create" Title="Opret" Icon="tab_plus.svg" />
+        <ShellContent x:Name="FindTab" Route="find" Title="Brugere" Icon="tab_add_users.svg" />
+        <ShellContent x:Name="MessagesTab" Route="messages" Title="Beskeder" Icon="tab_messages.svg" />
+    </TabBar>
+</Shell>
