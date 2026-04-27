@@ -13,11 +13,13 @@ export class GameRealtimeService implements OnDestroy {
   private _error$ = new Subject<string>();
   private _yatzy$ = new Subject<{ playerId: string; gifName: string }>();
   private _connected$ = new BehaviorSubject<boolean>(false);
+  private _diceRolling$ = new Subject<number[]>();
 
   readonly gameState$ = this._gameState$.asObservable();
   readonly error$ = this._error$.asObservable();
   readonly yatzy$ = this._yatzy$.asObservable();
   readonly connected$ = this._connected$.asObservable();
+  readonly diceRolling$ = this._diceRolling$.asObservable();
 
   private currentRoomCode: string | null = null;
   private currentPlayerId: string | null = null;
@@ -99,6 +101,7 @@ export class GameRealtimeService implements OnDestroy {
     this.connection.on('PlayerJoined',     updateState);
     this.connection.on('PlayerLeft',       updateState);
     this.connection.on('GameStarted',      updateState);
+    this.connection.on('DiceRolling',      (positions: number[]) => this._diceRolling$.next(positions));
     this.connection.on('DiceRolled',       updateState);
     this.connection.on('HoldChanged',      updateState);
     this.connection.on('ScoreSelected',    updateState);

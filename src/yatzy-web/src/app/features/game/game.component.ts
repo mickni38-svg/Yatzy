@@ -44,6 +44,8 @@ export class GameComponent implements OnInit, OnDestroy {
   private previousRollNumber = 0;
   /** True mens mindst én terning stadig ruller – skjuler score-foreslag */
   diceSpinning = false;
+  /** Resolver der kaldes når DiceRolled ankommer med de rigtige terningværdier */
+  private _spectatorStopResolve: ((values: number[]) => void) | null = null;
 
   private updateAllStreams(remote: Map<string, MediaStream>): void {
     const map = new Map(remote);
@@ -154,8 +156,14 @@ export class GameComponent implements OnInit, OnDestroy {
       this.realtime.gameState$.subscribe(state => {
         if (!state) return;
 
-        const prevRoll = this.previousRollNumber;
         this.previousRollNumber = state.rollNumber;
+
+        // Hvis en spectator-animation venter på rigtige værdier, lever dem nu
+        if (this._spectatorStopResolve) {
+          const resolver = this._spectatorStopResolve;
+          this._spectatorStopResolve = null;
+          resolver(state.dice.map(d => d.value));
+        }
 
         // Detect om nogen netop har scoret Yatzy
         for (const player of state.players) {
@@ -188,14 +196,23 @@ export class GameComponent implements OnInit, OnDestroy {
         this.game = state;
         this.hasSelectedCategory = false;
 
-        // En anden spiller har kastet – trigger animation for tilskuere
-        if (state.rollNumber > 0 && state.rollNumber !== prevRoll && !this.isLocallyRolling) {
-          this._triggerAnimation(state.dice, false);
-        }
-
         if (state.status === GameStatus.Completed) {
           this.router.navigate(['/results']);
         }
+      })
+    );
+
+    // Tilskuere: start animation øjeblikkeligt når kasteren trykker (inden DB-skrivning)
+    this.sub.add(
+      this.realtime.diceRolling$.subscribe(rollingPositions => {
+        if (this.isLocallyRolling) return; // kasteren styrer selv sin animation
+        if (!this.game) return;
+        // Byg en syntetisk dice-array: kun de positioner der ruller er ikke holdt
+        const dice = this.game.dice.map(d => ({
+          ...d,
+          isHeld: !rollingPositions.includes(d.position)
+        }));
+        this._triggerAnimation(dice, false);
       })
     );
 
@@ -245,9 +262,9 @@ export class GameComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Fælles animationslogik for båden kasteren og tilskuere.
-   * isRoller = true  → styrer isActing + isLocallyRolling efter stop
-   * isRoller = false → tilskuer: 3 sekunders animation, derefter stop
+   * Fælles animationslogik for kasteren og tilskuere.
+   * isRoller = true  → styrer isActing + isLocallyRolling efter stop; stopper på fast timer
+   * isRoller = false → tilskuer: spinner til DiceRolled ankommer, stopper derefter sekventielt med rigtige værdier
    */
   private _triggerAnimation(dice: DiceDto[], isRoller: boolean): void {
     const freeIndices = dice
@@ -275,29 +292,52 @@ export class GameComponent implements OnInit, OnDestroy {
 
     if (isRoller) this.sound.startSpin();
 
-    // Samme forsinkelse og stop-sekvens uanset om man er kasteren eller tilskuer
-    const stopDelay = 3000;
     const stopInterval = 1000;
-    setTimeout(() => {
-      if (this.rollInterval) { clearInterval(this.rollInterval); this.rollInterval = null; }
-      if (isRoller) this.sound.stopSpin();
 
-      freeIndices.forEach((dieIndex, order) => {
+    if (isRoller) {
+      // Kasteren: fast 3s spin, derefter sekventiel stop
+      setTimeout(() => {
+        if (this.rollInterval) { clearInterval(this.rollInterval); this.rollInterval = null; }
+        this.sound.stopSpin();
+
+        freeIndices.forEach((dieIndex, order) => {
+          setTimeout(() => {
+            this.rollingDice[dieIndex] = false;
+            this.rollingDice = [...this.rollingDice];
+            this.sound.playBing();
+          }, order * stopInterval);
+        });
+
         setTimeout(() => {
-          this.rollingDice[dieIndex] = false;
-          this.rollingDice = [...this.rollingDice];
-          if (isRoller) this.sound.playBing();
-        }, order * stopInterval);
+          this.isActing = false;
+          this.isLocallyRolling = false;
+          this.diceSpinning = false;
+          this._checkYatzyOnDice();
+        }, freeIndices.length * stopInterval);
+      }, 3000);
+    } else {
+      // Tilskuer: spinner til DiceRolled-event leverer de rigtige værdier
+      const valuesPromise = new Promise<number[]>(resolve => {
+        this._spectatorStopResolve = resolve;
       });
 
-      setTimeout(() => {
-        if (isRoller) { this.isActing = false; this.isLocallyRolling = false; }
-        // Alle terninger er stoppet – vis nu score-foreslag
-        this.diceSpinning = false;
-        // Tjek om nuværende spiller har kastet Yatzy (5 ens)
-        this._checkYatzyOnDice();
-      }, freeIndices.length * stopInterval);
-    }, stopDelay);
+      valuesPromise.then(finalValues => {
+        if (this.rollInterval) { clearInterval(this.rollInterval); this.rollInterval = null; }
+
+        freeIndices.forEach((dieIndex, order) => {
+          setTimeout(() => {
+            this.animatedValues[dieIndex] = finalValues[dieIndex];
+            this.animatedValues = [...this.animatedValues];
+            this.rollingDice[dieIndex] = false;
+            this.rollingDice = [...this.rollingDice];
+          }, order * stopInterval);
+        });
+
+        setTimeout(() => {
+          this.diceSpinning = false;
+        }, freeIndices.length * stopInterval);
+      });
+    }
   }
 
   private _stopRollAnimation(): void {

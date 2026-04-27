@@ -6,6 +6,7 @@ public static class HubEvents
     public const string PlayerJoined      = "PlayerJoined";
     public const string PlayerLeft        = "PlayerLeft";
     public const string GameStarted       = "GameStarted";
+    public const string DiceRolling        = "DiceRolling";
     public const string DiceRolled        = "DiceRolled";
     public const string HoldChanged       = "HoldChanged";
     public const string ScoreSelected     = "ScoreSelected";

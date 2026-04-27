@@ -8,6 +8,7 @@ public interface IGameHubService
     Task BroadcastPlayerJoinedAsync(string roomCode, GameStateResponse state);
     Task BroadcastPlayerLeftAsync(string roomCode, GameStateResponse state);
     Task BroadcastGameStartedAsync(string roomCode, GameStateResponse state);
+    Task BroadcastDiceRollingAsync(string roomCode, IReadOnlyList<int> rollingPositions);
     Task BroadcastDiceRolledAsync(string roomCode, GameStateResponse state);
     Task BroadcastHoldChangedAsync(string roomCode, GameStateResponse state);
     Task BroadcastScoreSelectedAsync(string roomCode, GameStateResponse state);
