@@ -36,7 +36,7 @@ RollDice({ GameId: Guid, PlayerId: Guid })
 ```
 Ruller ikke-holdte terninger. Broadcaster `DiceRolled` til alle.
 
-> [Se implementering → L109](https://github.com/mickni38-svg/Yatzy/blob/main/src/Yatzy.Api/Hubs/GameHub.cs#L109)
+> [Se implementering → L105](https://github.com/mickni38-svg/Yatzy/blob/main/src/Yatzy.Api/Hubs/GameHub.cs#L105)
 
 #### `ToggleHold`
 ```
@@ -44,7 +44,7 @@ ToggleHold({ GameId: Guid, PlayerId: Guid, Position: number })
 ```
 Holder eller frigiver én terning. Broadcaster `HoldChanged` til alle.
 
-> [Se implementering → L120](https://github.com/mickni38-svg/Yatzy/blob/main/src/Yatzy.Api/Hubs/GameHub.cs#L120)
+> [Se implementering → L118](https://github.com/mickni38-svg/Yatzy/blob/main/src/Yatzy.Api/Hubs/GameHub.cs#L118)
 
 #### `SelectScore`
 ```
@@ -68,7 +68,7 @@ LeaveGame({ GameId: Guid, PlayerId: Guid })
 ```
 Markerer spilleren som forladt. Broadcaster `PlayerLeft` (eller `GameEnded` hvis host forlader) til alle.
 
-> [Se implementering → L172](https://github.com/mickni38-svg/Yatzy/blob/main/src/Yatzy.Api/Hubs/GameHub.cs#L172)
+> [Se implementering → L173](https://github.com/mickni38-svg/Yatzy/blob/main/src/Yatzy.Api/Hubs/GameHub.cs#L173)
 
 ---
 
