@@ -106,18 +106,17 @@ public sealed class GameHub : Hub
     {
         try
         {
-            // Hent nuværende state for at vide hvilke terninger der ikke er holdt
-            var currentState = await _gameAppService.GetByIdAsync(request.GameId);
-            var rollingPositions = currentState.Dice
+            // Udfør kast og gem i DB – resultatet er klar inden vi broadcaster
+            var state = await _gameplayAppService.RollDiceAsync(request);
+
+            var rollingPositions = state.Dice
                 .Where(d => !d.IsHeld)
                 .Select(d => d.Position)
                 .ToList();
 
-            // Broadcast øjeblikkeligt til alle klienter: animation starter nu
-            await _hubService.BroadcastDiceRollingAsync(currentState.RoomCode, rollingPositions);
-
-            // Udfør kast og gem i DB
-            var state = await _gameplayAppService.RollDiceAsync(request);
+            // Broadcast til alle klienter: start animation nu (resultatet er allerede beregnet)
+            await _hubService.BroadcastDiceRollingAsync(state.RoomCode, rollingPositions);
+            // Send det endelige state umiddelbart efter – klienter bruger det til sekventiel reveal
             await _hubService.BroadcastDiceRolledAsync(state.RoomCode, state);
         }
         catch (Exception ex)

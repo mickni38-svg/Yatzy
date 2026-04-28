@@ -75,7 +75,7 @@
           <div class="dice-row">
             <div class="die-wrapper" *ngFor="let die of game.dice; let i = index">
               <app-dice-tile
-                [value]="rollingDice[i] ? animatedValues[i] : die.value"
+                [value]="isAnimating ? animatedValues[i] : die.value"
                 [isHeld]="die.isHeld"
                 [isRolling]="rollingDice[i]"
                 [disabled]="!isMyTurn || game.rollNumber === 0 || rollingDice[i]"

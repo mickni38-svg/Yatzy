@@ -1,169 +1,154 @@
-# Angular frontend
+﻿# Angular frontend
 
 ## Formål
-Frontend skal implementeres i Angular og TypeScript og køre i Chrome.
+Frontend er implementeret i Angular 19 og TypeScript og kører i browseren.
 
-Den skal være enkel, modulær og nem at udvide.
+Den er enkel, modulær og opdelt i et tydeligt service-lag.
 
 ---
 
 ## Hovedprincip
-Frontend skal have et tydeligt service-lag.
 
-Det betyder:
-- komponenter viser UI
-- services kalder backend
-- services holder SignalR connection
-- komponenter må ikke selv kende HTTP detaljer
+- Komponenter viser UI
+- Services kalder backend
+- Services holder SignalR connection
+- Komponenter kender ikke HTTP-detaljer
 
 ---
 
-## Forslået Angular struktur
+## Angular struktur
 
 ```text
 src/app/
   core/
-    models/
-    services/
-    guards/
-    interceptors/
+    models/         – GameStateDto, PlayerDto, DiceDto, ScoreEntryDto
+    services/       – GameApiService, GameRealtimeService, PlayerSessionService, DiceSoundService, WebRtcService
   features/
-    lobby/
-    game/
-    results/
+    lobby/          – LobbyComponent (opret/join spil)
+    game/           – GameComponent (hovedelspilsskærm)
+    results/        – ResultsComponent (slutstilling)
   shared/
     components/
-    enums/
-    models/
+      dice-tile/    – Én terning med pip-SVG og rolling-animation
+      dice-tray/    – Container for 5 terninger
+      score-sheet/  – Scorekort med kategori-valg
+      player-list/  – Spillerliste
+      turn-banner/  – Aktiv-spiller-banner
+    enums/          – GameStatus, ScoreCategory
 ```
 
 ---
 
-## Services der bør findes
+## Services
 
 ### GameApiService
-Ansvar:
 - create game
 - join game
-- start game
-- get game state
+- get game state (HTTP)
 
 ### GameRealtimeService
-Ansvar:
-- SignalR connect
-- join room
-- lyt til events
-- send roll/toggle/select
+Ansvar: SignalR connection og event-streams.
+
+Eksponerede observables:
+
+| Observable | Type | Beskrivelse |
+|---|---|---|
+| `gameState$` | `GameStateDto` | Opdateret game state |
+| `diceRolling$` | `number[]` | Terning-positioner der ruller |
+| `diceRolled$` | `GameStateDto` | Endelig state efter kast |
+| `error$` | `string` | Fejlbeskeder |
+| `yatzy$` | `{ playerId, gifName }` | Yatzy-fejring |
+| `connected$` | `boolean` | Forbindelsesstatus |
+
+`applyState(state)` bruges til manuelt at opdatere `gameState$` efter animation.
 
 ### PlayerSessionService
-Ansvar:
-- gem player id lokalt
-- gem game id eller room code lokalt
-- restore session ved refresh
+- gem og restore `playerId`, `gameId`, `roomCode` i sessionStorage
+
+### DiceSoundService
+- `startSpin()` / `stopSpin()` – løbende kastelyd
+- `playBing()` – lyd når én terning lander
+
+---
+
+## Terning-animationsflow i GameComponent
+
+```
+DiceRolling-event modtages (NgZone.run)
+    ↓
+_startSpin(rollingPositions) kaldes
+    ↓
+isAnimating = true, diceSpinning = true
+    ↓
+setInterval: animatedValues opdateres hvert 80ms
+    ↓
+DiceRolled-event modtages → _pendingRolledState gemmes
+    ↓
+Efter 3 sekunder: interval stoppes
+    ↓
+Terningerne reveales én ad gangen (1 sekund interval)
+    animatedValues[i] = finalValues[i], rollingDice[i] = false
+    ↓
+isAnimating = false, applyState(finalState)
+```
+
+Template bruger `isAnimating` til at vælge kilde:
+```html
+[value]="isAnimating ? animatedValues[i] : die.value"
+```
+
+`NgZone.run()` er påkrævet så change detection kører for alle klienter (ikke kun kasteren).
 
 ---
 
 ## Sider
-Byg mindst disse pages:
 
 ### LobbyPage
-Vis:
-- room code
-- spillere
-- ready/start status
-- knap til at starte spil
+- Opret spil / join med room code
+- Vis spillerliste
+- Host kan starte spil
 
 ### GamePage
-Vis:
-- aktiv spiller
-- runde
-- kast nummer
-- 5 terninger
-- hold knapper
-- scorekort
-- kategori-valg
+- Aktiv spiller og runde
+- 5 terninger med spin-animation og hold-knapper
+- Scorekort med kategori-forslag
+- Kamera-grid (WebRTC)
+- Yatzy-fejrings-GIF overlay
 
 ### ResultPage
-Vis:
-- slutstilling
-- vinder
-- nyt spil / tilbage til lobby
-
----
-
-## Komponenter
-Byg små genbrugelige komponenter:
-
-- `dice-tray`
-- `dice-tile`
-- `score-sheet`
-- `player-list`
-- `turn-banner`
-- `category-selector`
-- `standings-bar`
-
----
-
-## State-model i frontend
-Hold en central state for game screen:
-- game id
-- room code
-- players
-- current player
-- dice
-- roll number
-- selected suggestions
-- scoreboard
+- Slutstilling med vinder
+- Link til nyt spil
 
 ---
 
 ## TypeScript interfaces
-Definér interfaces der matcher backend DTO’er.
 
-Eksempler:
-- `GameStateDto`
-- `PlayerDto`
-- `DiceDto`
-- `ScoreEntryDto`
+```typescript
+interface GameStateDto { gameId, roomCode, status, roundNumber, rollNumber, currentPlayerId, players, dice }
+interface PlayerDto    { playerId, displayName, isHost, isConnected, hasLeft, totalScore, scoreEntries }
+interface DiceDto      { position, value, isHeld }
+interface ScoreEntryDto { category, score, isUsed }
+```
 
 ---
 
 ## UI-regler
-- grøn Yatzy-identitet
-- tydelig aktiv spiller
-- tydelig hold-markering
-- tydelig remaining rolls
-- scorekort skal være centralt og let læseligt
-
----
-
-## Angular HTTP
-Brug `HttpClient`.
-
-Base URL skal ligge i environment.
-
----
-
-## SignalR i Angular
-Brug `@microsoft/signalr`.
-
-Realtime service skal:
-- starte forbindelse
-- genforbinde automatisk
-- gen-joine room efter reconnect
-- pushe events ind i RxJS streams
-
----
-
-## Copilot-prompt
-> Implement the Angular frontend for the Yatzy browser game. Use a clean service layer in TypeScript for HTTP and SignalR communication. Build lobby, game page, result page, reusable shared components, and models matching the ASP.NET Core backend DTOs.
+- Grøn Yatzy-identitet
+- Tydelig aktiv spiller
+- Tydelig hold-markering
+- Tydelig remaining rolls
+- Scorekort centralt og let læseligt
 
 ---
 
 ## Done-kriterier
-Fasen er færdig når:
-- man kan oprette/joine spil fra browseren
-- game state vises korrekt
-- kast og hold kan udføres via UI
-- scorevalg fungerer
-- realtime events opdaterer browseren
+
+- [x] Man kan oprette og joine spil fra browseren
+- [x] Game state vises korrekt
+- [x] Kast og hold kan udføres via UI
+- [x] Scorevalg fungerer
+- [x] Realtime events opdaterer alle klienter synkroniseret
+- [x] Terning-spin-animation kører i 3 sekunder på alle klienter
+- [x] Terningerne reveales én ad gangen med 1 sekund interval
+- [x] Kameravisning via WebRTC
+- [x] Yatzy-fejring med GIF
