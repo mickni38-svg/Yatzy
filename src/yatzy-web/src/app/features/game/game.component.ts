@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, NgZone } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -6,7 +6,7 @@ import { HttpClient } from '@angular/common/http';
 import { Subscription } from 'rxjs';
 import { GameRealtimeService } from '../../core/services/game-realtime.service';
 import { PlayerSessionService } from '../../core/services/player-session.service';
-import { GameStateDto, DiceDto } from '../../core/models/game-state.dto';
+import { GameStateDto } from '../../core/models/game-state.dto';
 import { GameStatus } from '../../shared/enums/game-status.enum';
 import { ScoreCategory } from '../../shared/enums/score-category.enum';
 import { DiceTileComponent } from '../../shared/components/dice-tile/dice-tile.component';
@@ -34,18 +34,17 @@ export class GameComponent implements OnInit, OnDestroy {
   remoteStreams = new Map<string, MediaStream>();
   allStreams = new Map<string, MediaStream>();
 
-  /** Værdier vist på terningerne – cykler tilfældigt under animation */
+  /** Værdier vist på terningerne – cykler tilfældigt under spin-animation */
   animatedValues: number[] = [1, 1, 1, 1, 1];
   /** Hvilke terninger (indeks) der aktuelt ruller */
   rollingDice: boolean[] = [false, false, false, false, false];
+  /** True mens animation er i gang – template bruger animatedValues for alle terninger */
+  isAnimating = false;
   private rollInterval: ReturnType<typeof setInterval> | null = null;
-  /** Bruges til at undgå double-trigger: sæt til true mens DEN lokale spiller kaster */
-  private isLocallyRolling = false;
-  private previousRollNumber = 0;
-  /** True mens mindst én terning stadig ruller – skjuler score-foreslag */
+  /** True mens mindst én terning stadig ruller – skjuler score-forslag */
   diceSpinning = false;
-  /** Resolver der kaldes når DiceRolled ankommer med de rigtige terningværdier */
-  private _spectatorStopResolve: ((values: number[]) => void) | null = null;
+  /** Gemmer det endelige state fra DiceRolled mens spin-animation kører */
+  private _pendingRolledState: GameStateDto | null = null;
 
   private updateAllStreams(remote: Map<string, MediaStream>): void {
     const map = new Map(remote);
@@ -123,7 +122,8 @@ export class GameComponent implements OnInit, OnDestroy {
     private router: Router,
     public webrtc: WebRtcService,
     private sound: DiceSoundService,
-    private http: HttpClient
+    private http: HttpClient,
+    private zone: NgZone
   ) {}
 
   ngOnInit(): void {
@@ -156,15 +156,6 @@ export class GameComponent implements OnInit, OnDestroy {
       this.realtime.gameState$.subscribe(state => {
         if (!state) return;
 
-        this.previousRollNumber = state.rollNumber;
-
-        // Hvis en spectator-animation venter på rigtige værdier, lever dem nu
-        if (this._spectatorStopResolve) {
-          const resolver = this._spectatorStopResolve;
-          this._spectatorStopResolve = null;
-          resolver(state.dice.map(d => d.value));
-        }
-
         // Detect om nogen netop har scoret Yatzy
         for (const player of state.players) {
           const hasYatzy = player.scoreEntries.some(
@@ -177,11 +168,9 @@ export class GameComponent implements OnInit, OnDestroy {
             const isWinner = player.playerId === this.myPlayerId;
             const amHost = this.isIAmHost;
             // Vinderen broadcaster til alle — host broadcaster som fallback
-            // Begge tjekker prioritet: vinder går først, host venter 300ms
             const delay = isWinner ? 0 : (amHost ? 300 : -1);
             if (delay >= 0) {
               setTimeout(() => {
-                // Undgå dobbelt-broadcast: tjek om GIF allerede vises
                 if (!this.isCelebrating(player.playerId)) {
                   this.realtime.triggerYatzy(player.playerId, gifFile).catch(() => {
                     this._showGif(player.playerId, gifFile);
@@ -202,17 +191,22 @@ export class GameComponent implements OnInit, OnDestroy {
       })
     );
 
-    // Tilskuere: start animation øjeblikkeligt når kasteren trykker (inden DB-skrivning)
+    // Alle klienter: DiceRolling starter 3s spin-animation
     this.sub.add(
       this.realtime.diceRolling$.subscribe(rollingPositions => {
-        if (this.isLocallyRolling) return; // kasteren styrer selv sin animation
-        if (!this.game) return;
-        // Byg en syntetisk dice-array: kun de positioner der ruller er ikke holdt
-        const dice = this.game.dice.map(d => ({
-          ...d,
-          isHeld: !rollingPositions.includes(d.position)
-        }));
-        this._triggerAnimation(dice, false);
+        this.zone.run(() => {
+          if (!this.game) return;
+          this._startSpin(rollingPositions);
+        });
+      })
+    );
+
+    // Alle klienter: DiceRolled ankommer mens spin kører – gem og reveal sekventielt
+    this.sub.add(
+      this.realtime.diceRolled$.subscribe(state => {
+        this.zone.run(() => {
+          this._pendingRolledState = state;
+        });
       })
     );
 
@@ -244,44 +238,39 @@ export class GameComponent implements OnInit, OnDestroy {
   async rollDice(): Promise<void> {
     if (!this.game || !this.isMyTurn || this.canSelectOnly) return;
     this.isActing = true;
-    this.isLocallyRolling = true;
     this.errorMessage = '';
-
-    this._triggerAnimation(this.game.dice, true);
-
     try {
-      await Promise.all([
-        this.realtime.rollDice(this.game.gameId, this.myPlayerId!),
-        new Promise<void>(res => setTimeout(res, 3000 + 5 * 1000 + 200)) // 3s spin + 5×1s stop + buffer
-      ]);
+      await this.realtime.rollDice(this.game.gameId, this.myPlayerId!);
+      // Animation starter via DiceRolling-event som serveren broadcaster til alle
     } catch {
-      this._stopRollAnimation();
       this.isActing = false;
-      this.isLocallyRolling = false;
     }
   }
 
   /**
-   * Fælles animationslogik for kasteren og tilskuere.
-   * isRoller = true  → styrer isActing + isLocallyRolling efter stop; stopper på fast timer
-   * isRoller = false → tilskuer: spinner til DiceRolled ankommer, stopper derefter sekventielt med rigtige værdier
+   * Starter 3s spin-animation for de terninger der ruller (alle klienter).
+   * Efter 3s afventer vi _pendingRolledState og revealer terningerne én ad gangen med 1s interval.
    */
-  private _triggerAnimation(dice: DiceDto[], isRoller: boolean): void {
-    const freeIndices = dice
+  private _startSpin(rollingPositions: number[]): void {
+    if (!this.game) return;
+
+    // Indeks i dice-arrayet for de terninger der ruller
+    const freeIndices = this.game.dice
       .map((d, i) => ({ d, i }))
-      .filter(x => !x.d.isHeld)
+      .filter(x => rollingPositions.includes(x.d.position))
       .map(x => x.i);
 
-    if (freeIndices.length === 0) {
-      if (isRoller) { this.isActing = false; this.isLocallyRolling = false; }
-      return;
-    }
+    if (freeIndices.length === 0) return;
 
-    this.animatedValues = dice.map(d => d.value);
-    this.rollingDice = dice.map(() => false);
+    // Sæt startværdier og markér som rullende
+    this.animatedValues = this.game.dice.map(d => d.value);
+    this.rollingDice = this.game.dice.map(() => false);
     freeIndices.forEach(i => (this.rollingDice[i] = true));
     this.diceSpinning = true;
+    this.isAnimating = true;
+    this._pendingRolledState = null;
 
+    // Start hurtig tilfældig animation
     if (this.rollInterval) clearInterval(this.rollInterval);
     this.rollInterval = setInterval(() => {
       freeIndices.forEach(i => {
@@ -290,69 +279,47 @@ export class GameComponent implements OnInit, OnDestroy {
       this.animatedValues = [...this.animatedValues];
     }, 80);
 
-    if (isRoller) this.sound.startSpin();
+    this.sound.startSpin();
 
-    const stopInterval = 1000;
+    // Efter 3s: stop spin og reveal én terning ad gangen
+    setTimeout(() => {
+      if (this.rollInterval) { clearInterval(this.rollInterval); this.rollInterval = null; }
+      this.sound.stopSpin();
 
-    if (isRoller) {
-      // Kasteren: fast 3s spin, derefter sekventiel stop
+      const finalState = this._pendingRolledState;
+      const finalValues = finalState
+        ? finalState.dice.map(d => d.value)
+        : this.animatedValues.slice();
+
+      freeIndices.forEach((dieIndex, order) => {
+        setTimeout(() => {
+          this.animatedValues[dieIndex] = finalValues[dieIndex];
+          this.animatedValues = [...this.animatedValues];
+          this.rollingDice[dieIndex] = false;
+          this.rollingDice = [...this.rollingDice];
+          this.sound.playBing();
+        }, order * 1000);
+      });
+
+      const totalRevealMs = freeIndices.length * 1000;
       setTimeout(() => {
-        if (this.rollInterval) { clearInterval(this.rollInterval); this.rollInterval = null; }
-        this.sound.stopSpin();
-
-        freeIndices.forEach((dieIndex, order) => {
-          setTimeout(() => {
-            this.rollingDice[dieIndex] = false;
-            this.rollingDice = [...this.rollingDice];
-            this.sound.playBing();
-          }, order * stopInterval);
-        });
-
-        setTimeout(() => {
-          this.isActing = false;
-          this.isLocallyRolling = false;
-          this.diceSpinning = false;
-          this._checkYatzyOnDice();
-        }, freeIndices.length * stopInterval);
-      }, 3000);
-    } else {
-      // Tilskuer: spinner til DiceRolled-event leverer de rigtige værdier
-      const valuesPromise = new Promise<number[]>(resolve => {
-        this._spectatorStopResolve = resolve;
-      });
-
-      valuesPromise.then(finalValues => {
-        if (this.rollInterval) { clearInterval(this.rollInterval); this.rollInterval = null; }
-
-        freeIndices.forEach((dieIndex, order) => {
-          setTimeout(() => {
-            this.animatedValues[dieIndex] = finalValues[dieIndex];
-            this.animatedValues = [...this.animatedValues];
-            this.rollingDice[dieIndex] = false;
-            this.rollingDice = [...this.rollingDice];
-          }, order * stopInterval);
-        });
-
-        setTimeout(() => {
-          this.diceSpinning = false;
-        }, freeIndices.length * stopInterval);
-      });
-    }
-  }
-
-  private _stopRollAnimation(): void {
-    if (this.rollInterval) { clearInterval(this.rollInterval); this.rollInterval = null; }
-    this.sound.stopSpin();
-    this.rollingDice = [false, false, false, false, false];
-    this.isLocallyRolling = false;
-    this.diceSpinning = false;
+        this.diceSpinning = false;
+        this.isAnimating = false;
+        this.isActing = false;
+        if (finalState) {
+          // Opdater game state nu hvor animation er færdig
+          this.realtime.applyState(finalState);
+          this._pendingRolledState = null;
+        }
+        this._checkYatzyOnDice();
+      }, totalRevealMs);
+    }, 3000);
   }
 
   /** Tjek om alle 5 terninger (inkl. holdte) viser samme øjne → Yatzy */
   private _checkYatzyOnDice(): void {
     if (!this.game || !this.isMyTurn) return;
 
-    // Har spilleren allerede brugt Yatzy-kategorien?
     const me = this.game.players.find(p => p.playerId === this.myPlayerId);
     if (!me) return;
     const yatzyAlreadyUsed = me.scoreEntries.some(
@@ -360,7 +327,6 @@ export class GameComponent implements OnInit, OnDestroy {
     );
     if (yatzyAlreadyUsed) return;
 
-    // Alle 5 terningers aktuelle v\u00e6rdier (animatedValues indeholder slut-v\u00e6rdier)
     const vals = this.game.dice.map((d, i) =>
       this.rollingDice[i] ? this.animatedValues[i] : d.value
     );
@@ -368,7 +334,6 @@ export class GameComponent implements OnInit, OnDestroy {
     const allSame = vals.every(v => v === vals[0]);
     if (!allSame) return;
 
-    // Det er Yatzy! Broadcaster til alle
     const gifFile = this.gifList[0]?.file ?? 'yatzy-celebration.gif';
     this.realtime.triggerYatzy(this.myPlayerId!, gifFile).catch(() => {
       this._showGif(this.myPlayerId!, gifFile);
@@ -459,7 +424,8 @@ export class GameComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.sub.unsubscribe();
-    this._stopRollAnimation();
+    if (this.rollInterval) { clearInterval(this.rollInterval); this.rollInterval = null; }
+    this.sound.stopSpin();
     this.yatzyTimers.forEach(t => clearTimeout(t));
     this.yatzyTimers.clear();
     // webrtc.stop() er allerede kaldt i leaveGame() — kald kun hvis stream stadig kører

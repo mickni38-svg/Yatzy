@@ -14,12 +14,14 @@ export class GameRealtimeService implements OnDestroy {
   private _yatzy$ = new Subject<{ playerId: string; gifName: string }>();
   private _connected$ = new BehaviorSubject<boolean>(false);
   private _diceRolling$ = new Subject<number[]>();
+  private _diceRolled$ = new Subject<GameStateDto>();
 
   readonly gameState$ = this._gameState$.asObservable();
   readonly error$ = this._error$.asObservable();
   readonly yatzy$ = this._yatzy$.asObservable();
   readonly connected$ = this._connected$.asObservable();
   readonly diceRolling$ = this._diceRolling$.asObservable();
+  readonly diceRolled$ = this._diceRolled$.asObservable();
 
   private currentRoomCode: string | null = null;
   private currentPlayerId: string | null = null;
@@ -94,6 +96,10 @@ export class GameRealtimeService implements OnDestroy {
     return this._gameState$.value;
   }
 
+  applyState(state: GameStateDto): void {
+    this._gameState$.next(state);
+  }
+
   private registerHandlers(): void {
     const updateState = (state: GameStateDto) => this._gameState$.next(state);
 
@@ -102,7 +108,7 @@ export class GameRealtimeService implements OnDestroy {
     this.connection.on('PlayerLeft',       updateState);
     this.connection.on('GameStarted',      updateState);
     this.connection.on('DiceRolling',      (positions: number[]) => this._diceRolling$.next(positions));
-    this.connection.on('DiceRolled',       updateState);
+    this.connection.on('DiceRolled',       (state: GameStateDto) => this._diceRolled$.next(state));
     this.connection.on('HoldChanged',      updateState);
     this.connection.on('ScoreSelected',    updateState);
     this.connection.on('GameEnded',        updateState);
