@@ -90,6 +90,31 @@ export class WebRtcService implements OnDestroy {
     this.connection = null;
   }
 
+  /** Tænd kamera+mikrofon og send stream til alle åbne peer connections */
+  async startLocalStream(): Promise<void> {
+    if (this.localStream) return; // allerede tændt
+    try {
+      this.localStream = await navigator.mediaDevices.getUserMedia({
+        video: { width: 320, height: 180, frameRate: 15 },
+        audio: true
+      });
+      // Tilføj tracks til eksisterende peer connections
+      this.peers.forEach(pc => {
+        this.localStream!.getTracks().forEach(t =>
+          pc.addTrack(t, this.localStream!));
+      });
+    } catch {
+      console.warn('[WebRTC] Kunne ikke tilgå kamera/mikrofon.');
+      this.localStream = null;
+    }
+  }
+
+  /** Sluk kamera+mikrofon */
+  stopLocalStream(): void {
+    this.localStream?.getTracks().forEach(t => t.stop());
+    this.localStream = null;
+  }
+
   ngOnDestroy(): void { this.stop(); }
 
   // ── Internal ────────────────────────────────────────────────────────────────

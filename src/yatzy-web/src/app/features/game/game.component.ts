@@ -72,6 +72,11 @@ export class GameComponent implements OnInit, OnDestroy {
 
   toggleCamera(): void {
     this.cameraEnabled = !this.cameraEnabled;
+    if (this.cameraEnabled) {
+      this.webrtc.startLocalStream();
+    } else {
+      this.webrtc.stopLocalStream();
+    }
   }
 
   /** Vis en specifik GIF lokalt på en spillers tile */
