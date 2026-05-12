@@ -186,7 +186,9 @@ export class GameComponent implements OnInit, OnDestroy {
         this.hasSelectedCategory = false;
 
         if (state.status === GameStatus.Completed) {
+          // Navigér til resultater – behold SignalR-forbindelsen så spilleren forbliver connected
           this.router.navigate(['/results']);
+          return;
         }
       })
     );
@@ -371,15 +373,14 @@ export class GameComponent implements OnInit, OnDestroy {
   get cameraGridCols(): string {
     const n = this.game?.players.length ?? 0;
     if (n <= 1) return 'repeat(1, 1fr)';
-    if (n === 2) return 'repeat(2, 1fr)';
-    return 'repeat(2, 1fr)'; // 3-4 spillere: 2×2
+    return 'repeat(2, 1fr)';
   }
 
   /** CSS grid-template-rows baseret på antal spillere */
   get cameraGridRows(): string {
     const n = this.game?.players.length ?? 0;
     if (n <= 2) return 'repeat(1, 1fr)';
-    return 'repeat(2, 1fr)'; // 3-4 spillere: 2×2
+    return 'repeat(2, 1fr)';
   }
 
   async leaveGame(): Promise<void> {

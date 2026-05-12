@@ -202,14 +202,14 @@ $orange2:   #ff9800;
 
 /* ── Video grid – dynamisk ── */
 .camera-grid {
-  flex: 0 0 auto;
-  display: flex;
-  flex-wrap: wrap;
+  flex: 1;
+  min-height: 0;
+  display: grid;
   gap: clamp(4px,.6vw,10px);
   padding: clamp(6px,.8vh,12px) clamp(10px,1.5vw,20px);
   background: $bg2;
-  justify-content: center;
-  align-items: flex-start;
+  align-content: stretch;
+  justify-content: stretch;
 }
 
 .camera-tile {
@@ -218,9 +218,9 @@ $orange2:   #ff9800;
   border-radius: 8px;
   overflow: hidden;
   border: 1px solid $border;
-  width: clamp(100px, 14vw, 160px);
-  height: clamp(100px, 14vw, 160px);
-  flex-shrink: 0;
+  aspect-ratio: 1 / 1;
+  width: 100%;
+  height: 100%;
   display: flex;
   flex-direction: column;
 }
@@ -379,8 +379,18 @@ $orange2:   #ff9800;
   .content-row  { flex:1; min-height:0; flex-direction:column; overflow-y:auto; -webkit-overflow-scrolling:touch; }
   .play-col     { flex:none; max-width:100%; width:100%; }
   .play-area    { border-bottom:none; }
-  .camera-grid  { padding: 8px; }
-  .camera-tile  { width: clamp(80px, 22vw, 120px); height: clamp(80px, 22vw, 120px); }
+
+  /* Kamera: fylder bredden, kvadratisk 2×2 grid */
+  .camera-grid  {
+    padding: 8px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-auto-rows: calc(50vw - 12px);
+    gap: 8px;
+    align-content: start;
+  }
+  .camera-tile  { width: 100%; height: 100%; aspect-ratio: 1 / 1; }
+
   .col-score    { width:100%; max-width:100%; border-left:none; border-top:1px solid $border; flex:none; min-height:0; }
   .topbar       { display:none; }
 }

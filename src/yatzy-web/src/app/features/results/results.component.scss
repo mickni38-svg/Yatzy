@@ -98,3 +98,64 @@
     box-shadow: 0 6px 20px rgba(0,0,0,.25);
   }
 }
+
+.error-msg {
+  color: #ef9a9a;
+  font-size: .88rem;
+  background: rgba(239,83,80,.15);
+  border: 1px solid rgba(239,83,80,.3);
+  border-radius: 8px;
+  padding: 8px 16px;
+  margin: 0;
+}
+
+.action-row {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 8px;
+}
+
+.btn-new-game {
+  padding: 14px 44px;
+  background: #fff;
+  color: var(--green-900, #1b5e20);
+  border: none;
+  border-radius: var(--radius-md, 10px);
+  font-size: 1.05rem;
+  font-weight: 800;
+  cursor: pointer;
+  letter-spacing: .02em;
+  transition: all .15s;
+
+  &:hover:not(:disabled) {
+    background: #f1f8e9;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0,0,0,.25);
+  }
+
+  &:disabled {
+    opacity: .6;
+    cursor: not-allowed;
+  }
+}
+
+.btn-home {
+  padding: 14px 28px;
+  background: transparent;
+  color: #a5d6a7;
+  border: 2px solid rgba(165,214,167,.4);
+  border-radius: var(--radius-md, 10px);
+  font-size: 1.05rem;
+  font-weight: 700;
+  cursor: pointer;
+  letter-spacing: .02em;
+  transition: all .15s;
+
+  &:hover {
+    background: rgba(165,214,167,.1);
+    border-color: #a5d6a7;
+    transform: translateY(-2px);
+  }
+}

@@ -5,10 +5,10 @@
   </div>
 
   <h1 class="headline" [class.is-winner]="isWinner">
-    {{ isWinner ? 'You won!' : 'Game over!' }}
+    {{ isWinner ? 'Du vandt!' : 'Spillet er slut!' }}
   </h1>
   <p class="winner-name" *ngIf="!isWinner && winner">
-    {{ winner.displayName }} wins with {{ winner.totalScore }} pts
+    {{ winner.displayName }} vinder med {{ winner.totalScore }} point
   </p>
 
   <div class="standings">
@@ -19,10 +19,17 @@
          [class.rank-3]="i === 2"
          [class.me]="player.playerId === myPlayerId">
       <span class="medal">{{ i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : (i + 1) }}</span>
-      <span class="name">{{ player.displayName }}<span class="you-tag" *ngIf="player.playerId === myPlayerId"> you</span></span>
-      <span class="score">{{ player.totalScore }} pts</span>
+      <span class="name">{{ player.displayName }}<span class="you-tag" *ngIf="player.playerId === myPlayerId"> dig</span></span>
+      <span class="score">{{ player.totalScore }} point</span>
     </div>
   </div>
 
-  <button class="btn-play-again" (click)="playAgain()">Play Again</button>
+  <p class="error-msg" *ngIf="errorMessage">⚠️ {{ errorMessage }}</p>
+
+  <div class="action-row">
+    <button class="btn-new-game" (click)="newGame()" [disabled]="isCreating">
+      {{ isCreating ? 'Opretter...' : '🎲 Nyt spil' }}
+    </button>
+    <button class="btn-home" (click)="goHome()">🏠 Forside</button>
+  </div>
 </div>
