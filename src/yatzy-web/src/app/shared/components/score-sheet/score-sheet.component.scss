@@ -26,7 +26,7 @@ $greenhl: #66bb6a;
 .score-sheet {
   width:100%;
   border-collapse:collapse;
-  font-size:.95rem;
+  font-size:1rem;
   table-layout:fixed;
 }
 
@@ -34,12 +34,12 @@ $greenhl: #66bb6a;
 .score-sheet thead th {
   background:$green;
   color:#fff;
-  padding:9px 10px;
+  padding:11px 10px;
   text-align:center;
   position:sticky;
   top:0;
   z-index:2;
-  font-size:.90rem;
+  font-size:.95rem;
   white-space:nowrap;
   border-right:1px solid rgba(255,255,255,.15);
 }
@@ -50,11 +50,11 @@ $greenhl: #66bb6a;
 .score-sheet thead .you-tag { display:inline-block; font-size:.6rem; background:rgba(255,255,255,.2); border-radius:8px; padding:1px 5px; margin-top:1px; }
 
 /* Alle score-kolonner lige brede */
-.score-sheet thead th:not(.cat-col) { width:72px; min-width:56px; }
-.score-sheet td:not(.cat-name) { width:72px; min-width:56px; }
+.score-sheet thead th:not(.cat-col) { width:80px; min-width:64px; }
+.score-sheet td:not(.cat-name) { width:80px; min-width:64px; }
 
 /* Kategori-rækker */
-.score-sheet .score-row td { padding:4px 10px; border-bottom:1px solid $border; vertical-align:middle; }
+.score-sheet .score-row td { padding:6px 10px; border-bottom:1px solid $border; vertical-align:middle; }
 .score-sheet .score-row.not-selectable { cursor:not-allowed; }
 
 /* Hele rækken highlightes ved hover */
@@ -85,8 +85,8 @@ $greenhl: #66bb6a;
   border-bottom:1px solid $border;
   box-sizing:border-box;
 }
-.score-sheet .cat-label { color:$text; font-size:.95rem; }
-.score-sheet .max-pts   { font-size:.84rem; font-weight:700; color:$muted; min-width:22px; text-align:right; flex-shrink:0; }
+.score-sheet .cat-label { color:$text; font-size:1rem; }
+.score-sheet .max-pts   { font-size:.88rem; font-weight:700; color:$muted; min-width:26px; text-align:right; flex-shrink:0; }
 .score-sheet .bonus-max { color:$greenhl; }
 
 /* Score-celler */
@@ -96,9 +96,9 @@ $greenhl: #66bb6a;
   color:$muted;
   border-bottom:1px solid $border;
   border-right:1px solid $border;
-  padding:6px 6px;
+  padding:7px 6px;
   vertical-align:middle;
-  font-size:.92rem;
+  font-size:1rem;
 }
 .score-sheet .score-cell:last-child { border-right:none; }
 .score-sheet .score-cell.me   { background:rgba(46,125,50,.06); }
@@ -108,16 +108,16 @@ $greenhl: #66bb6a;
 .score-sheet .score-cell.available {
   cursor:pointer;
 }
-.score-sheet .score-cell.available .pick-pts { font-size:.98rem; font-weight:800; color:$greenhl; }
+.score-sheet .score-cell.available .pick-pts { font-size:1.05rem; font-weight:800; color:$greenhl; }
 
 /* Kan vælge men giver 0 – meget svag så man ikke forveksler med allerede valgt */
 .score-sheet .score-cell.available-zero {
   cursor:pointer;
 }
-.score-sheet .score-cell.available-zero .pick-pts { font-size:.98rem; font-weight:600; color:rgba(136,146,164,.45); }
+.score-sheet .score-cell.available-zero .pick-pts { font-size:1.05rem; font-weight:600; color:rgba(136,146,164,.45); }
 
 /* Subtotal-række (Sum øvre) */
-.score-sheet .subtotal-row td { padding:7px 10px; font-weight:700; color:$text; background:$bg3; border-bottom:2px solid $border; border-right:1px solid $border; vertical-align:middle; font-size:.95rem; }
+.score-sheet .subtotal-row td { padding:9px 10px; font-weight:700; color:$text; background:$bg3; border-bottom:2px solid $border; border-right:1px solid $border; vertical-align:middle; font-size:1rem; }
 .score-sheet .subtotal-row td.me { background:rgba(46,125,50,.12); }
 .score-sheet .subtotal-row td:not(.cat-name) { text-align:center; }
 
@@ -144,7 +144,7 @@ $greenhl: #66bb6a;
 }
 
 /* Total-række (Sum nederst) */
-.score-sheet .total-row td { padding:8px 10px; font-weight:700; background:$green; color:#fff; font-size:.98rem; border-top:2px solid $green2; border-right:1px solid rgba(255,255,255,.15); }
+.score-sheet .total-row td { padding:10px 10px; font-weight:700; background:$green; color:#fff; font-size:1.05rem; border-top:2px solid $green2; border-right:1px solid rgba(255,255,255,.15); }
 .score-sheet .total-row td.me { background:$green2; }
 .score-sheet .total-row td:not(.cat-name) { text-align:center; }
 

@@ -140,9 +140,8 @@ $orange2:   #ff9800;
 
 /* Spil-kolonne (terninger + video) */
 .play-col {
-  flex: 2;
+  flex: 1 1 0;
   min-width: 0;
-  max-width: 72%;
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -200,14 +199,17 @@ $orange2:   #ff9800;
 
 .error-msg { color:#ef5350; font-size:.85rem; text-align:center; background:rgba(239,83,80,.1); border:1px solid rgba(239,83,80,.3); border-radius:8px; padding:8px 14px; }
 
-/* ── Video grid – dynamisk ── */
+/* ── Video grid – fylder play-col, kvadratisk tiles ── */
 .camera-grid {
+  flex: 1;
+  min-height: 0;
   width: 100%;
   display: grid;
-  gap: clamp(4px,.6vw,8px);
-  padding: clamp(6px,.8vh,10px) clamp(8px,1.2vw,16px);
+  gap: clamp(3px,.5vw,6px);
+  padding: clamp(4px,.6vw,8px);
   background: $bg2;
   box-sizing: border-box;
+  align-content: start;
 }
 
 .camera-tile {
@@ -220,6 +222,7 @@ $orange2:   #ff9800;
   aspect-ratio: 1 / 1;
   display: flex;
   flex-direction: column;
+  min-width: 0;
 }
 .camera-label {
   position: absolute;
@@ -325,9 +328,7 @@ $orange2:   #ff9800;
 
 /* ── Pointtavle ── */
 .col-score {
-  flex: 1;
-  min-width: 260px;
-  max-width: 560px;
+  flex: 0 0 clamp(280px, 38%, 520px);
   min-height: 0;
   background: $bg2;
   border-left: 1px solid $border;
@@ -349,14 +350,13 @@ $orange2:   #ff9800;
 
 /* ── Tablet ≤900px ── */
 @media (max-width:900px) {
-  .sidebar    { width:130px; }
-  .col-score  { min-width:220px; }
-  .play-col   { max-width:68%; }
+  .sidebar   { width:130px; }
+  .col-score { flex: 0 0 clamp(220px, 36%, 360px); }
 }
 
 /* ── Kompakt desktop / stor tablet ≤1100px ── */
 @media (max-width:1100px) {
-  .play-col   { max-width:66%; }
+  .col-score { flex: 0 0 clamp(260px, 37%, 440px); }
 }
 
 /* ── Mobil ≤700px: 2-række layout (terninger+video øverst, pointtavle nederst) ── */
@@ -377,14 +377,15 @@ $orange2:   #ff9800;
   .play-col     { flex:none; max-width:100%; width:100%; }
   .play-area    { border-bottom:none; }
 
-  /* Kamera: 2×2, hver celle er præcis halvdelen af viewport-bredden minus gap/padding */
+  /* Kamera: altid 2 kolonner, kvadratisk, fylder fuld bredde */
   .camera-grid  {
-    padding: 6px;
-    gap: 6px;
-    grid-template-columns: 1fr 1fr;
-    grid-template-rows: auto;
+    flex: none;
+    padding: 4px;
+    gap: 4px;
+    grid-template-columns: 1fr 1fr !important;
+    align-content: start;
   }
-  .camera-tile  { aspect-ratio: 1 / 1; width: 100%; height: auto; }
+  .camera-tile  { aspect-ratio: 1 / 1; width: 100%; }
 
   .col-score    { width:100%; max-width:100%; border-left:none; border-top:1px solid $border; flex:none; min-height:0; }
   .topbar       { display:none; }
