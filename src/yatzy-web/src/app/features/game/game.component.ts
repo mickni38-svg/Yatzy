@@ -58,7 +58,11 @@ export class GameComponent implements OnInit, OnDestroy {
   showScore = false;
   cameraEnabled = false;
 
-  /** PlayerId → true når den pågældende spiller skal vise Yatzy-GIF */
+  get cameraGridCols(): string {
+    const n = this.game?.players.length ?? 0;
+    return n <= 2 ? 'repeat(1, 1fr)' : 'repeat(2, 1fr)';
+  }
+
   yatzyCelebrating = new Set<string>();
   yatzyCelebrationGif = new Map<string, string>();
   gifList: GifEntry[] = [];
@@ -368,13 +372,6 @@ export class GameComponent implements OnInit, OnDestroy {
   get canSelectOnly(): boolean { return (this.game?.rollNumber ?? 0) >= 3; }
   get canSelectEarly(): boolean { return this.isMyTurn && (this.game?.rollNumber ?? 0) > 0 && (this.game?.rollNumber ?? 0) < 3; }
   isHost(playerId: string): boolean { return this.game?.players[0]?.playerId === playerId; }
-
-  /** CSS grid-template-columns baseret på antal spillere */
-  get cameraGridCols(): string {
-    const n = this.game?.players.length ?? 0;
-    if (n <= 1) return 'repeat(1, 1fr)';
-    return 'repeat(2, 1fr)';
-  }
 
   async leaveGame(): Promise<void> {
     const gameId = this.game?.gameId;

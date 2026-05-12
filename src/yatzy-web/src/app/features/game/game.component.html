@@ -108,7 +108,8 @@
 
         <!-- Video grid – dynamisk kolonner/rækker efter antal spillere -->
         <div class="camera-grid"
-             *ngIf="cameraEnabled">
+             *ngIf="cameraEnabled"
+             [style.grid-template-columns]="cameraGridCols">
           <div class="camera-tile" *ngFor="let p of activePlayers">
             <div class="camera-label">
               <span class="online-dot">●</span>

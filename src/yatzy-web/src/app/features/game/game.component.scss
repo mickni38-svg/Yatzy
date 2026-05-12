@@ -200,11 +200,10 @@ $orange2:   #ff9800;
 
 .error-msg { color:#ef5350; font-size:.85rem; text-align:center; background:rgba(239,83,80,.1); border:1px solid rgba(239,83,80,.3); border-radius:8px; padding:8px 14px; }
 
-/* ── Video grid – 2×2 kvadratisk tiles ── */
+/* ── Video grid – dynamisk kolonner, kvadratisk tiles ── */
 .camera-grid {
   width: 100%;
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
   gap: clamp(4px,.6vw,8px);
   padding: clamp(4px,.6vw,8px);
   background: $bg2;
