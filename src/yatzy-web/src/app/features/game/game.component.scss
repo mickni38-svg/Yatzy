@@ -199,13 +199,12 @@ $orange2:   #ff9800;
 
 .error-msg { color:#ef5350; font-size:.85rem; text-align:center; background:rgba(239,83,80,.1); border:1px solid rgba(239,83,80,.3); border-radius:8px; padding:8px 14px; }
 
-/* ── Video grid – fylder play-col, kvadratisk tiles ── */
+/* ── Video grid – 2×2 kvadratisk tiles ── */
 .camera-grid {
-  flex: 1;
-  min-height: 0;
   width: 100%;
   display: grid;
-  gap: clamp(3px,.5vw,6px);
+  grid-template-columns: repeat(2, 1fr);
+  gap: clamp(4px,.6vw,8px);
   padding: clamp(4px,.6vw,8px);
   background: $bg2;
   box-sizing: border-box;
@@ -377,13 +376,10 @@ $orange2:   #ff9800;
   .play-col     { flex:none; max-width:100%; width:100%; }
   .play-area    { border-bottom:none; }
 
-  /* Kamera: altid 2 kolonner, kvadratisk, fylder fuld bredde */
+  /* Kamera: 2 kolonner, kvadratisk */
   .camera-grid  {
-    flex: none;
     padding: 4px;
     gap: 4px;
-    grid-template-columns: 1fr 1fr !important;
-    align-content: start;
   }
   .camera-tile  { aspect-ratio: 1 / 1; width: 100%; }
 
