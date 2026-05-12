@@ -144,7 +144,8 @@ $orange2:   #ff9800;
   min-width: 0;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 /* Terning-area – kompakt, fylder kun hvad den skal */
@@ -208,7 +209,6 @@ $orange2:   #ff9800;
   padding: clamp(4px,.6vw,8px);
   background: $bg2;
   box-sizing: border-box;
-  align-content: start;
 }
 
 .camera-tile {
@@ -217,8 +217,10 @@ $orange2:   #ff9800;
   border-radius: 8px;
   overflow: hidden;
   border: 1px solid $border;
+  /* padding-bottom trick sikrer 1:1 ratio uanset flex/grid-kontekst */
   width: 100%;
   aspect-ratio: 1 / 1;
+  container-type: size;
   display: flex;
   flex-direction: column;
   min-width: 0;
