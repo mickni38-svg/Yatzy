@@ -18,13 +18,9 @@
     <div class="sidebar-divider"></div>
 
     <nav class="sidebar-nav">
-      <button class="nav-item active">
-        <span class="nav-icon">🎲</span>
-        <span>KAST</span>
-      </button>
-      <button class="nav-item">
-        <span class="nav-icon">📋</span>
-        <span>POINTTAVLE</span>
+      <button class="nav-item btn-camera-nav" (click)="toggleCamera()" [class.active]="cameraEnabled">
+        <span class="nav-icon">📷</span>
+        <span>{{ cameraEnabled ? 'KAMERA TIL' : 'KAMERA FRA' }}</span>
       </button>
     </nav>
 
@@ -56,11 +52,6 @@
 
     <!-- ── SEKTION 1: Terninger & kast-knap ── -->
     <section class="sec-dice">
-      <!-- Kamera-knap kun synlig på mobil (topbar er skjult) -->
-      <button class="btn-camera-toggle btn-camera-mobile" (click)="toggleCamera()" [class.active]="cameraEnabled">
-        {{ cameraEnabled ? '📷 Kamera til' : '📷 Kamera fra' }}
-      </button>
-
       <div class="cast-header">
         <p class="cast-title" *ngIf="!canSelectOnly">
           Kast {{ game.rollNumber === 0 ? 1 : game.rollNumber }} af 3
