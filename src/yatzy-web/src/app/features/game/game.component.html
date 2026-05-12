@@ -106,44 +106,6 @@
           <p class="error-msg" *ngIf="errorMessage">⚠️ {{ errorMessage }}</p>
         </div>
 
-        <!-- Video grid – dynamisk kolonner/rækker efter antal spillere -->
-        <div class="camera-grid"
-             *ngIf="cameraEnabled"
-             [style.grid-template-columns]="cameraGridCols">
-          <div class="camera-tile" *ngFor="let p of activePlayers">
-            <div class="camera-label">
-              <span class="online-dot">●</span>
-              {{ p.displayName }}<span *ngIf="isHost(p.playerId)"> 👑</span><span *ngIf="p.playerId === myPlayerId" class="mic-icon"> 🎤</span>
-            </div>
-            <video *ngIf="p.playerId === myPlayerId && webrtc.localStream"
-                   [srcObject]="webrtc.localStream" autoplay muted playsinline></video>
-            <video *ngIf="p.playerId !== myPlayerId && allStreams.get(p.playerId)"
-                   [srcObject]="allStreams.get(p.playerId)" autoplay playsinline></video>
-            <div class="camera-no-stream"
-                 *ngIf="(p.playerId === myPlayerId && !webrtc.localStream) || (p.playerId !== myPlayerId && !allStreams.get(p.playerId))">
-            </div>
-            <!-- Yatzy fejring GIF overlay -->
-            <div class="yatzy-overlay" *ngIf="isCelebrating(p.playerId)">
-              <img [src]="getCelebrationGif(p.playerId)" alt="YATZY!" class="yatzy-gif" />
-              <div class="yatzy-text" *ngIf="showYatzyOverlay(p.playerId)">🎲 YATZY! 🎲</div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Host: manuel Yatzy-prank knap -->
-        <div class="host-yatzy-bar" *ngIf="isIAmHost">
-          <span class="host-yatzy-label">Host fun:</span>
-          <select class="gif-select" [(ngModel)]="selectedGif" [compareWith]="compareGifs">
-            <option *ngFor="let g of gifList" [ngValue]="g">{{ g.name }}</option>
-          </select>
-          <button class="btn-yatzy-prank"
-                  *ngFor="let p of activePlayers"
-                  (click)="triggerYatzyCelebration(p.playerId, true)"
-                  title="Vis GIF på {{ p.displayName }}">
-            🎉 {{ p.displayName }}
-          </button>
-        </div>
-
       </main>
 
       <!-- Pointtavle -->
@@ -160,6 +122,45 @@
       </aside>
 
     </div>
+
+    <!-- Video grid – fuld bredde under terninger+pointtavle -->
+    <div class="camera-section" *ngIf="cameraEnabled">
+      <div class="camera-grid"
+           [style.grid-template-columns]="cameraGridCols">
+        <div class="camera-tile" *ngFor="let p of activePlayers">
+          <div class="camera-label">
+            <span class="online-dot">●</span>
+            {{ p.displayName }}<span *ngIf="isHost(p.playerId)"> 👑</span><span *ngIf="p.playerId === myPlayerId" class="mic-icon"> 🎤</span>
+          </div>
+          <video *ngIf="p.playerId === myPlayerId && webrtc.localStream"
+                 [srcObject]="webrtc.localStream" autoplay muted playsinline></video>
+          <video *ngIf="p.playerId !== myPlayerId && allStreams.get(p.playerId)"
+                 [srcObject]="allStreams.get(p.playerId)" autoplay playsinline></video>
+          <div class="camera-no-stream"
+               *ngIf="(p.playerId === myPlayerId && !webrtc.localStream) || (p.playerId !== myPlayerId && !allStreams.get(p.playerId))">
+          </div>
+          <div class="yatzy-overlay" *ngIf="isCelebrating(p.playerId)">
+            <img [src]="getCelebrationGif(p.playerId)" alt="YATZY!" class="yatzy-gif" />
+            <div class="yatzy-text" *ngIf="showYatzyOverlay(p.playerId)">🎲 YATZY! 🎲</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Host: manuel Yatzy-prank knap -->
+    <div class="host-yatzy-bar" *ngIf="isIAmHost">
+      <span class="host-yatzy-label">Host fun:</span>
+      <select class="gif-select" [(ngModel)]="selectedGif" [compareWith]="compareGifs">
+        <option *ngFor="let g of gifList" [ngValue]="g">{{ g.name }}</option>
+      </select>
+      <button class="btn-yatzy-prank"
+              *ngFor="let p of activePlayers"
+              (click)="triggerYatzyCelebration(p.playerId, true)"
+              title="Vis GIF på {{ p.displayName }}">
+        🎉 {{ p.displayName }}
+      </button>
+    </div>
+
   </div>
 
 </div>

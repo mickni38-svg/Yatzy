@@ -89,7 +89,8 @@ $orange2:   #ff9800;
   min-width: 0;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 /* ── Topbar ── */
@@ -129,13 +130,12 @@ $orange2:   #ff9800;
   @media (max-width:700px) { display:none; }
 }
 
-/* ── Content row: terninger+video til venstre | pointtavle til højre ── */
+/* ── Content row: terninger til venstre | pointtavle til højre ── */
 .content-row {
-  flex: 1;
-  min-height: 0;
+  flex: 0 0 auto;
   display: flex;
   flex-direction: row;
-  overflow: hidden;
+  min-height: 0;
 }
 
 /* Spil-kolonne (terninger + video) */
@@ -200,7 +200,14 @@ $orange2:   #ff9800;
 
 .error-msg { color:#ef5350; font-size:.85rem; text-align:center; background:rgba(239,83,80,.1); border:1px solid rgba(239,83,80,.3); border-radius:8px; padding:8px 14px; }
 
-/* ── Video grid – dynamisk kolonner, kvadratisk tiles ── */
+/* ── Video grid – fuld bredde, under terninger+pointtavle ── */
+.camera-section {
+  flex-shrink: 0;
+  width: 100%;
+  background: $bg2;
+  border-top: 1px solid $border;
+}
+
 .camera-grid {
   width: 100%;
   display: grid;
@@ -370,17 +377,10 @@ $orange2:   #ff9800;
   .sidebar-spacer { flex:1; min-width:4px; }
   .btn-leave    { margin:0; padding:4px 8px; font-size:.62rem; width:auto; white-space:nowrap; flex-shrink:0; }
 
-  .game-body    { flex:1; min-height:0; display:flex; flex-direction:column; overflow:hidden; }
-  .content-row  { flex:1; min-height:0; flex-direction:column; overflow-y:auto; -webkit-overflow-scrolling:touch; }
+  .game-body    { flex:1; min-height:0; display:flex; flex-direction:column; overflow-y:auto; overflow-x:hidden; }
+  .content-row  { flex:0 0 auto; flex-direction:column; }
   .play-col     { flex:none; max-width:100%; width:100%; }
   .play-area    { border-bottom:none; }
-
-  /* Kamera: 2 kolonner, kvadratisk */
-  .camera-grid  {
-    padding: 4px;
-    gap: 4px;
-  }
-  .camera-tile  { aspect-ratio: 1 / 1; width: 100%; }
 
   .col-score    { width:100%; max-width:100%; border-left:none; border-top:1px solid $border; flex:none; min-height:0; }
   .topbar       { display:none; }
