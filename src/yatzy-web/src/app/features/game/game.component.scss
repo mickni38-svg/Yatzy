@@ -202,14 +202,12 @@ $orange2:   #ff9800;
 
 /* ── Video grid – dynamisk ── */
 .camera-grid {
-  flex: 1;
-  min-height: 0;
+  width: 100%;
   display: grid;
-  gap: clamp(4px,.6vw,10px);
-  padding: clamp(6px,.8vh,12px) clamp(10px,1.5vw,20px);
+  gap: clamp(4px,.6vw,8px);
+  padding: clamp(6px,.8vh,10px) clamp(8px,1.2vw,16px);
   background: $bg2;
-  align-content: stretch;
-  justify-content: stretch;
+  box-sizing: border-box;
 }
 
 .camera-tile {
@@ -218,9 +216,8 @@ $orange2:   #ff9800;
   border-radius: 8px;
   overflow: hidden;
   border: 1px solid $border;
-  aspect-ratio: 1 / 1;
   width: 100%;
-  height: 100%;
+  aspect-ratio: 1 / 1;
   display: flex;
   flex-direction: column;
 }
@@ -380,16 +377,14 @@ $orange2:   #ff9800;
   .play-col     { flex:none; max-width:100%; width:100%; }
   .play-area    { border-bottom:none; }
 
-  /* Kamera: fylder bredden, kvadratisk 2×2 grid */
+  /* Kamera: 2×2, hver celle er præcis halvdelen af viewport-bredden minus gap/padding */
   .camera-grid  {
-    padding: 8px;
-    display: grid;
+    padding: 6px;
+    gap: 6px;
     grid-template-columns: 1fr 1fr;
-    grid-auto-rows: calc(50vw - 12px);
-    gap: 8px;
-    align-content: start;
+    grid-template-rows: auto;
   }
-  .camera-tile  { width: 100%; height: 100%; aspect-ratio: 1 / 1; }
+  .camera-tile  { aspect-ratio: 1 / 1; width: 100%; height: auto; }
 
   .col-score    { width:100%; max-width:100%; border-left:none; border-top:1px solid $border; flex:none; min-height:0; }
   .topbar       { display:none; }

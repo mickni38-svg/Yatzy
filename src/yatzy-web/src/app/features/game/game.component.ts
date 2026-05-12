@@ -376,13 +376,6 @@ export class GameComponent implements OnInit, OnDestroy {
     return 'repeat(2, 1fr)';
   }
 
-  /** CSS grid-template-rows baseret på antal spillere */
-  get cameraGridRows(): string {
-    const n = this.game?.players.length ?? 0;
-    if (n <= 2) return 'repeat(1, 1fr)';
-    return 'repeat(2, 1fr)';
-  }
-
   async leaveGame(): Promise<void> {
     const gameId = this.game?.gameId;
     const playerId = this.myPlayerId;
