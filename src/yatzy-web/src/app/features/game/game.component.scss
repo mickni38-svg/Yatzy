@@ -1,4 +1,4 @@
-/* ── Dark tema variabler ── */
+﻿/* ── Dark tema variabler ── */
 $bg:        #1a1f2e;
 $bg2:       #222838;
 $bg3:       #2a3040;
@@ -9,7 +9,7 @@ $green:     #2e7d32;
 $orange:    #f57c00;
 $orange2:   #ff9800;
 
-/* ── Shell ── */
+/* ── Shell: sidebar til venstre, game-body til højre ── */
 .game-shell {
   display: flex;
   height: 100vh;
@@ -19,7 +19,7 @@ $orange2:   #ff9800;
   font-family: system-ui, sans-serif;
 }
 
-/* ── Venstre sidebar ── */
+/* ── Sidebar ── */
 .sidebar {
   width: 160px;
   flex-shrink: 0;
@@ -29,61 +29,36 @@ $orange2:   #ff9800;
   flex-direction: column;
   padding: 16px 0;
 }
-
-.sidebar-logo {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 0 16px 16px;
-  font-size: 1.1rem;
-  font-weight: 900;
-  color: $orange2;
-  letter-spacing: .05em;
-}
-.logo-icon { font-size: 1.4rem; }
-
-.sidebar-info {
-  padding: 12px 16px;
-  background: $bg3;
-  margin: 0 8px;
-  border-radius: 8px;
-}
-.sidebar-label { font-size: .62rem; font-weight:700; color: $text-muted; letter-spacing:.08em; margin-bottom:2px; }
-.sidebar-round { font-size: 1.5rem; font-weight: 900; color: $text; line-height: 1; margin-bottom: 6px; }
-.sidebar-turn  { font-size: .72rem; font-weight: 700; color: $text-muted; }
-.sidebar-turn.my-turn { color: $green; }
-
-.sidebar-divider { height:1px; background:$border; margin: 16px 8px; }
-
+.sidebar-logo { display:flex; align-items:center; gap:8px; padding:0 16px 16px; font-size:1.1rem; font-weight:900; color:$orange2; letter-spacing:.05em; }
+.logo-icon { font-size:1.4rem; }
+.sidebar-info { padding:12px 16px; background:$bg3; margin:0 8px; border-radius:8px; }
+.sidebar-label { font-size:.62rem; font-weight:700; color:$text-muted; letter-spacing:.08em; margin-bottom:2px; }
+.sidebar-round { font-size:1.5rem; font-weight:900; color:$text; line-height:1; margin-bottom:6px; }
+.sidebar-turn  { font-size:.72rem; font-weight:700; color:$text-muted; }
+.sidebar-turn.my-turn { color:$green; }
+.sidebar-divider { height:1px; background:$border; margin:16px 8px; }
 .sidebar-nav { display:flex; flex-direction:column; gap:4px; padding:0 8px; }
 .nav-item {
-  display: flex; align-items: center; gap: 10px;
-  padding: 10px 12px;
-  border: none; background: transparent; color: $text-muted;
-  border-radius: 8px; font-size: .75rem; font-weight:700; letter-spacing:.04em;
-  cursor: pointer; text-align:left; width:100%;
-  transition: background .15s, color .15s;
+  display:flex; align-items:center; gap:10px; padding:10px 12px;
+  border:none; background:transparent; color:$text-muted;
+  border-radius:8px; font-size:.75rem; font-weight:700; letter-spacing:.04em;
+  cursor:pointer; text-align:left; width:100%;
+  transition:background .15s, color .15s;
   .nav-icon { font-size:1rem; }
-  &:hover { background: $bg3; color: $text; }
-  &.active { background: $bg3; color: $text; border-left: 3px solid $orange2; padding-left: 9px; }
+  &:hover { background:$bg3; color:$text; }
+  &.active { background:$bg3; color:$text; border-left:3px solid $orange2; padding-left:9px; }
 }
-
 .sidebar-spacer { flex:1; }
-
 .btn-leave {
-  margin: 0 8px;
-  padding: 10px 12px;
-  background: transparent;
-  border: 1px solid #c62828;
-  color: #ef5350;
-  border-radius: 8px;
-  font-size: .72rem; font-weight:700; letter-spacing:.04em;
-  cursor: pointer; text-align:left; width:calc(100% - 16px);
-  transition: background .15s;
-  &:hover { background: rgba(239,83,80,.12); }
+  margin:0 8px; padding:10px 12px; background:transparent;
+  border:1px solid #c62828; color:#ef5350; border-radius:8px;
+  font-size:.72rem; font-weight:700; letter-spacing:.04em;
+  cursor:pointer; text-align:left; width:calc(100% - 16px);
+  transition:background .15s;
+  &:hover { background:rgba(239,83,80,.12); }
 }
 
-/* ── Body (topbar + main + score) ── */
+/* ── game-body: scroller lodret, indeholder alle 3 sektioner ── */
 .game-body {
   flex: 1;
   min-width: 0;
@@ -95,20 +70,12 @@ $orange2:   #ff9800;
 
 /* ── Topbar ── */
 .topbar {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  height: 52px;
-  flex-shrink: 0;
-  background: $bg2;
-  border-bottom: 1px solid $border;
-  padding: 0 20px;
-  gap: 16px;
+  display:flex; align-items:center; justify-content:flex-end;
+  height:52px; flex-shrink:0;
+  background:$bg2; border-bottom:1px solid $border;
+  padding:0 20px; gap:16px;
 }
-.topbar-center {
-  flex:1; display:flex; align-items:center; gap:10px;
-  font-size:.9rem;
-}
+.topbar-center { flex:1; display:flex; align-items:center; gap:10px; font-size:.9rem; }
 .round-info { font-weight:600; color:$text-muted; }
 .turn-dot   { font-size:.7rem; color:$text-muted; }
 .turn-dot.my-turn { color:#66bb6a; }
@@ -120,58 +87,39 @@ $orange2:   #ff9800;
   cursor:pointer; transition:background .15s;
   &:hover { background:$bg3; color:$text; }
 }
-
 .btn-camera-toggle {
   padding:6px 14px; border:1px solid $border; background:transparent;
   color:$text-muted; border-radius:8px; font-size:.82rem; font-weight:600;
   cursor:pointer; transition:background .15s, color .15s, border-color .15s;
   &:hover { background:$bg3; color:$text; }
-  &.active { border-color:$orange; color:$orange2; background:rgba($orange, .1); }
-  @media (max-width:700px) { display:none; }
+  &.active { border-color:$orange; color:$orange2; background:rgba($orange,.1); }
 }
 
-/* ── Content row: terninger til venstre | pointtavle til højre ── */
-.content-row {
-  flex: 0 0 auto;
-  display: flex;
-  flex-direction: row;
-  min-height: 0;
-}
-
-/* Spil-kolonne (terninger + video) */
-.play-col {
-  flex: 1 1 0;
-  min-width: 0;
+/* ══════════════════════════════════════════════
+   SEKTION 1 — Terninger & kast-knap
+   ══════════════════════════════════════════════ */
+.sec-dice {
+  width: 100%;
+  flex-shrink: 0;
   display: flex;
   flex-direction: column;
-  overflow-y: auto;
-  overflow-x: hidden;
-}
-
-/* Terning-area – kompakt, fylder kun hvad den skal */
-.play-area {
-  flex: 0 0 auto;
-  overflow-y: visible;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
   align-items: center;
   gap: clamp(8px,1.5vh,18px);
   padding: clamp(10px,1.8vh,22px) clamp(16px,3vw,40px);
   border-bottom: 1px solid $border;
+  background: $bg;
+  box-sizing: border-box;
 }
 
 .cast-header { text-align:center; }
 .cast-title  { font-size:clamp(.85rem,1.4vw,1.05rem); font-weight:700; color:$text; margin:0 0 2px; }
 .cast-sub    { font-size:clamp(.72rem,1.1vw,.88rem); font-weight:600; color:#66bb6a; margin:0; }
 .cast-sub.waiting { color:$text-muted; font-style:italic; font-weight:400; }
-
 .dice-row    { display:flex; gap:clamp(6px,1.4vw,18px); justify-content:center; align-items:flex-end; flex-wrap:wrap; }
 .die-wrapper { display:flex; flex-direction:column; align-items:center; gap:clamp(4px,.8vh,8px); }
 
 .btn-hold {
-  padding:5px clamp(10px,1.5vw,22px);
-  border-radius:6px;
+  padding:5px clamp(10px,1.5vw,22px); border-radius:6px;
   font-size:clamp(.68rem,1.1vw,.8rem); font-weight:800; letter-spacing:.06em;
   border:2px solid $orange; background:transparent; color:$orange;
   cursor:pointer; transition:background .15s,color .15s;
@@ -180,7 +128,6 @@ $orange2:   #ff9800;
   &.held:hover      { background:darken($orange,8%); }
   &:disabled        { opacity:.3; cursor:not-allowed; }
 }
-
 .center-actions { display:flex; align-items:center; gap:16px; justify-content:center; flex-wrap:wrap; }
 .btn-roll-big {
   padding:clamp(12px,2vh,18px) clamp(32px,5vw,64px);
@@ -197,23 +144,24 @@ $orange2:   #ff9800;
   0%,100% { box-shadow:0 4px 18px rgba($orange,.4); }
   50%      { box-shadow:0 6px 28px rgba($orange,.7); transform:scale(1.03); }
 }
-
 .error-msg { color:#ef5350; font-size:.85rem; text-align:center; background:rgba(239,83,80,.1); border:1px solid rgba(239,83,80,.3); border-radius:8px; padding:8px 14px; }
 
-/* ── Video grid – fuld bredde, under terninger+pointtavle ── */
-.camera-section {
-  flex-shrink: 0;
+/* ══════════════════════════════════════════════
+   SEKTION 2 — Video tiles (altid fuld bredde)
+   ══════════════════════════════════════════════ */
+.sec-camera {
   width: 100%;
+  flex-shrink: 0;
   background: $bg2;
-  border-top: 1px solid $border;
+  border-bottom: 1px solid $border;
+  box-sizing: border-box;
 }
 
 .camera-grid {
   width: 100%;
   display: grid;
-  gap: clamp(4px,.6vw,8px);
-  padding: clamp(4px,.6vw,8px);
-  background: $bg2;
+  gap: 6px;
+  padding: 6px;
   box-sizing: border-box;
 }
 
@@ -230,122 +178,66 @@ $orange2:   #ff9800;
   min-width: 0;
 }
 .camera-label {
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  padding: 4px 8px;
-  background: linear-gradient(to bottom, rgba(0,0,0,.7), transparent);
-  font-size: clamp(.66rem,1.1vw,.8rem); font-weight:700; color:#fff;
-  display:flex; align-items:center; gap:4px;
-  z-index:1;
+  position:absolute; top:0; left:0; right:0; padding:4px 8px;
+  background:linear-gradient(to bottom, rgba(0,0,0,.7), transparent);
+  font-size:clamp(.66rem,1.1vw,.8rem); font-weight:700; color:#fff;
+  display:flex; align-items:center; gap:4px; z-index:1;
   white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
 }
 .online-dot { color:#66bb6a; font-size:.6rem; }
 .mic-icon   { margin-left:auto; }
+.camera-tile video { width:100%; height:100%; object-fit:cover; display:block; flex:1; }
+.camera-no-stream  { flex:1; background:$bg3; display:flex; align-items:center; justify-content:center; color:$text-muted; font-size:1.5rem; }
 
-.camera-tile video {
-  width:100%; height:100%; object-fit:cover; display:block; flex:1;
-}
-.camera-no-stream {
-  flex:1; background:$bg3; display:flex; align-items:center; justify-content:center;
-  color:$text-muted; font-size:1.5rem;
-}
-
-/* ── Yatzy fejring overlay ── */
 .yatzy-overlay {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  background: rgba(0,0,0,.45);
-  z-index: 10;
-  animation: yatzy-fadein .3s ease;
-  border-radius: 8px;
+  position:absolute; inset:0; display:flex; flex-direction:column;
+  align-items:center; justify-content:center;
+  background:rgba(0,0,0,.45); z-index:10;
+  animation:yatzy-fadein .3s ease; border-radius:8px;
 }
-.yatzy-gif {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  border-radius: 8px;
-}
+.yatzy-gif { width:100%; height:100%; object-fit:cover; border-radius:8px; }
 .yatzy-text {
-  position: absolute;
-  bottom: 8px;
-  left: 0; right: 0;
-  text-align: center;
-  font-size: clamp(.9rem, 2.5vw, 1.5rem);
-  font-weight: 900;
-  color: #fff;
-  text-shadow: 0 2px 8px rgba(0,0,0,.9), 0 0 20px $orange;
-  letter-spacing: .08em;
-  animation: yatzy-bounce .5s ease infinite alternate;
+  position:absolute; bottom:8px; left:0; right:0; text-align:center;
+  font-size:clamp(.9rem,2.5vw,1.5rem); font-weight:900; color:#fff;
+  text-shadow:0 2px 8px rgba(0,0,0,.9), 0 0 20px $orange;
+  letter-spacing:.08em; animation:yatzy-bounce .5s ease infinite alternate;
 }
-@keyframes yatzy-fadein {
-  from { opacity: 0; transform: scale(1.05); }
-  to   { opacity: 1; transform: scale(1); }
-}
-@keyframes yatzy-bounce {
-  from { transform: translateY(0) scale(1); }
-  to   { transform: translateY(-4px) scale(1.04); }
-}
+@keyframes yatzy-fadein { from { opacity:0; transform:scale(1.05); } to { opacity:1; transform:scale(1); } }
+@keyframes yatzy-bounce { from { transform:translateY(0) scale(1); } to { transform:translateY(-4px) scale(1.04); } }
 
-/* ── Host Yatzy-prank bar ── */
 .host-yatzy-bar {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 6px clamp(10px,1.5vw,20px);
-  background: $bg2;
-  border-top: 1px solid $border;
-  flex-wrap: wrap;
+  display:flex; align-items:center; gap:8px;
+  padding:6px clamp(10px,1.5vw,20px);
+  background:$bg2; border-top:1px solid $border; flex-wrap:wrap;
 }
-.host-yatzy-label {
-  font-size: .68rem;
-  font-weight: 700;
-  color: $text-muted;
-  letter-spacing: .05em;
-  white-space: nowrap;
-}
+.host-yatzy-label { font-size:.68rem; font-weight:700; color:$text-muted; letter-spacing:.05em; white-space:nowrap; }
 .gif-select {
-  padding: 4px 8px;
-  border: 1px solid $border;
-  background: $bg3;
-  color: $text;
-  border-radius: 6px;
-  font-size: .72rem;
-  cursor: pointer;
-  outline: none;
-  &:focus { border-color: $orange; }
+  padding:4px 8px; border:1px solid $border; background:$bg3; color:$text;
+  border-radius:6px; font-size:.72rem; cursor:pointer; outline:none;
+  &:focus { border-color:$orange; }
 }
 .btn-yatzy-prank {
-  padding: 4px 10px;
-  border: 1px solid $orange;
-  background: transparent;
-  color: $orange2;
-  border-radius: 6px;
-  font-size: .72rem;
-  font-weight: 700;
-  cursor: pointer;
-  transition: background .15s;
-  &:hover { background: rgba($orange, .18); }
+  padding:4px 10px; border:1px solid $orange; background:transparent; color:$orange2;
+  border-radius:6px; font-size:.72rem; font-weight:700; cursor:pointer;
+  transition:background .15s;
+  &:hover { background:rgba($orange,.18); }
 }
 
-/* ── Pointtavle ── */
-.col-score {
-  flex: 0 0 clamp(280px, 38%, 520px);
-  min-height: 0;
-  background: $bg2;
-  border-left: 1px solid $border;
+/* ══════════════════════════════════════════════
+   SEKTION 3 — Scoreboard
+   ══════════════════════════════════════════════ */
+.sec-score {
+  width: 100%;
+  flex-shrink: 0;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
+  background: $bg2;
+  box-sizing: border-box;
 }
 .score-panel-title {
-  padding: 14px 16px 12px;
-  font-size: .82rem; font-weight:900; color:$text; letter-spacing:.1em;
-  border-bottom: 1px solid $border;
-  background: $bg2; flex-shrink:0;
+  padding:14px 16px 12px;
+  font-size:.82rem; font-weight:900; color:$text; letter-spacing:.1em;
+  border-bottom:1px solid $border; background:$bg2; flex-shrink:0;
 }
 
 /* ── Utility ── */
@@ -355,33 +247,19 @@ $orange2:   #ff9800;
 
 /* ── Tablet ≤900px ── */
 @media (max-width:900px) {
-  .sidebar   { width:130px; }
-  .col-score { flex: 0 0 clamp(220px, 36%, 360px); }
+  .sidebar { width:130px; }
 }
 
-/* ── Kompakt desktop / stor tablet ≤1100px ── */
-@media (max-width:1100px) {
-  .col-score { flex: 0 0 clamp(260px, 37%, 440px); }
-}
-
-/* ── Mobil ≤700px: 2-række layout (terninger+video øverst, pointtavle nederst) ── */
+/* ── Mobil ≤700px ── */
 @media (max-width:700px) {
-  .game-shell { flex-direction:column; }
-  .sidebar    { width:100%; flex-direction:row; height:44px; padding:0 8px; align-items:center; border-right:none; border-bottom:1px solid $border; overflow:hidden; }
+  .game-shell   { flex-direction:column; }
+  .sidebar      { width:100%; flex-direction:row; height:44px; padding:0 8px; align-items:center; border-right:none; border-bottom:1px solid $border; overflow:hidden; }
   .sidebar-logo { padding:0 8px 0 0; font-size:.82rem; }
-  .logo-icon  { font-size:1rem; }
-  .sidebar-info,
-  .sidebar-divider { display:none; }
+  .logo-icon    { font-size:1rem; }
+  .sidebar-info, .sidebar-divider { display:none; }
   .sidebar-nav  { flex-direction:row; padding:0; gap:2px; flex:1; }
   .nav-item     { padding:4px 7px; font-size:.62rem; .nav-icon { font-size:.8rem; } }
   .sidebar-spacer { flex:1; min-width:4px; }
   .btn-leave    { margin:0; padding:4px 8px; font-size:.62rem; width:auto; white-space:nowrap; flex-shrink:0; }
-
-  .game-body    { flex:1; min-height:0; display:flex; flex-direction:column; overflow-y:auto; overflow-x:hidden; }
-  .content-row  { flex:0 0 auto; flex-direction:column; }
-  .play-col     { flex:none; max-width:100%; width:100%; }
-  .play-area    { border-bottom:none; }
-
-  .col-score    { width:100%; max-width:100%; border-left:none; border-top:1px solid $border; flex:none; min-height:0; }
   .topbar       { display:none; }
 }

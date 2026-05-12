@@ -35,7 +35,7 @@
     </button>
   </aside>
 
-  <!-- RESTEN: topbar + indhold -->
+  <!-- RESTEN: topbar + 3 sektioner -->
   <div class="game-body">
 
     <header class="topbar">
@@ -54,79 +54,56 @@
       </div>
     </header>
 
-    <!-- Horisontal row: spil + pointtavle -->
-    <div class="content-row">
+    <!-- ── SEKTION 1: Terninger & kast-knap ── -->
+    <section class="sec-dice">
+      <div class="cast-header">
+        <p class="cast-title" *ngIf="!canSelectOnly">
+          Kast {{ game.rollNumber === 0 ? 1 : game.rollNumber }} af 3
+        </p>
+        <p class="cast-title" *ngIf="canSelectOnly && isMyTurn">Vælg en kategori</p>
+        <p class="cast-title" *ngIf="canSelectOnly && !isMyTurn">Runde {{ game.roundNumber }}/13</p>
+        <p class="cast-sub" *ngIf="isMyTurn && !canSelectOnly && game.rollNumber > 0">Vælg hvilke terninger du vil holde, eller vælg en kategori</p>
+        <p class="cast-sub" *ngIf="isMyTurn && canSelectOnly">Klik på pointtavlen for at registrere din score</p>
+        <p class="cast-sub waiting" *ngIf="!isMyTurn">Venter på {{ currentPlayerName }}…</p>
+      </div>
 
-      <!-- Midterste: terninger over, video under -->
-      <main class="play-col">
-
-        <div class="play-area">
-          <div class="cast-header">
-            <p class="cast-title" *ngIf="!canSelectOnly">
-              Kast {{ game.rollNumber === 0 ? 1 : game.rollNumber }} af 3
-            </p>
-            <p class="cast-title" *ngIf="canSelectOnly && isMyTurn">Vælg en kategori</p>
-            <p class="cast-title" *ngIf="canSelectOnly && !isMyTurn">Runde {{ game.roundNumber }}/13</p>
-            <p class="cast-sub" *ngIf="isMyTurn && !canSelectOnly && game.rollNumber > 0">Vælg hvilke terninger du vil holde, eller vælg en kategori</p>
-            <p class="cast-sub" *ngIf="isMyTurn && canSelectOnly">Klik på pointtavlen for at registrere din score</p>
-            <p class="cast-sub waiting" *ngIf="!isMyTurn">Venter på {{ currentPlayerName }}…</p>
-          </div>
-
-          <div class="dice-row">
-            <div class="die-wrapper" *ngFor="let die of game.dice; let i = index">
-              <app-dice-tile
-                [value]="isAnimating ? animatedValues[i] : die.value"
-                [isHeld]="die.isHeld"
-                [isRolling]="rollingDice[i]"
-                [disabled]="!isMyTurn || game.rollNumber === 0 || rollingDice[i]"
-                (toggle)="onToggleHold(die.position)">
-              </app-dice-tile>
-              <button class="btn-hold"
-                      *ngIf="isMyTurn"
-                      [class.held]="die.isHeld"
-                      [disabled]="game.rollNumber === 0 || hasSelectedCategory"
-                      (click)="onToggleHold(die.position)">
-                HOLD
-              </button>
-            </div>
-          </div>
-
-          <div class="center-actions" *ngIf="!canSelectOnly">
-            <button class="btn-roll-big"
-                    (click)="rollDice()"
-                    [class.pulse]="isMyTurn && game.rollNumber === 0"
-                    [disabled]="!canRoll || isActing">
-              {{ game.rollNumber === 0 ? 'KAST TERNINGER' : 'KAST IGEN' }}
-            </button>
-            <span class="roll-count" *ngIf="game.rollNumber > 0">
-              {{ 3 - game.rollNumber }} kast tilbage
-            </span>
-          </div>
-
-          <p class="error-msg" *ngIf="errorMessage">⚠️ {{ errorMessage }}</p>
+      <div class="dice-row">
+        <div class="die-wrapper" *ngFor="let die of game.dice; let i = index">
+          <app-dice-tile
+            [value]="isAnimating ? animatedValues[i] : die.value"
+            [isHeld]="die.isHeld"
+            [isRolling]="rollingDice[i]"
+            [disabled]="!isMyTurn || game.rollNumber === 0 || rollingDice[i]"
+            (toggle)="onToggleHold(die.position)">
+          </app-dice-tile>
+          <button class="btn-hold"
+                  *ngIf="isMyTurn"
+                  [class.held]="die.isHeld"
+                  [disabled]="game.rollNumber === 0 || hasSelectedCategory"
+                  (click)="onToggleHold(die.position)">
+            HOLD
+          </button>
         </div>
+      </div>
 
-      </main>
+      <div class="center-actions" *ngIf="!canSelectOnly">
+        <button class="btn-roll-big"
+                (click)="rollDice()"
+                [class.pulse]="isMyTurn && game.rollNumber === 0"
+                [disabled]="!canRoll || isActing">
+          {{ game.rollNumber === 0 ? 'KAST TERNINGER' : 'KAST IGEN' }}
+        </button>
+        <span class="roll-count" *ngIf="game.rollNumber > 0">
+          {{ 3 - game.rollNumber }} kast tilbage
+        </span>
+      </div>
 
-      <!-- Pointtavle -->
-      <aside class="col-score">
-        <div class="score-panel-title">POINTTAVLE</div>
-        <app-score-sheet
-          [players]="game.players"
-          [myPlayerId]="myPlayerId"
-          [canSelect]="(canSelectOnly || canSelectEarly) && isMyTurn"
-          [diceValues]="diceValues"
-          [spinning]="diceSpinning"
-          (selectCategory)="onSelectCategory($event)">
-        </app-score-sheet>
-      </aside>
+      <p class="error-msg" *ngIf="errorMessage">⚠️ {{ errorMessage }}</p>
+    </section>
 
-    </div>
-
-    <!-- Video grid – fuld bredde under terninger+pointtavle -->
-    <div class="camera-section" *ngIf="cameraEnabled">
-      <div class="camera-grid"
-           [style.grid-template-columns]="cameraGridCols">
+    <!-- ── SEKTION 2: Video tiles ── -->
+    <section class="sec-camera" *ngIf="cameraEnabled">
+      <div class="camera-grid" [style.grid-template-columns]="cameraGridCols">
         <div class="camera-tile" *ngFor="let p of activePlayers">
           <div class="camera-label">
             <span class="online-dot">●</span>
@@ -145,21 +122,34 @@
           </div>
         </div>
       </div>
-    </div>
 
-    <!-- Host: manuel Yatzy-prank knap -->
-    <div class="host-yatzy-bar" *ngIf="isIAmHost">
-      <span class="host-yatzy-label">Host fun:</span>
-      <select class="gif-select" [(ngModel)]="selectedGif" [compareWith]="compareGifs">
-        <option *ngFor="let g of gifList" [ngValue]="g">{{ g.name }}</option>
-      </select>
-      <button class="btn-yatzy-prank"
-              *ngFor="let p of activePlayers"
-              (click)="triggerYatzyCelebration(p.playerId, true)"
-              title="Vis GIF på {{ p.displayName }}">
-        🎉 {{ p.displayName }}
-      </button>
-    </div>
+      <!-- Host: manuel Yatzy-prank knap -->
+      <div class="host-yatzy-bar" *ngIf="isIAmHost">
+        <span class="host-yatzy-label">Host fun:</span>
+        <select class="gif-select" [(ngModel)]="selectedGif" [compareWith]="compareGifs">
+          <option *ngFor="let g of gifList" [ngValue]="g">{{ g.name }}</option>
+        </select>
+        <button class="btn-yatzy-prank"
+                *ngFor="let p of activePlayers"
+                (click)="triggerYatzyCelebration(p.playerId, true)"
+                title="Vis GIF på {{ p.displayName }}">
+          🎉 {{ p.displayName }}
+        </button>
+      </div>
+    </section>
+
+    <!-- ── SEKTION 3: Scoreboard ── -->
+    <section class="sec-score">
+      <div class="score-panel-title">POINTTAVLE</div>
+      <app-score-sheet
+        [players]="game.players"
+        [myPlayerId]="myPlayerId"
+        [canSelect]="(canSelectOnly || canSelectEarly) && isMyTurn"
+        [diceValues]="diceValues"
+        [spinning]="diceSpinning"
+        (selectCategory)="onSelectCategory($event)">
+      </app-score-sheet>
+    </section>
 
   </div>
 
