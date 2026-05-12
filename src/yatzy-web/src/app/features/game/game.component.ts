@@ -60,7 +60,7 @@ export class GameComponent implements OnInit, OnDestroy {
 
   get cameraGridCols(): string {
     const n = this.game?.players.length ?? 0;
-    return n <= 2 ? 'repeat(1, 1fr)' : 'repeat(2, 1fr)';
+    return n <= 1 ? 'repeat(1, 1fr)' : 'repeat(2, 1fr)';
   }
 
   yatzyCelebrating = new Set<string>();
