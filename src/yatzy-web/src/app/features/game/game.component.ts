@@ -56,7 +56,7 @@ export class GameComponent implements OnInit, OnDestroy {
   }
   hasSelectedCategory = false;
   showScore = false;
-  cameraEnabled = true;
+  cameraEnabled = false;
 
   /** PlayerId → true når den pågældende spiller skal vise Yatzy-GIF */
   yatzyCelebrating = new Set<string>();
