@@ -1,8 +1,8 @@
-/* ═══════════════════════════════════════════════════
-   Yatzy – Global Design Tokens & Reset
-   ═══════════════════════════════════════════════════ */
+﻿/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   Yatzy â€“ Global Design Tokens & Reset
+   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 :root {
-  /* Green palette – mockup uses #2e7d32 header, #f5f5f5 bg */
+  /* Green palette â€“ mockup uses #2e7d32 header, #f5f5f5 bg */
   --green-950: #1b5e20;
   --green-900: #1b5e20;
   --green-800: #2e7d32;
@@ -22,7 +22,7 @@
   --topbar-h: 52px;
   --scorebar-h: 44px;
 
-  /* Neutrals – lyst tema som mockup */
+  /* Neutrals â€“ lyst tema som mockup */
   --text-main:  #1a1a1a;
   --text-muted: #666;
   --bg-page:    #f0f0f0;
@@ -47,7 +47,6 @@
 
 html, body {
   height: 100%;
-  overflow: hidden;
 }
 
 body {
@@ -62,7 +61,7 @@ h1, h2, h3, h4 { margin: 0; font-weight: 700; }
 button { font-family: inherit; cursor: pointer; border: none; }
 ul { list-style: none; }
 
-/* ── Button base ────────────────────────────────── */
+/* â”€â”€ Button base â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .btn {
   display: inline-flex;
   align-items: center;
@@ -102,7 +101,7 @@ ul { list-style: none; }
   }
 }
 
-/* ── Card surface ───────────────────────────────── */
+/* â”€â”€ Card surface â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .card {
   background: var(--bg-surface);
   border-radius: var(--radius-lg);
@@ -110,5 +109,6 @@ ul { list-style: none; }
   padding: 24px;
 }
 
-/* ── Error text ─────────────────────────────────── */
+/* â”€â”€ Error text â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .error { color: var(--error); font-size: .85rem; margin: 4px 0; }
+

@@ -1,4 +1,4 @@
-﻿/* ── Dark tema variabler ── */
+/* ── Dark tema variabler ── */
 $bg:        #1a1f2e;
 $bg2:       #222838;
 $bg3:       #2a3040;
@@ -23,6 +23,8 @@ $orange2:   #ff9800;
 .sidebar {
   width: 160px;
   flex-shrink: 0;
+  height: 100vh;
+  overflow-y: auto;
   background: $bg2;
   border-right: 1px solid $border;
   display: flex;
