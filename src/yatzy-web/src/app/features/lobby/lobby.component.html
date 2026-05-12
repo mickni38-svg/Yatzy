@@ -77,7 +77,7 @@
         <p class="lobby-players-sub">Vent på at alle er klar…</p>
       </div>
 
-      <div class="camera-grid">
+      <div class="camera-grid" [style.grid-template-columns]="game.players.length <= 2 ? 'repeat(1,1fr)' : 'repeat(2,1fr)'">
         <div class="camera-tile" *ngFor="let p of game.players">
           <video *ngIf="p.playerId === myPlayerId && webrtc.localStream"
                  [srcObject]="webrtc.localStream" autoplay muted playsinline></video>

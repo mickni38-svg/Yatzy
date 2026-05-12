@@ -108,8 +108,9 @@ $orange2: #ff9800;
 
 .camera-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
+  gap: 8px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .camera-tile {
@@ -119,6 +120,8 @@ $orange2: #ff9800;
   border-radius: 10px;
   overflow: hidden;
   border: 1px solid $border;
+  aspect-ratio: 1 / 1;
+  position: relative;
 }
 
 .camera-label {
@@ -136,9 +139,10 @@ $orange2: #ff9800;
 
 .camera-tile video {
   width: 100%;
-  aspect-ratio: 16/9;
+  height: 100%;
   object-fit: cover;
   display: block;
+  flex: 1;
 }
 
 .camera-no-stream {
@@ -362,5 +366,5 @@ $orange2: #ff9800;
 @media (max-width: 800px) {
   .lobby-body { flex-direction: column; }
   .lobby-score-panel { width: 100%; min-width: 0; }
-  .camera-grid { grid-template-columns: 1fr 1fr; }
+  /* grid-template-columns styres af [style] binding i HTML */
 }

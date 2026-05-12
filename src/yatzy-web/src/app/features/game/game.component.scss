@@ -216,10 +216,8 @@ $orange2:   #ff9800;
   border-radius: 8px;
   overflow: hidden;
   border: 1px solid $border;
-  /* padding-bottom trick sikrer 1:1 ratio uanset flex/grid-kontekst */
   width: 100%;
   aspect-ratio: 1 / 1;
-  container-type: size;
   display: flex;
   flex-direction: column;
   min-width: 0;
