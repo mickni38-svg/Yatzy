@@ -56,6 +56,11 @@
 
     <!-- ── SEKTION 1: Terninger & kast-knap ── -->
     <section class="sec-dice">
+      <!-- Kamera-knap kun synlig på mobil (topbar er skjult) -->
+      <button class="btn-camera-toggle btn-camera-mobile" (click)="toggleCamera()" [class.active]="cameraEnabled">
+        {{ cameraEnabled ? '📷 Kamera til' : '📷 Kamera fra' }}
+      </button>
+
       <div class="cast-header">
         <p class="cast-title" *ngIf="!canSelectOnly">
           Kast {{ game.rollNumber === 0 ? 1 : game.rollNumber }} af 3

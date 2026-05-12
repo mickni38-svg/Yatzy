@@ -97,6 +97,11 @@ $orange2:   #ff9800;
   &.active { border-color:$orange; color:$orange2; background:rgba($orange,.1); }
 }
 
+/* Mobil-kamera-knap: skjult på desktop, synlig på mobil */
+.btn-camera-mobile {
+  display: none;
+}
+
 /* ══════════════════════════════════════════════
    SEKTION 1 — Terninger & kast-knap
    ══════════════════════════════════════════════ */
@@ -263,5 +268,6 @@ $orange2:   #ff9800;
   .nav-item     { padding:4px 7px; font-size:.62rem; .nav-icon { font-size:.8rem; } }
   .sidebar-spacer { flex:1; min-width:4px; }
   .btn-leave    { margin:0; padding:4px 8px; font-size:.62rem; width:auto; white-space:nowrap; flex-shrink:0; }
-  .topbar       { display:none; }
+  .topbar          { display:none; }
+  .btn-camera-mobile { display:block; align-self:flex-end; margin-bottom:4px; }
 }
