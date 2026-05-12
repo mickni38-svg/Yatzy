@@ -89,9 +89,6 @@
                 [disabled]="!canRoll || isActing">
           {{ game.rollNumber === 0 ? 'KAST TERNINGER' : 'KAST IGEN' }}
         </button>
-        <span class="roll-count" *ngIf="game.rollNumber > 0">
-          {{ 3 - game.rollNumber }} kast tilbage
-        </span>
       </div>
 
       <p class="error-msg" *ngIf="errorMessage">⚠️ {{ errorMessage }}</p>
